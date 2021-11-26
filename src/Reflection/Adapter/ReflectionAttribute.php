@@ -38,7 +38,9 @@ final class ReflectionAttribute extends CoreReflectionAttribute
 
     public function newInstance(): object
     {
-        throw new Exception\NotImplemented('Not implemented');
+        $class = $this->getName();
+
+        return new $class(...$this->getArguments());
     }
 
     public function __toString(): string

@@ -12,6 +12,6 @@ $classInfo = \Roave\BetterReflection\Reflection\ReflectionClass::createFromName(
 $clone = clone($classInfo);
 ?>
 --EXPECTF--
-Fatal error: Uncaught %SRoave\BetterReflection\Reflection\Exception\Uncloneable%s
+Fatal error: Uncaught %SPHPStan\BetterReflection\Reflection\Exception\Uncloneable%s
 Stack trace:
 %a

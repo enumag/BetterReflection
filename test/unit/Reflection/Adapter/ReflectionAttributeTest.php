@@ -7,7 +7,6 @@ namespace Roave\BetterReflectionTest\Reflection\Adapter;
 use PHPUnit\Framework\TestCase;
 use ReflectionAttribute as CoreReflectionAttribute;
 use ReflectionClass as CoreReflectionClass;
-use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
 use Roave\BetterReflection\Reflection\Adapter\ReflectionAttribute as ReflectionAttributeAdapter;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 
@@ -52,7 +51,6 @@ class ReflectionAttributeTest extends TestCase
             ['getTarget', null, 1, []],
             ['isRepeated', null, false, []],
             ['getArguments', null, [], []],
-            ['newInstance', NotImplemented::class, null, []],
         ];
     }
 

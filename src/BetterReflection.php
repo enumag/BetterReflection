@@ -25,9 +25,15 @@ use Roave\BetterReflection\Util\FindReflectionOnLine;
 
 final class BetterReflection
 {
+    private static ?SourceLocator $sharedSourceLocator = null;
+
     private ?SourceLocator $sourceLocator = null;
 
+    private static ?Reflector $sharedReflector = null;
+
     private ?Reflector $reflector = null;
+
+    private static ?Parser $sharedPhpParser = null;
 
     private ?Parser $phpParser = null;
 
@@ -35,7 +41,29 @@ final class BetterReflection
 
     private ?FindReflectionOnLine $findReflectionOnLine = null;
 
+    private static ?SourceStubber $sharedSourceStubber = null;
+
     private ?SourceStubber $sourceStubber = null;
+
+    public static function populate(
+        SourceLocator $sourceLocator,
+        Reflector $classReflector,
+        Parser $phpParser,
+        SourceStubber $sourceStubber,
+    ): void {
+        self::$sharedSourceLocator = $sourceLocator;
+        self::$sharedReflector     = $classReflector;
+        self::$sharedPhpParser     = $phpParser;
+        self::$sharedSourceStubber = $sourceStubber;
+    }
+
+    public function __construct()
+    {
+        $this->sourceLocator = self::$sharedSourceLocator;
+        $this->reflector     = self::$sharedReflector;
+        $this->phpParser     = self::$sharedPhpParser;
+        $this->sourceStubber = self::$sharedSourceStubber;
+    }
 
     public function sourceLocator(): SourceLocator
     {

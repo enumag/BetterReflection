@@ -207,6 +207,11 @@ class ReflectionConstant implements Reflection
         return AnnotationHelper::isDeprecated($this->getDocComment());
     }
 
+    public function populateValue(mixed $value): void
+    {
+        $this->compiledValue = new CompiledValue($value);
+    }
+
     /**
      * Returns constant value
      */

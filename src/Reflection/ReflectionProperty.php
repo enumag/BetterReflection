@@ -233,10 +233,8 @@ class ReflectionProperty
     /**
      * Get the default value of the property (as defined before constructor is
      * called, when the property is defined)
-     *
-     * @return scalar|array<scalar>|null
      */
-    public function getDefaultValue(): string|int|float|bool|array|null
+    public function getDefaultValue(): mixed
     {
         $defaultValueNode = $this->node->props[$this->positionInNode]->default;
 

@@ -24,6 +24,8 @@ use ValueError;
 use function array_map;
 use function sprintf;
 
+use const PHP_VERSION_ID;
+
 final class ReflectionMethod extends CoreReflectionMethod
 {
     public function __construct(private BetterReflectionMethod $betterReflectionMethod)
@@ -287,6 +289,10 @@ final class ReflectionMethod extends CoreReflectionMethod
     {
         if ($flags !== 0 && $flags !== ReflectionAttribute::IS_INSTANCEOF) {
             throw new ValueError('Argument #2 ($flags) must be a valid attribute filter flag');
+        }
+
+        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80012) {
+            return [];
         }
 
         if ($name !== null && $flags & ReflectionAttribute::IS_INSTANCEOF) {

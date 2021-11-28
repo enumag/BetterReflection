@@ -994,7 +994,11 @@ class ReflectionClass implements Reflection
         }
 
         if ($this->cachedParentClass === null) {
-            $this->cachedParentClass = $this->reflector->reflectClass($this->node->extends->toString());
+            try {
+                $this->cachedParentClass = $this->reflector->reflectClass($this->node->extends->toString());
+            } catch (IdentifierNotFound) {
+                return null;
+            }
         }
 
         if ($this->cachedParentClass->isInterface() || $this->cachedParentClass->isTrait()) {

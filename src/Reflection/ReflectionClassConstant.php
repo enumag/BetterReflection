@@ -6,6 +6,7 @@ namespace Roave\BetterReflection\Reflection;
 
 use PhpParser\Node\Stmt\ClassConst;
 use ReflectionClassConstant as CoreReflectionClassConstant;
+use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\NodeCompiler\CompiledValue;
 use Roave\BetterReflection\NodeCompiler\CompileNodeToValue;
 use Roave\BetterReflection\NodeCompiler\CompilerContext;
@@ -99,7 +100,16 @@ class ReflectionClassConstant
 
     public function isFinal(): bool
     {
-        return $this->node->isFinal();
+        $final = $this->node->isFinal();
+        if ($final) {
+            return true;
+        }
+
+        if (BetterReflection::$phpVersion >= 80100) {
+            return false;
+        }
+
+        return $this->getDeclaringClass()->isInterface();
     }
 
     /**

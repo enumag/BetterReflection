@@ -30,6 +30,6 @@ class ParseToAstFailure extends RuntimeException
         return new self(sprintf(
             'AST failed to parse in located source%s',
             $additionalInformation,
-        ), previous: $previous);
+        ), 0, $previous);
     }
 }

@@ -9,6 +9,7 @@ use ReflectionClass as CoreReflectionClass;
 use ReflectionException as CoreReflectionException;
 use ReflectionExtension as CoreReflectionExtension;
 use ReflectionMethod as CoreReflectionMethod;
+use ReturnTypeWillChange;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use Roave\BetterReflection\Reflection\ReflectionClass as BetterReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionClassConstant as BetterReflectionClassConstant;
@@ -84,24 +85,40 @@ final class ReflectionClass extends CoreReflectionClass
         return $this->betterReflectionClass->isCloneable();
     }
 
-    public function getFileName(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getFileName()
     {
         $fileName = $this->betterReflectionClass->getFileName();
 
         return $fileName !== null ? FileHelper::normalizeSystemPath($fileName) : false;
     }
 
-    public function getStartLine(): int|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getStartLine()
     {
         return $this->betterReflectionClass->getStartLine();
     }
 
-    public function getEndLine(): int|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getEndLine()
     {
         return $this->betterReflectionClass->getEndLine();
     }
 
-    public function getDocComment(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getDocComment()
     {
         return $this->betterReflectionClass->getDocComment() ?: false;
     }
@@ -115,32 +132,42 @@ final class ReflectionClass extends CoreReflectionClass
         }
     }
 
-    public function hasMethod(string $name): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function hasMethod($name): bool
     {
         return $this->betterReflectionClass->hasMethod($name);
     }
 
-    public function getMethod(string $name): ReflectionMethod
+    /**
+     * {@inheritDoc}
+     */
+    public function getMethod($name): \ReflectionMethod
     {
         return new ReflectionMethod($this->betterReflectionClass->getMethod($name));
     }
 
     /**
-     * @return list<ReflectionMethod>
-     *
-     * @psalm-suppress MethodSignatureMismatch
+     * {@inheritDoc}
      */
-    public function getMethods(?int $filter = null): array
+    public function getMethods($filter = null): array
     {
         return array_map(static fn (BetterReflectionMethod $method): ReflectionMethod => new ReflectionMethod($method), $this->betterReflectionClass->getMethods($filter));
     }
 
-    public function hasProperty(string $name): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function hasProperty($name): bool
     {
         return $this->betterReflectionClass->hasProperty($name);
     }
 
-    public function getProperty(string $name): ReflectionProperty
+    /**
+     * {@inheritDoc}
+     */
+    public function getProperty($name): \ReflectionProperty
     {
         $betterReflectionProperty = $this->betterReflectionClass->getProperty($name);
 
@@ -152,16 +179,17 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * @return list<ReflectionProperty>
-     *
-     * @psalm-suppress MethodSignatureMismatch
+     * {@inheritDoc}
      */
-    public function getProperties(?int $filter = null): array
+    public function getProperties($filter = null): array
     {
         return array_values(array_map(static fn (BetterReflectionProperty $property): ReflectionProperty => new ReflectionProperty($property), $this->betterReflectionClass->getProperties($filter)));
     }
 
-    public function hasConstant(string $name): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function hasConstant($name): bool
     {
         if ($this->betterReflectionClass instanceof BetterReflectionEnum && $this->betterReflectionClass->hasCase($name)) {
             return true;
@@ -181,7 +209,11 @@ final class ReflectionClass extends CoreReflectionClass
         );
     }
 
-    public function getConstant(string $name): mixed
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getConstant($name)
     {
         if ($this->betterReflectionClass instanceof BetterReflectionEnum) {
             $enumCase = $this->betterReflectionClass->getCase($name);
@@ -202,7 +234,11 @@ final class ReflectionClass extends CoreReflectionClass
         return $betterConstantOrEnumCase->getValue();
     }
 
-    public function getReflectionConstant(string $name): ReflectionClassConstant|false
+    /**
+     * {@inheritdoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getReflectionConstant($name)
     {
         if ($this->betterReflectionClass instanceof BetterReflectionEnum) {
             $enumCase = $this->betterReflectionClass->getCase($name);
@@ -333,12 +369,22 @@ final class ReflectionClass extends CoreReflectionClass
         return $this->betterReflectionClass->getModifiers();
     }
 
-    public function isInstance(object $object): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function isInstance($object): bool
     {
         return $this->betterReflectionClass->isInstance($object);
     }
 
-    public function newInstance(mixed ...$args): self
+    /**
+     * @param mixed $arg
+     * @param mixed ...$args
+     *
+     * @return object
+     */
+    #[ReturnTypeWillChange]
+    public function newInstance($arg = null, ...$args)
     {
         throw new Exception\NotImplemented('Not implemented');
     }
@@ -353,7 +399,11 @@ final class ReflectionClass extends CoreReflectionClass
         throw new Exception\NotImplemented('Not implemented');
     }
 
-    public function getParentClass(): ReflectionClass|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getParentClass()
     {
         $parentClass = $this->betterReflectionClass->getParentClass();
 
@@ -365,9 +415,9 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * @psalm-suppress MethodSignatureMismatch
+     * {@inheritDoc}
      */
-    public function isSubclassOf(CoreReflectionClass|string $class): bool
+    public function isSubclassOf($class): bool
     {
         $realParentClassNames = $this->betterReflectionClass->getParentClassNames();
 
@@ -391,7 +441,11 @@ final class ReflectionClass extends CoreReflectionClass
         return $this->betterReflectionClass->getStaticProperties();
     }
 
-    public function getStaticPropertyValue(string $name, mixed $default = null): mixed
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getStaticPropertyValue($name, $default = null)
     {
         $betterReflectionProperty = $this->betterReflectionClass->getProperty($name);
 
@@ -412,7 +466,10 @@ final class ReflectionClass extends CoreReflectionClass
         return $property->getValue();
     }
 
-    public function setStaticPropertyValue(string $name, mixed $value): void
+    /**
+     * {@inheritDoc}
+     */
+    public function setStaticPropertyValue($name, $value): void
     {
         $betterReflectionProperty = $this->betterReflectionClass->getProperty($name);
 
@@ -448,9 +505,9 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * @psalm-suppress MethodSignatureMismatch
+     * @param \ReflectionClass|string $interface
      */
-    public function implementsInterface(CoreReflectionClass|string $interface): bool
+    public function implementsInterface($interface): bool
     {
         $realInterfaceNames = $this->betterReflectionClass->getInterfaceNames();
 
@@ -469,7 +526,11 @@ final class ReflectionClass extends CoreReflectionClass
         throw new Exception\NotImplemented('Not implemented');
     }
 
-    public function getExtensionName(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getExtensionName()
     {
         return $this->betterReflectionClass->getExtensionName() ?? false;
     }

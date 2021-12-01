@@ -11,6 +11,7 @@ use ReflectionException as CoreReflectionException;
 use ReflectionExtension as CoreReflectionExtension;
 use ReflectionFunction as CoreReflectionFunction;
 use ReflectionType as CoreReflectionType;
+use ReturnTypeWillChange;
 use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use Roave\BetterReflection\Reflection\ReflectionFunction as BetterReflectionFunction;
@@ -62,7 +63,11 @@ final class ReflectionFunction extends CoreReflectionFunction
         return $this->betterReflectionFunction->isUserDefined();
     }
 
-    public function getClosureThis(): object|null
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getClosureThis()
     {
         throw new NotImplemented('Not implemented');
     }
@@ -77,17 +82,29 @@ final class ReflectionFunction extends CoreReflectionFunction
         throw new NotImplemented('Not implemented');
     }
 
-    public function getDocComment(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getDocComment()
     {
         return $this->betterReflectionFunction->getDocComment() ?? false;
     }
 
-    public function getStartLine(): int|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getStartLine()
     {
         return $this->betterReflectionFunction->getStartLine();
     }
 
-    public function getEndLine(): int|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getEndLine()
     {
         return $this->betterReflectionFunction->getEndLine();
     }
@@ -98,12 +115,20 @@ final class ReflectionFunction extends CoreReflectionFunction
         throw new NotImplemented('Not implemented');
     }
 
-    public function getExtensionName(): string
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getExtensionName()
     {
         return $this->betterReflectionFunction->getExtensionName() ?? '';
     }
 
-    public function getFileName(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getFileName()
     {
         $fileName = $this->betterReflectionFunction->getFileName();
 
@@ -180,22 +205,34 @@ final class ReflectionFunction extends CoreReflectionFunction
         return $this->betterReflectionFunction->isDisabled();
     }
 
-    public function invoke(mixed ...$args): mixed
+    /**
+     * @param mixed $arg
+     * @param mixed ...$args
+     *
+     * @return mixed
+     *
+     * @throws CoreReflectionException
+     */
+    #[ReturnTypeWillChange]
+    public function invoke($arg = null, ...$args)
     {
         try {
             return $this->betterReflectionFunction->invoke(...func_get_args());
         } catch (Throwable $e) {
-            throw new CoreReflectionException($e->getMessage(), previous: $e);
+            throw new CoreReflectionException($e->getMessage(), 0, $e);
         }
     }
 
-    /** @param list<mixed> $args */
-    public function invokeArgs(array $args): mixed
+    /**
+     * @param mixed[] $args
+     */
+    #[ReturnTypeWillChange]
+    public function invokeArgs(array $args)
     {
         try {
             return $this->betterReflectionFunction->invokeArgs($args);
         } catch (Throwable $e) {
-            throw new CoreReflectionException($e->getMessage(), previous: $e);
+            throw new CoreReflectionException($e->getMessage(), 0, $e);
         }
     }
 

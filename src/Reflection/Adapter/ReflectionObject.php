@@ -9,6 +9,7 @@ use ReflectionClass as CoreReflectionClass;
 use ReflectionException as CoreReflectionException;
 use ReflectionExtension as CoreReflectionExtension;
 use ReflectionObject as CoreReflectionObject;
+use ReturnTypeWillChange;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use Roave\BetterReflection\Reflection\ReflectionClass as BetterReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionClassConstant as BetterReflectionClassConstant;
@@ -66,24 +67,40 @@ final class ReflectionObject extends CoreReflectionObject
         return $this->betterReflectionObject->isCloneable();
     }
 
-    public function getFileName(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getFileName()
     {
         $fileName = $this->betterReflectionObject->getFileName();
 
         return $fileName !== null ? FileHelper::normalizeSystemPath($fileName) : false;
     }
 
-    public function getStartLine(): int|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getStartLine()
     {
         return $this->betterReflectionObject->getStartLine();
     }
 
-    public function getEndLine(): int|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getEndLine()
     {
         return $this->betterReflectionObject->getEndLine();
     }
 
-    public function getDocComment(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getDocComment()
     {
         return $this->betterReflectionObject->getDocComment() ?? false;
     }
@@ -99,14 +116,20 @@ final class ReflectionObject extends CoreReflectionObject
         return new ReflectionMethod($constructor);
     }
 
-    public function hasMethod(string $name): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function hasMethod($name): bool
     {
         assert($name !== '');
 
         return $this->betterReflectionObject->hasMethod($this->getMethodRealName($name));
     }
 
-    public function getMethod(string $name): ReflectionMethod
+    /**
+     * {@inheritDoc}
+     */
+    public function getMethod($name): \ReflectionMethod
     {
         assert($name !== '');
 
@@ -136,13 +159,10 @@ final class ReflectionObject extends CoreReflectionObject
     }
 
     /**
+     * {@inheritDoc}
      * @param int-mask-of<ReflectionMethod::IS_*>|null $filter
-     *
-     * @return list<ReflectionMethod>
-     *
-     * @psalm-suppress MethodSignatureMismatch
      */
-    public function getMethods(int|null $filter = null): array
+    public function getMethods($filter = null): array
     {
         return array_values(array_map(
             static fn (BetterReflectionMethod $method): ReflectionMethod => new ReflectionMethod($method),
@@ -150,14 +170,20 @@ final class ReflectionObject extends CoreReflectionObject
         ));
     }
 
-    public function hasProperty(string $name): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function hasProperty($name): bool
     {
         assert($name !== '');
 
         return $this->betterReflectionObject->hasProperty($name);
     }
 
-    public function getProperty(string $name): ReflectionProperty
+    /**
+     * {@inheritDoc}
+     */
+    public function getProperty($name): \ReflectionProperty
     {
         assert($name !== '');
 
@@ -171,13 +197,10 @@ final class ReflectionObject extends CoreReflectionObject
     }
 
     /**
+     * {@inheritDoc}
      * @param int-mask-of<ReflectionProperty::IS_*>|null $filter
-     *
-     * @return list<ReflectionProperty>
-     *
-     * @psalm-suppress MethodSignatureMismatch
      */
-    public function getProperties(int|null $filter = null): array
+    public function getProperties($filter = null): array
     {
         return array_values(array_map(
             static fn (BetterReflectionProperty $property): ReflectionProperty => new ReflectionProperty($property),
@@ -185,7 +208,10 @@ final class ReflectionObject extends CoreReflectionObject
         ));
     }
 
-    public function hasConstant(string $name): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function hasConstant($name): bool
     {
         assert($name !== '');
 
@@ -205,7 +231,11 @@ final class ReflectionObject extends CoreReflectionObject
         );
     }
 
-    public function getConstant(string $name): mixed
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getConstant($name)
     {
         assert($name !== '');
 
@@ -217,7 +247,11 @@ final class ReflectionObject extends CoreReflectionObject
         return $betterReflectionConstant->getValue();
     }
 
-    public function getReflectionConstant(string $name): ReflectionClassConstant|false
+    /**
+     * {@inheritdoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getReflectionConstant($name)
     {
         assert($name !== '');
 
@@ -314,27 +348,49 @@ final class ReflectionObject extends CoreReflectionObject
         return $this->betterReflectionObject->getModifiers();
     }
 
-    public function isInstance(object $object): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function isInstance($object): bool
     {
         return $this->betterReflectionObject->isInstance($object);
     }
 
-    public function newInstance(mixed ...$args): ReflectionObject
+    /**
+     * @param mixed $arg
+     * @param mixed ...$args
+     *
+     * @return object
+     */
+    #[ReturnTypeWillChange]
+    public function newInstance($arg = null, ...$args)
     {
         throw new Exception\NotImplemented('Not implemented');
     }
 
-    public function newInstanceWithoutConstructor(): ReflectionObject
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function newInstanceWithoutConstructor()
     {
         throw new Exception\NotImplemented('Not implemented');
     }
 
-    public function newInstanceArgs(array|null $args = null): ReflectionObject
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function newInstanceArgs(?array $args = null)
     {
         throw new Exception\NotImplemented('Not implemented');
     }
 
-    public function getParentClass(): ReflectionClass|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getParentClass()
     {
         $parentClass = $this->betterReflectionObject->getParentClass();
 
@@ -345,8 +401,10 @@ final class ReflectionObject extends CoreReflectionObject
         return new ReflectionClass($parentClass);
     }
 
-    /** @psalm-suppress MethodSignatureMismatch */
-    public function isSubclassOf(CoreReflectionClass|string $class): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function isSubclassOf($class): bool
     {
         $realParentClassNames = $this->betterReflectionObject->getParentClassNames();
 
@@ -370,7 +428,11 @@ final class ReflectionObject extends CoreReflectionObject
         return $this->betterReflectionObject->getStaticProperties();
     }
 
-    public function getStaticPropertyValue(string $name, mixed $default = null): mixed
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getStaticPropertyValue($name, $default = null)
     {
         assert($name !== '');
 
@@ -393,7 +455,10 @@ final class ReflectionObject extends CoreReflectionObject
         return $property->getValue();
     }
 
-    public function setStaticPropertyValue(string $name, mixed $value): void
+    /**
+     * {@inheritDoc}
+     */
+    public function setStaticPropertyValue($name, $value): void
     {
         assert($name !== '');
 
@@ -428,8 +493,10 @@ final class ReflectionObject extends CoreReflectionObject
         return $this->isIterateable();
     }
 
-    /** @psalm-suppress MethodSignatureMismatch */
-    public function implementsInterface(CoreReflectionClass|string $interface): bool
+    /**
+     * @param \ReflectionClass|string $interface
+     */
+    public function implementsInterface($interface): bool
     {
         $realInterfaceNames = $this->betterReflectionObject->getInterfaceNames();
 
@@ -448,7 +515,11 @@ final class ReflectionObject extends CoreReflectionObject
         throw new Exception\NotImplemented('Not implemented');
     }
 
-    public function getExtensionName(): string|false
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getExtensionName()
     {
         return $this->betterReflectionObject->getExtensionName() ?? false;
     }

@@ -35,7 +35,6 @@ use Roave\BetterReflection\Reflection\ReflectionParameter;
 use Roave\BetterReflection\Reflection\ReflectionProperty;
 use Roave\BetterReflection\Reflection\ReflectionUnionType;
 use Roave\BetterReflection\Reflector\DefaultReflector;
-use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use Roave\BetterReflection\SourceLocator\Ast\Locator;
 use Roave\BetterReflection\SourceLocator\Located\LocatedSource;
 use Roave\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
@@ -59,13 +58,11 @@ use Roave\BetterReflectionTest\Fixture;
 use Roave\BetterReflectionTest\Fixture\AbstractClass;
 use Roave\BetterReflectionTest\Fixture\Attr;
 use Roave\BetterReflectionTest\Fixture\ClassExtendingNonAbstractClass;
-use Roave\BetterReflectionTest\Fixture\ClassForHinting;
 use Roave\BetterReflectionTest\Fixture\ClassUsesAndRenamesMethodFromTrait;
 use Roave\BetterReflectionTest\Fixture\ClassUsesTwoTraitsWithSameMethodNameOneIsAbstract;
 use Roave\BetterReflectionTest\Fixture\ClassUsingTraitWithAbstractMethod;
 use Roave\BetterReflectionTest\Fixture\ClassWithAttributes;
 use Roave\BetterReflectionTest\Fixture\ClassWithCaseInsensitiveMethods;
-use Roave\BetterReflectionTest\Fixture\ClassWithMissingParent;
 use Roave\BetterReflectionTest\Fixture\ClassWithNonAbstractTraitMethodThatOverwritePreviousAbstractTraitMethod;
 use Roave\BetterReflectionTest\Fixture\DefaultProperties;
 use Roave\BetterReflectionTest\Fixture\ExampleClass;
@@ -87,7 +84,6 @@ use Roave\BetterReflectionTest\FixtureOther\AnotherClass;
 use SplFileInfo;
 use stdClass;
 use Stringable;
-use TypeError;
 use UnitEnum;
 
 use function array_keys;
@@ -382,24 +378,6 @@ class ReflectionClassTest extends TestCase
 
         self::assertSame('k', $classInfo->getMethod('k')->getName(), 'Failed asserting that method k from trait Bar2 was returned');
         self::assertSame('Bar3', $classInfo->getMethod('k')->getDeclaringClass()->getName());
-    }
-
-    public function testGetMethodsWithBrokenClass(): void
-    {
-        $classInfo = (new DefaultReflector(new SingleFileSourceLocator(
-            __DIR__ . '/../Fixture/ClassWithMissingParent.php',
-            $this->astLocator,
-        )))->reflectClass(ClassWithMissingParent::class);
-
-        try {
-            $classInfo->getMethods();
-        } catch (IdentifierNotFound) {
-            // Ignore error for the first time
-        }
-
-        $this->expectException(IdentifierNotFound::class);
-
-        $classInfo->getMethods();
     }
 
     public function testGetMethodsOrder(): void
@@ -1738,24 +1716,6 @@ PHP;
         $class->getInterfaces();
     }
 
-    public function testIsInstance(): void
-    {
-        // note: ClassForHinting is safe to type-check against, as it will actually be loaded at runtime
-        $class = (new DefaultReflector(new SingleFileSourceLocator(
-            __DIR__ . '/../Fixture/ClassForHinting.php',
-            $this->astLocator,
-        )))->reflectClass(ClassForHinting::class);
-
-        self::assertFalse($class->isInstance(new stdClass()));
-        self::assertFalse($class->isInstance($this));
-        self::assertTrue($class->isInstance(new ClassForHinting()));
-
-        $this->expectException(TypeError::class);
-
-        /** @phpstan-ignore-next-line */
-        $class->isInstance('foo');
-    }
-
     public function testIsSubclassOf(): void
     {
         $subExampleClass = (new DefaultReflector(new SingleFileSourceLocator(
@@ -2486,30 +2446,6 @@ PHP;
 
         self::assertNotContains(Stringable::class, $noStringable->getInterfaceNames());
         self::assertNotContains(Stringable::class, $noStringable->getImmediateInterfaces());
-    }
-
-    public function testNoStringableInterfaceWhenStringableIsNotInternal(): void
-    {
-        $php = <<<'PHP'
-            <?php
-
-            class Stringable
-            {
-            }
-
-            class NoStringable
-            {
-                public function __toString(): string
-                {
-                }
-            }
-        PHP;
-
-        $reflector = new DefaultReflector(new StringSourceLocator($php, $this->astLocator));
-
-        $noStringable = $reflector->reflectClass('NoStringable');
-
-        self::assertNotContains(Stringable::class, $noStringable->getInterfaceNames());
     }
 
     public function testHasAllInterfacesWithStringable(): void

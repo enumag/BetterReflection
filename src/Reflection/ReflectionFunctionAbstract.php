@@ -385,7 +385,7 @@ trait ReflectionFunctionAbstract
     /**
      * Fetch the AST for this method or function.
      */
-    abstract public function getAst(): Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction;
+    abstract public function getAst(): Node\FunctionLike;
 
     /**
      * @return list<ReflectionAttribute>

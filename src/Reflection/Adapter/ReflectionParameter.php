@@ -8,6 +8,7 @@ use OutOfBoundsException;
 use ReflectionClass as CoreReflectionClass;
 use ReflectionFunctionAbstract as CoreReflectionFunctionAbstract;
 use ReflectionParameter as CoreReflectionParameter;
+use ReturnTypeWillChange;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use Roave\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
 use Roave\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
@@ -116,7 +117,11 @@ final class ReflectionParameter extends CoreReflectionParameter
         return $this->betterReflectionParameter->isDefaultValueAvailable();
     }
 
-    public function getDefaultValue(): mixed
+    /**
+     * {@inheritDoc}
+     */
+    #[ReturnTypeWillChange]
+    public function getDefaultValue()
     {
         return $this->betterReflectionParameter->getDefaultValue();
     }
@@ -136,7 +141,7 @@ final class ReflectionParameter extends CoreReflectionParameter
         return $this->betterReflectionParameter->hasType();
     }
 
-    public function getType(): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|ReflectionType|null
+    public function getType(): ?\ReflectionType
     {
         return ReflectionType::fromTypeOrNull($this->betterReflectionParameter->getType());
     }

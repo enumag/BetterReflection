@@ -6,6 +6,8 @@ namespace Roave\BetterReflection\Reflection;
 
 use Closure;
 use PhpParser\Node;
+use PhpParser\Node\Expr\ArrowFunction;
+use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
 use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
@@ -78,7 +80,10 @@ class ReflectionFunction implements Reflection
         return new self($reflector, $node, $locatedSource, $namespaceNode);
     }
 
-    public function getAst(): Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction
+    /**
+     * @return ArrowFunction|\PhpParser\Node\Expr\Closure|Function_
+     */
+    public function getAst(): Node\FunctionLike
     {
         return $this->functionNode;
     }

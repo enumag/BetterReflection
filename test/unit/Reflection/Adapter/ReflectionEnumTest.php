@@ -37,11 +37,23 @@ use function array_map;
 use function get_class_methods;
 use function is_array;
 
+use const PHP_VERSION_ID;
+
 /**
  * @covers \Roave\BetterReflection\Reflection\Adapter\ReflectionEnum
  */
 class ReflectionEnumTest extends TestCase
 {
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+        if (PHP_VERSION_ID >= 80000) {
+            return;
+        }
+
+        self::markTestSkipped('Test requires PHP 8.0');
+    }
+
     /**
      * @return array<string, array{0: string}>
      */

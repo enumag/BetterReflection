@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Roave\BetterReflectionTest\Reflection\Adapter;
 
+use Error;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass as CoreReflectionClass;
@@ -15,7 +16,6 @@ use Roave\BetterReflection\Reflection\ReflectionClass as BetterReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionClassConstant as BetterReflectionClassConstant;
 use Roave\BetterReflection\Reflection\ReflectionEnumCase as BetterReflectionEnumCase;
 use Roave\BetterReflectionTest\Fixture\PureEnum;
-use ValueError;
 
 use function array_combine;
 use function array_map;
@@ -318,7 +318,7 @@ class ReflectionClassConstantTest extends TestCase
         $betterReflectionClassConstant  = $this->createMock(BetterReflectionClassConstant::class);
         $reflectionClassConstantAdapter = new ReflectionClassConstantAdapter($betterReflectionClassConstant);
 
-        self::expectException(ValueError::class);
+        self::expectException(Error::class);
         $reflectionClassConstantAdapter->getAttributes(null, 123);
     }
 

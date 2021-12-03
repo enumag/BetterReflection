@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Adapter;
 
 use Closure;
+use Error;
 use Exception;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
@@ -23,7 +24,6 @@ use Roave\BetterReflection\Reflection\ReflectionNamedType as BetterReflectionNam
 use Roave\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
 use Roave\BetterReflection\Util\FileHelper;
 use Throwable;
-use ValueError;
 
 use function array_combine;
 use function array_map;
@@ -407,7 +407,7 @@ class ReflectionFunctionTest extends TestCase
         $betterReflectionFunction  = $this->createMock(BetterReflectionFunction::class);
         $reflectionFunctionAdapter = new ReflectionFunctionAdapter($betterReflectionFunction);
 
-        self::expectException(ValueError::class);
+        self::expectException(Error::class);
         $reflectionFunctionAdapter->getAttributes(null, 123);
     }
 

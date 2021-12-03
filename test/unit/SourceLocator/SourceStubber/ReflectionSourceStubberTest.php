@@ -45,6 +45,8 @@ use function in_array;
 use function method_exists;
 use function sort;
 
+use const PHP_VERSION_ID;
+
 /**
  * @covers \Roave\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber
  */
@@ -57,6 +59,16 @@ class ReflectionSourceStubberTest extends TestCase
     private PhpInternalSourceLocator $phpInternalSourceLocator;
 
     private Reflector $reflector;
+
+    public static function setUpBeforeClass(): void
+    {
+        parent::setUpBeforeClass();
+        if (PHP_VERSION_ID >= 80000) {
+            return;
+        }
+
+        self::markTestSkipped('Test requires PHP 8.0');
+    }
 
     protected function setUp(): void
     {

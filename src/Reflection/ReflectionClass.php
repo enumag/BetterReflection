@@ -1224,10 +1224,6 @@ class ReflectionClass implements Reflection
      */
     private function addStringableInterface(array $interfaces): array
     {
-        if (BetterReflection::$phpVersion < 80000) {
-            return $interfaces;
-        }
-
         /** @psalm-var class-string $stringableClassName */
         $stringableClassName = Stringable::class;
 
@@ -1239,10 +1235,7 @@ class ReflectionClass implements Reflection
             if (strtolower($immediateMethodName) === '__tostring') {
                 try {
                     $stringableInterfaceReflection = $this->reflector->reflectClass($stringableClassName);
-
-                    if ($stringableInterfaceReflection->isInternal()) {
-                        $interfaces[$stringableClassName] = $stringableInterfaceReflection;
-                    }
+                    $interfaces[$stringableClassName] = $stringableInterfaceReflection;
                 } catch (IdentifierNotFound) {
                     // Stringable interface does not exist on target PHP version
                 }

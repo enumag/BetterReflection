@@ -28,6 +28,8 @@ use function is_array;
 
 trait ReflectionFunctionAbstract
 {
+    private ?string $cachedName = null;
+
     abstract public function __toString(): string;
 
     abstract public function getShortName(): string;
@@ -38,11 +40,15 @@ trait ReflectionFunctionAbstract
      */
     public function getName(): string
     {
-        if (! $this->inNamespace()) {
-            return $this->getShortName();
+        if ($this->cachedName !== null) {
+            return $this->cachedName;
         }
 
-        return $this->getNamespaceName() . '\\' . $this->getShortName();
+        if (! $this->inNamespace()) {
+            return $this->cachedName = $this->getShortName();
+        }
+
+        return $this->cachedName = $this->getNamespaceName() . '\\' . $this->getShortName();
     }
 
     /**

@@ -83,6 +83,20 @@ class ReflectionClass implements Reflection
 
     private ?ReflectionClass $cachedParentClass = null;
 
+    /** @var self[]|null */
+    private ?array $cachedInheritanceClassHierarchy = null;
+
+    /** @var class-string|trait-string|null */
+    private ?string $cachedName = null;
+
+    private ?ReflectionMethod $cachedConstructor = null;
+
+    /** @var array<string, ReflectionClass>|null */
+    private ?array $cachedInterfaces = null;
+
+    /** @var list<string>|null */
+    private ?array $cachedInterfaceNames = null;
+
     protected function __construct(
         private Reflector $reflector,
         private ClassNode|InterfaceNode|TraitNode|EnumNode $node,
@@ -186,16 +200,20 @@ class ReflectionClass implements Reflection
      */
     public function getName(): string
     {
-        if (! $this->inNamespace()) {
+        if ($this->cachedName === null) {
+            if (!$this->inNamespace()) {
+                /** @psalm-var class-string|trait-string */
+                return $this->cachedName = $this->getShortName();
+            }
+
+            $namespacedName = $this->node->namespacedName;
+            assert($namespacedName instanceof Node\Name);
+
             /** @psalm-var class-string|trait-string */
-            return $this->getShortName();
+            return $this->cachedName = $namespacedName->toString();
         }
 
-        $namespacedName = $this->node->namespacedName;
-        assert($namespacedName instanceof Node\Name);
-
-        /** @psalm-var class-string|trait-string */
-        return $namespacedName->toString();
+        return $this->cachedName;
     }
 
     /**
@@ -717,13 +735,17 @@ class ReflectionClass implements Reflection
      */
     public function getConstructor(): ReflectionMethod
     {
+        if ($this->cachedConstructor !== null) {
+            return $this->cachedConstructor;
+        }
+
         $constructors = array_values(array_filter($this->getMethods(), static fn (ReflectionMethod $method): bool => $method->isConstructor()));
 
         if (! isset($constructors[0])) {
             throw new OutOfBoundsException('Could not find method: __construct');
         }
 
-        return $constructors[0];
+        return $this->cachedConstructor = $constructors[0];
     }
 
     /**
@@ -1346,7 +1368,11 @@ class ReflectionClass implements Reflection
      */
     public function getInterfaces(): array
     {
-        return array_merge(...array_map(
+        if ($this->cachedInterfaces !== null) {
+            return $this->cachedInterfaces;
+        }
+
+        return $this->cachedInterfaces = array_merge(...array_map(
             static fn (self $reflectionClass): array => $reflectionClass->getCurrentClassImplementedInterfacesIndexedByName(),
             $this->getInheritanceClassHierarchy(),
         ));
@@ -1394,7 +1420,11 @@ class ReflectionClass implements Reflection
      */
     public function getInterfaceNames(): array
     {
-        return array_values(array_map(
+        if ($this->cachedInterfaceNames !== null) {
+            return $this->cachedInterfaceNames;
+        }
+
+        return $this->cachedInterfaceNames = array_values(array_map(
             static fn (self $interface): string => $interface->getName(),
             $this->getInterfaces(),
         ));
@@ -1538,11 +1568,15 @@ class ReflectionClass implements Reflection
      */
     private function getInheritanceClassHierarchy(): array
     {
-        $parentClass = $this->getParentClass();
+        if ($this->cachedInheritanceClassHierarchy === null) {
+            $parentClass = $this->getParentClass();
 
-        return $parentClass
-            ? array_merge($parentClass->getInheritanceClassHierarchy(), [$this])
-            : [$this];
+            $this->cachedInheritanceClassHierarchy = $parentClass
+                ? array_merge($parentClass->getInheritanceClassHierarchy(), [$this])
+                : [$this];
+        }
+
+        return $this->cachedInheritanceClassHierarchy;
     }
 
     /**

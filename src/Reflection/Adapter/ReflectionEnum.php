@@ -28,8 +28,6 @@ use function constant;
 use function sprintf;
 use function strtolower;
 
-use const PHP_VERSION_ID;
-
 /** @psalm-suppress PropertyNotSetInConstructor */
 final class ReflectionEnum extends CoreReflectionEnum
 {
@@ -469,7 +467,7 @@ final class ReflectionEnum extends CoreReflectionEnum
     /**
      * @param class-string|null $name
      *
-     * @return list<ReflectionAttribute>
+     * @return list<ReflectionAttribute|FakeReflectionAttribute>
      */
     public function getAttributes(string|null $name = null, int $flags = 0): array
     {
@@ -477,15 +475,7 @@ final class ReflectionEnum extends CoreReflectionEnum
             throw new ValueError('Argument #2 ($flags) must be a valid attribute filter flag');
         }
 
-        if (PHP_VERSION_ID >= 80000 && PHP_VERSION_ID < 80012) {
-            return [];
-        }
-
-        if (PHP_VERSION_ID < 70200) {
-            return [];
-        }
-
-        if ($name !== null && $flags & ReflectionAttribute::IS_INSTANCEOF) {
+        if ($name !== null && $flags !== 0) {
             $attributes = $this->betterReflectionEnum->getAttributesByInstance($name);
         } elseif ($name !== null) {
             $attributes = $this->betterReflectionEnum->getAttributesByName($name);
@@ -493,7 +483,7 @@ final class ReflectionEnum extends CoreReflectionEnum
             $attributes = $this->betterReflectionEnum->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute => new ReflectionAttribute($betterReflectionAttribute), $attributes);
+        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
     }
 
     public function isEnum(): bool

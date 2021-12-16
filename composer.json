@@ -1,13 +1,12 @@
 {
-    "name": "roave/better-reflection",
+    "name": "ondrejmirtes/better-reflection",
     "description": "Better Reflection - an improved code reflection API",
     "license": "MIT",
     "require": {
-        "php": "~8.0.12 || ~8.1.0 || ~8.2.0",
+        "php": "^7.2 || ^8.0",
         "ext-json": "*",
-        "jetbrains/phpstorm-stubs": "2022.2",
-        "nikic/php-parser": "^4.15.1",
-        "roave/signature": "^1.7"
+        "jetbrains/phpstorm-stubs": "dev-master#9717ec39b211f2cef82a59c29c9eef0954647fac",
+        "nikic/php-parser": "^4.15.1"
     },
     "authors": [
         {
@@ -38,11 +37,11 @@
         "phpstan/phpstan-phpunit": "^1.2.2",
         "phpunit/phpunit": "^9.5.25",
         "vimeo/psalm": "^4.29",
-        "roave/infection-static-analysis-plugin": "^1.25.0"
+        "rector/rector": "0.12.5"
     },
     "autoload": {
         "psr-4": {
-            "Roave\\BetterReflection\\": "src"
+            "PHPStan\\BetterReflection\\": "src"
         }
     },
     "autoload-dev": {

@@ -25,3 +25,8 @@ parameters:
         -
             message: '#Call to an undefined method PhpParser\\NodeVisitorAbstract::(getNode|setConstantName)\(\)#'
             path: src/SourceLocator/Type/AutoloadSourceLocator.php
+
+        -
+            message: "#^Declaring PHPStan namespace is not allowed in 3rd party packages\\.$#"
+            count: 1
+            path: src/BetterReflection.php

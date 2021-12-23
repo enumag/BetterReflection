@@ -1,30 +1,32 @@
 <?php
 
-if (class_exists(ReflectionEnum::class, false)) {
-    return;
-}
-
-class ReflectionEnum extends ReflectionClass
-{
-    public function __construct(object|string $objectOrClass) {}
-
-    public function hasCase(string $name): bool
-    {
+if (\PHP_VERSION_ID < 80100) {
+    if (class_exists(ReflectionEnum::class, false)) {
+        return;
     }
 
-    public function getCases(): array
+    class ReflectionEnum extends ReflectionClass
     {
-    }
+        public function __construct(object|string $objectOrClass) {}
 
-    public function getCase(string $name): ReflectionEnumUnitCase
-    {
-    }
+        public function hasCase(string $name): bool
+        {
+        }
 
-    public function isBacked(): bool
-    {
-    }
+        public function getCases(): array
+        {
+        }
 
-    public function getBackingType(): ?ReflectionType
-    {
+        public function getCase(string $name): ReflectionEnumUnitCase
+        {
+        }
+
+        public function isBacked(): bool
+        {
+        }
+
+        public function getBackingType(): ?ReflectionType
+        {
+        }
     }
 }

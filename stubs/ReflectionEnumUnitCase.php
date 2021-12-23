@@ -1,23 +1,25 @@
 <?php
 
-if (class_exists(ReflectionEnumUnitCase::class, false)) {
-    return;
-}
-
-class ReflectionEnumUnitCase extends ReflectionClassConstant
-{
-    public function __construct(object|string $class, string $constant)
-    {
+if (\PHP_VERSION_ID < 80100) {
+    if (class_exists(ReflectionEnumUnitCase::class, false)) {
+        return;
     }
 
-    public function getValue(): UnitEnum
+    class ReflectionEnumUnitCase extends ReflectionClassConstant
     {
-    }
+        public function __construct(object|string $class, string $constant)
+        {
+        }
 
-    /**
-     * @return ReflectionEnum
-     */
-    public function getEnum(): ReflectionEnum
-    {
+        public function getValue(): UnitEnum
+        {
+        }
+
+        /**
+         * @return ReflectionEnum
+         */
+        public function getEnum(): ReflectionEnum
+        {
+        }
     }
 }

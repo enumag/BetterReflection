@@ -50,6 +50,7 @@ use function get_defined_constants;
 use function implode;
 use function in_array;
 use function is_array;
+use function is_file;
 use function is_resource;
 use function method_exists;
 use function preg_replace;
@@ -88,7 +89,14 @@ final class ReflectionSourceStubber implements SourceStubber
         /** phpcs:enable */
 
         $classReflection = $isEnum ? new CoreReflectionEnum($className) : new CoreReflectionClass($className);
-        $classNode       = $this->createClass($classReflection);
+        if (
+            $classReflection->getExtensionName() === false
+            && ($classReflection->getFileName() !== false && is_file($classReflection->getFileName()))
+        ) {
+            return null;
+        }
+
+        $classNode = $this->createClass($classReflection);
 
         if ($classNode instanceof Class_) {
             $this->addClassModifiers($classNode, $classReflection);
@@ -133,7 +141,14 @@ final class ReflectionSourceStubber implements SourceStubber
         }
 
         $functionReflection = new CoreReflectionFunction($functionName);
-        $functionNode       = $this->builderFactory->function($functionReflection->getShortName());
+        if (
+            $functionReflection->getExtensionName() === false
+            && ($functionReflection->getFileName() !== false && is_file($functionReflection->getFileName()))
+        ) {
+            return null;
+        }
+
+        $functionNode = $this->builderFactory->function($functionReflection->getShortName());
 
         $this->addDocComment($functionNode, $functionReflection);
         $this->addParameters($functionNode, $functionReflection);
@@ -167,6 +182,9 @@ final class ReflectionSourceStubber implements SourceStubber
         }
 
         [$constantValue, $extensionName] = $constantData;
+        if ($extensionName === null) {
+            return null;
+        }
 
         if (is_resource($constantValue)) {
             $constantValue = $this->builderFactory->funcCall('constant', [$constantName]);

@@ -8,6 +8,7 @@ use PhpParser\ConstExprEvaluator;
 use PhpParser\Node;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionClassConstant;
+use Roave\BetterReflection\Reflection\ReflectionEnum;
 use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
 
 use function array_map;
@@ -206,6 +207,13 @@ class CompileNodeToValue
         $classReflection = $classContext !== null && $classContext->getName() === $className ? $classContext : $context->getReflector()->reflectClass($className);
 
         $reflectionConstant = $classReflection->getReflectionConstant($constantName);
+        if ($classReflection instanceof ReflectionEnum) {
+            if ($classReflection->hasCase($constantName)) {
+                if (defined($classConstantName)) {
+                    return constant($classConstantName);
+                }
+            }
+        }
 
         if (! $reflectionConstant instanceof ReflectionClassConstant) {
             throw Exception\UnableToCompileNode::becauseOfNotFoundClassConstantReference($context, $classReflection, $node);

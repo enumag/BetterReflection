@@ -656,6 +656,6 @@ final class ReflectionSourceStubber implements SourceStubber
 
     private function createStubData(string $stub, ?string $extensionName): StubData
     {
-        return new StubData($stub, $extensionName);
+        return new StubData($stub, $extensionName, null);
     }
 }

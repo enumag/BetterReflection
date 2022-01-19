@@ -37,6 +37,7 @@ use stdClass;
 
 use function assert;
 use function define;
+use function preg_quote;
 use function realpath;
 use function sprintf;
 use function uniqid;
@@ -263,9 +264,9 @@ class CompileNodeToValueTest extends TestCase
     public function testExceptionThrownWhenInvalidNodeGiven(): void
     {
         $this->expectException(UnableToCompileNode::class);
-        $this->expectExceptionMessage(sprintf(
-            'Unable to compile expression in global namespace: unrecognized node type %s in file "" (line -1)',
-            Yield_::class,
+        $this->expectExceptionMessageMatches(sprintf(
+            '#^Unable to compile expression in global namespace: unrecognized node type %s in file#',
+            preg_quote(Yield_::class),
         ));
 
         (new CompileNodeToValue())->__invoke(new Yield_(), $this->getDummyContextWithGlobalNamespace());
@@ -274,7 +275,7 @@ class CompileNodeToValueTest extends TestCase
     public function testExceptionThrownWhenUndefinedConstUsed(): void
     {
         $this->expectException(UnableToCompileNode::class);
-        $this->expectExceptionMessage('Could not locate constant "FOO" while evaluating expression in global namespace in file "" (line -1)');
+        $this->expectExceptionMessageMatches('#^Could not locate constant "FOO" while evaluating expression in global namespace in file#');
 
         (new CompileNodeToValue())->__invoke(new ConstFetch(new Name('FOO')), $this->getDummyContextWithGlobalNamespace());
     }
@@ -282,7 +283,7 @@ class CompileNodeToValueTest extends TestCase
     public function testExceptionThrownWhenUndefinedClassConstUsed(): void
     {
         $this->expectException(UnableToCompileNode::class);
-        $this->expectExceptionMessage('Could not locate constant EmptyClass::FOO while trying to evaluate constant expression in global namespace in file "" (line -1)');
+        $this->expectExceptionMessageMatches('#^Could not locate constant EmptyClass::FOO while trying to evaluate constant expression in global namespace in file#');
 
         (new CompileNodeToValue())
             ->__invoke(

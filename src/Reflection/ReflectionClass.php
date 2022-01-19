@@ -510,7 +510,7 @@ class ReflectionClass implements Reflection
             return $methods;
         }
 
-        $internalLocatedSource = new InternalLocatedSource('', $this->getName(), 'Core');
+        $internalLocatedSource = new InternalLocatedSource('', $this->getName(), 'Core', $this->getFileName());
         $createMethod          = fn (string $name, array $params, Node\Identifier|Node\NullableType $returnType): ReflectionMethod => ReflectionMethod::createFromNode(
             $this->reflector,
             new ClassMethod(

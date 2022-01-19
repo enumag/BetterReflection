@@ -260,7 +260,8 @@ final class PhpStormStubsSourceStubber implements SourceStubber
             $classNode->extends = $this->replaceExtendsOrImplementsByPhpVersion($className, $classNode->extends);
         }
 
-        $extension = $this->getExtensionFromFilePath(self::$classMap[strtolower($className)]);
+        $filePath  = self::$classMap[strtolower($className)];
+        $extension = $this->getExtensionFromFilePath($filePath);
         $stub      = $this->createStub($classNode, $classNodeData[1]);
 
         if ($className === Traversable::class) {
@@ -270,7 +271,7 @@ final class PhpStormStubsSourceStubber implements SourceStubber
             $stub = str_replace('PS_UNRESERVE_PREFIX_throw', 'throw', $stub);
         }
 
-        return new StubData($stub, $extension);
+        return new StubData($stub, $extension, $this->getAbsoluteFilePath($filePath));
     }
 
     /**
@@ -333,9 +334,10 @@ final class PhpStormStubsSourceStubber implements SourceStubber
             return null;
         }
 
-        $extension = $this->getExtensionFromFilePath(self::$functionMap[strtolower($functionName)]);
+        $filePath  = self::$functionMap[strtolower($functionName)];
+        $extension = $this->getExtensionFromFilePath($filePath);
 
-        return new StubData($this->createStub($functionNodeData[0], $functionNodeData[1]), $extension);
+        return new StubData($this->createStub($functionNodeData[0], $functionNodeData[1]), $extension, $this->getAbsoluteFilePath($filePath));
     }
 
     public function generateConstantStub(string $constantName): ?StubData
@@ -371,7 +373,7 @@ final class PhpStormStubsSourceStubber implements SourceStubber
 
         $extension = $this->getExtensionFromFilePath($filePath);
 
-        return new StubData($this->createStub($constantNodeData[0], $constantNodeData[1]), $extension);
+        return new StubData($this->createStub($constantNodeData[0], $constantNodeData[1]), $extension, $this->getAbsoluteFilePath($filePath));
     }
 
     private function parseFile(string $filePath): void

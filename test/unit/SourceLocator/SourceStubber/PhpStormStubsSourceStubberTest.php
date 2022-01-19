@@ -1292,4 +1292,10 @@ class PhpStormStubsSourceStubberTest extends TestCase
 
         self::assertTrue($class->isSubclassOf($subclassName));
     }
+
+    public function testFilename(): void
+    {
+        $reflection = $this->reflector->reflectClass('XMLReader');
+        $this->assertSame(realpath(__DIR__ . '/../../../../vendor/jetbrains/phpstorm-stubs/xmlreader/xmlreader.php'), realpath($reflection->getFileName()));
+    }
 }

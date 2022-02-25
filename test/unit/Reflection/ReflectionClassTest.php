@@ -10,6 +10,7 @@ use Baz;
 use E;
 use Iterator;
 use PhpParser\Node;
+use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Stmt\Class_;
 use PHPUnit\Framework\TestCase;
 use Qux;
@@ -2596,5 +2597,40 @@ PHP;
         $fooBar            = $reflector->reflectClass('FooBar');
         $fooBarDoFooMethod = $fooBar->getMethod('doFoo');
         self::assertTrue($fooBarDoFooMethod->isPublic());
+    }
+
+    public function testEvaluateClassConstantFromAnonymousClass(): void
+    {
+        $php = <<<'PHP'
+<?php
+class ApiCacheMap
+{
+    protected const DEFAULT_CACHE_TTL = 600;
+
+    protected const CACHE_MAP = [self::DEFAULT_CACHE_TTL => []];
+}
+PHP;
+
+        $source = <<<'PHP'
+<?php
+new class extends ApiCacheMap {
+	protected const CACHE_MAP = [
+		1 => ApiCacheMap::CACHE_MAP[self::DEFAULT_CACHE_TTL],
+	];
+};
+PHP;
+        $parser = BetterReflectionSingleton::instance()->phpParser();
+        $ast    = $parser->parse($source);
+        $new    = $ast[0]->expr;
+        self::assertInstanceOf(New_::class, $new);
+
+        $reflector = (new DefaultReflector(new StringSourceLocator($php, $this->astLocator)));
+        $anonymous = ReflectionClass::createFromNode(
+            $reflector,
+            $new->class,
+            new LocatedSource($source, null),
+        );
+        $array     = $anonymous->getConstant('CACHE_MAP');
+        self::assertIsArray($array);
     }
 }

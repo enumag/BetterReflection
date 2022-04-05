@@ -39,6 +39,9 @@ class ReflectionProperty
 {
     private ?CompiledValue $compiledDefaultValue = null;
 
+    /** @var list<ReflectionAttribute> */
+    private array $attributes;
+
     private function __construct(
         private Reflector $reflector,
         private PropertyNode $node,
@@ -48,6 +51,7 @@ class ReflectionProperty
         private bool $isPromoted,
         private bool $declaredAtCompileTime,
     ) {
+        $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
     }
 
     /**
@@ -304,7 +308,7 @@ class ReflectionProperty
      */
     public function getAttributes(): array
     {
-        return ReflectionAttributeHelper::createAttributes($this->reflector, $this);
+        return $this->attributes;
     }
 
     /**

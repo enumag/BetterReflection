@@ -23,12 +23,16 @@ class ReflectionClassConstant
 
     private ?CompiledValue $compiledValue = null;
 
+    /** @var list<ReflectionAttribute> */
+    private array $attributes;
+
     private function __construct(
         private Reflector $reflector,
         private ClassConst $node,
         private ReflectionClass $owner,
         private int $positionInNode,
     ) {
+        $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
     }
 
     /**
@@ -192,7 +196,7 @@ class ReflectionClassConstant
      */
     public function getAttributes(): array
     {
-        return ReflectionAttributeHelper::createAttributes($this->reflector, $this);
+        return $this->attributes;
     }
 
     /**

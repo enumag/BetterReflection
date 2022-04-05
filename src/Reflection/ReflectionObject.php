@@ -468,16 +468,6 @@ class ReflectionObject extends ReflectionClass
         return $this->reflectionClass->getStaticPropertyValue($propertyName);
     }
 
-    public function getAst(): ClassNode|InterfaceNode|TraitNode|EnumNode
-    {
-        return $this->reflectionClass->getAst();
-    }
-
-    public function getDeclaringNamespaceAst(): ?Namespace_
-    {
-        return $this->reflectionClass->getDeclaringNamespaceAst();
-    }
-
     /**
      * @return list<ReflectionAttribute>
      */

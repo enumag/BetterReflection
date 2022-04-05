@@ -7,16 +7,12 @@ namespace Roave\BetterReflectionTest\Reflection;
 use InvalidArgumentException;
 use PhpParser\Node;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass as CoreReflectionClass;
-use ReflectionNamedType;
 use ReflectionObject as CoreReflectionObject;
-use ReflectionParameter;
 use ReflectionProperty as CoreReflectionProperty;
 use Roave\BetterReflection\Reflection\Exception\Uncloneable;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionObject;
 use Roave\BetterReflection\Reflection\ReflectionProperty;
-use Roave\BetterReflection\SourceLocator\Located\EvaledLocatedSource;
 use Roave\BetterReflection\Util\FileHelper;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 use Roave\BetterReflectionTest\Fixture\ClassForHinting;
@@ -25,12 +21,7 @@ use Roave\BetterReflectionTest\Fixture\FixtureInterfaceRequire;
 use Roave\BetterReflectionTest\Fixture\RuntimeProperties;
 use stdClass;
 
-use function array_map;
-use function get_class_methods;
-use function in_array;
-use function random_int;
 use function realpath;
-use function uniqid;
 
 /**
  * @covers \Roave\BetterReflection\Reflection\ReflectionObject
@@ -216,129 +207,6 @@ class ReflectionObjectTest extends TestCase
             'hasNullAsDefaultWithType' => null,
             'noDefaultWithType' => null,
         ], $classInfo->getDefaultProperties());
-    }
-
-    /**
-     * This data provider gets all the public methods from ReflectionClass, but
-     * filters out a few methods we want to test manually
-     *
-     * @return array<string, array{0: string}>
-     */
-    public function reflectionClassMethodProvider(): array
-    {
-        $publicClassMethods = get_class_methods(ReflectionClass::class);
-
-        $ignoreMethods = [
-            'createFromName',
-            'createFromNode',
-            'createFromInstance',
-            'getDefaultProperties',
-            '__toString',
-            '__clone',
-        ];
-
-        $filteredMethods = [];
-        foreach ($publicClassMethods as $method) {
-            if (in_array($method, $ignoreMethods, true)) {
-                continue;
-            }
-
-            $filteredMethods[$method] = [$method];
-        }
-
-        return $filteredMethods;
-    }
-
-    /**
-     * This test loops through the DataProvider (which provides a list of public
-     * methods from ReflectionClass), ensures the method exists in ReflectionObject
-     * and that when the method is called on ReflectionObject, the method of the
-     * same name on ReflectionClass is also called.
-     *
-     * @dataProvider reflectionClassMethodProvider
-     */
-    public function testReflectionObjectOverridesAllMethodsInReflectionClass(string $methodName): void
-    {
-        // First, ensure the expected method even exists
-        $publicObjectMethods = get_class_methods(ReflectionObject::class);
-        self::assertContains($methodName, $publicObjectMethods);
-
-        // Create a mock that will be used to assert that the named method will
-        // be called when we call the same method on ReflectionObject
-        $mockReflectionClass = $this->getMockBuilder(ReflectionClass::class)
-            ->disableOriginalConstructor()
-            ->setMethods([$methodName])
-            ->getMock();
-
-        $method = $mockReflectionClass
-            ->expects($this->atLeastOnce())
-            ->method($methodName);
-
-        $php  = '<?php class stdClass {}';
-        $node = $this->parse($php)[0];
-
-        // Cannot be generated because the declared return type is a union, we have to provide a return value
-        if ($methodName === 'getAst') {
-            $method->willReturn($node);
-        }
-
-        // Force inject node and locatedSource properties on our ReflectionClass
-        // mock so that methods will not fail when they are accessed
-        $mockReflectionClassReflection = new CoreReflectionClass(ReflectionClass::class);
-
-        $mockReflectionClassNodeReflection = $mockReflectionClassReflection->getProperty('locatedSource');
-        $mockReflectionClassNodeReflection->setAccessible(true);
-        $mockReflectionClassNodeReflection->setValue($mockReflectionClass, new EvaledLocatedSource($php, 'stdClass'));
-
-        $mockReflectionClassNodeReflection = $mockReflectionClassReflection->getProperty('node');
-        $mockReflectionClassNodeReflection->setAccessible(true);
-        $mockReflectionClassNodeReflection->setValue($mockReflectionClass, $node);
-
-        $mockReflectionClassNodeReflection = $mockReflectionClassReflection->getProperty('declaringNamespace');
-        $mockReflectionClassNodeReflection->setAccessible(true);
-        $mockReflectionClassNodeReflection->setValue($mockReflectionClass, null);
-
-        // Create the ReflectionObject from a dummy class
-        $reflectionObject = ReflectionObject::createFromInstance(new stdClass());
-
-        // Override the reflectionClass property on the ReflectionObject to use
-        // the mocked reflectionclass above
-        $reflectionObjectReflection                        = new CoreReflectionObject($reflectionObject);
-        $reflectionObjectReflectionClassPropertyReflection = $reflectionObjectReflection->getProperty('reflectionClass');
-        $reflectionObjectReflectionClassPropertyReflection->setAccessible(true);
-        $reflectionObjectReflectionClassPropertyReflection->setValue($reflectionObject, $mockReflectionClass);
-
-        $reflectionObjectReflectionMethod = $reflectionObjectReflection->getMethod($methodName);
-        $fakeParams                       = array_map(
-            static function (ReflectionParameter $parameter) use ($methodName) {
-                if ($methodName === 'isInstance' && $parameter->getName() === 'object') {
-                    return new stdClass();
-                }
-
-                $type     = $parameter->getType();
-                $typeName = $type instanceof ReflectionNamedType ? $type->getName() : (string) $type;
-
-                switch ($typeName) {
-                    case 'int':
-                        return random_int(1, 1000);
-
-                    case 'null':
-                        return null;
-
-                    case 'bool':
-                        return (bool) random_int(0, 1);
-
-                    default:
-                        return uniqid('stringParam', true);
-                }
-            },
-            $reflectionObjectReflectionMethod->getParameters(),
-        );
-
-        // Finally, call the method name with some dummy parameters. This should
-        // ensure that the method of the same name gets called on the
-        // $mockReflectionClass mock (as we expect $methodName to be called)
-        $reflectionObject->{$methodName}(...$fakeParams);
     }
 
     public function testCannotClone(): void

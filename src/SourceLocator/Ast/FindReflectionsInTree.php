@@ -156,6 +156,9 @@ final class FindReflectionsInTree
 
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor(new NameResolver());
+        $nodeTraverser->traverse($ast);
+
+        $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($nodeVisitor);
         $nodeTraverser->traverse($ast);
 

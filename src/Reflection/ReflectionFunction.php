@@ -11,6 +11,7 @@ use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
 use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
+use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
 use Roave\BetterReflection\Reflection\Exception\FunctionDoesNotExist;
 use Roave\BetterReflection\Reflection\StringCast\ReflectionFunctionStringCast;
 use Roave\BetterReflection\Reflector\DefaultReflector;
@@ -31,6 +32,9 @@ class ReflectionFunction implements Reflection
 
     private Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $functionNode;
 
+    /** @var list<ReflectionAttribute> */
+    private array $attributes;
+
     private function __construct(
         private Reflector $reflector,
         private Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
@@ -40,6 +44,7 @@ class ReflectionFunction implements Reflection
         assert($node instanceof Node\Stmt\Function_ || $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction);
 
         $this->functionNode = $node;
+        $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
     }
 
     /**
@@ -88,6 +93,14 @@ class ReflectionFunction implements Reflection
     public function getAst(): Node\FunctionLike
     {
         return $this->functionNode;
+    }
+
+    /**
+     * @return list<ReflectionAttribute>
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
     }
 
     /**

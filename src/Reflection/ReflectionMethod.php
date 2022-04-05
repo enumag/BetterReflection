@@ -12,6 +12,7 @@ use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
 use ReflectionException;
 use ReflectionMethod as CoreReflectionMethod;
+use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
 use Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist;
 use Roave\BetterReflection\Reflection\Exception\NoObjectProvided;
 use Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
@@ -31,6 +32,9 @@ class ReflectionMethod
 
     private MethodNode $methodNode;
 
+    /** @var list<ReflectionAttribute> */
+    private array $attributes;
+
     private function __construct(
         private Reflector $reflector,
         private MethodNode|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
@@ -44,6 +48,7 @@ class ReflectionMethod
         assert($node instanceof MethodNode);
 
         $this->methodNode = $node;
+        $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
     }
 
     /**
@@ -97,6 +102,14 @@ class ReflectionMethod
     public function getAst(): MethodNode
     {
         return $this->methodNode;
+    }
+
+    /**
+     * @return list<ReflectionAttribute>
+     */
+    public function getAttributes(): array
+    {
+        return $this->attributes;
     }
 
     public function getShortName(): string

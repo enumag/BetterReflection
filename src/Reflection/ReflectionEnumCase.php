@@ -24,11 +24,15 @@ class ReflectionEnumCase
 {
     private ?CompiledValue $compiledValue = null;
 
+    /** @var list<ReflectionAttribute> */
+    private array $attributes;
+
     private function __construct(
         private Reflector $reflector,
         private EnumCase $node,
         private ReflectionEnum $enum,
     ) {
+        $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
     }
 
     /**
@@ -124,7 +128,7 @@ class ReflectionEnumCase
      */
     public function getAttributes(): array
     {
-        return ReflectionAttributeHelper::createAttributes($this->reflector, $this);
+        return $this->attributes;
     }
 
     /**

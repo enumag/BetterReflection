@@ -34,6 +34,9 @@ class ReflectionParameter
 
     private ?CompiledValue $compiledDefaultValue = null;
 
+    /** @var list<ReflectionAttribute> */
+    private array $attributes;
+
     private function __construct(
         private Reflector $reflector,
         private ParamNode $node,
@@ -41,6 +44,7 @@ class ReflectionParameter
         private int $parameterIndex,
     ) {
         $this->isOptional = $this->detectIsOptional();
+        $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
     }
 
     /**
@@ -522,7 +526,7 @@ class ReflectionParameter
      */
     public function getAttributes(): array
     {
-        return ReflectionAttributeHelper::createAttributes($this->reflector, $this);
+        return $this->attributes;
     }
 
     /**

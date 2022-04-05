@@ -396,18 +396,6 @@ trait ReflectionFunctionAbstract
     /**
      * @return list<ReflectionAttribute>
      */
-    public function getAttributes(): array
-    {
-        /**
-         * @psalm-var ReflectionMethod|ReflectionFunction $this
-         * @phpstan-ignore-next-line
-         */
-        return ReflectionAttributeHelper::createAttributes($this->reflector, $this);
-    }
-
-    /**
-     * @return list<ReflectionAttribute>
-     */
     public function getAttributesByName(string $name): array
     {
         return ReflectionAttributeHelper::filterAttributesByName($this->getAttributes(), $name);

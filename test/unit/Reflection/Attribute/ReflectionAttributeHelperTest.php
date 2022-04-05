@@ -18,8 +18,7 @@ class ReflectionAttributeHelperTest extends TestCase
 {
     public function testCreateAttributes(): void
     {
-        $ast             = $this->createMock(Node\Stmt\Class_::class);
-        $ast->attrGroups = [
+        $attrGroups = [
             new Node\AttributeGroup([
                 new Node\Attribute(new Node\Name('SomeAttr')),
                 new Node\Attribute(new Node\Name('AnotherAttr')),
@@ -28,13 +27,11 @@ class ReflectionAttributeHelperTest extends TestCase
         ];
 
         $reflection = $this->createMock(ReflectionClass::class);
-        $reflection
-            ->method('getAst')
-            ->willReturn($ast);
 
         $attributes = ReflectionAttributeHelper::createAttributes(
             $this->createMock(Reflector::class),
             $reflection,
+            $attrGroups,
         );
 
         self::assertCount(3, $attributes);

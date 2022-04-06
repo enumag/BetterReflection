@@ -6,8 +6,6 @@ namespace Roave\BetterReflection\Reflection;
 
 use Closure;
 use PhpParser\Node;
-use PhpParser\Node\Expr\ArrowFunction;
-use PhpParser\Node\Stmt\Function_;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
 use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
@@ -30,21 +28,26 @@ class ReflectionFunction implements Reflection
 
     public const CLOSURE_NAME = '{closure}';
 
-    private Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $functionNode;
-
     /** @var list<ReflectionAttribute> */
     private array $attributes;
 
+    private string $shortName;
+
+    private bool $isStatic;
+
     private function __construct(
         private Reflector $reflector,
-        private Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
+        Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
         private LocatedSource $locatedSource,
-        private ?NamespaceNode $declaringNamespace = null,
+        ?NamespaceNode $declaringNamespace = null,
     ) {
         assert($node instanceof Node\Stmt\Function_ || $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction);
+        $this->populateTrait($node, $declaringNamespace);
 
-        $this->functionNode = $node;
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
+
+        $this->shortName = $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction ? self::CLOSURE_NAME : $node->name->name;
+        $this->isStatic = ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction) && $node->static;
     }
 
     /**
@@ -88,14 +91,6 @@ class ReflectionFunction implements Reflection
     }
 
     /**
-     * @return ArrowFunction|\PhpParser\Node\Expr\Closure|Function_
-     */
-    public function getAst(): Node\FunctionLike
-    {
-        return $this->functionNode;
-    }
-
-    /**
      * @return list<ReflectionAttribute>
      */
     public function getAttributes(): array
@@ -109,11 +104,7 @@ class ReflectionFunction implements Reflection
      */
     public function getShortName(): string
     {
-        if ($this->functionNode instanceof Node\Expr\Closure || $this->functionNode instanceof Node\Expr\ArrowFunction) {
-            return self::CLOSURE_NAME;
-        }
-
-        return $this->functionNode->name->name;
+        return $this->shortName;
     }
 
     /**
@@ -135,9 +126,7 @@ class ReflectionFunction implements Reflection
 
     public function isStatic(): bool
     {
-        $node = $this->getAst();
-
-        return ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction) && $node->static;
+        return $this->isStatic;
     }
 
     /**

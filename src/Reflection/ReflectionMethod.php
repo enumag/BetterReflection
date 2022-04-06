@@ -7,6 +7,7 @@ namespace Roave\BetterReflection\Reflection;
 use Closure;
 use OutOfBoundsException;
 use PhpParser\Node;
+use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod as MethodNode;
 use PhpParser\Node\Stmt\Namespace_;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
@@ -30,25 +31,29 @@ class ReflectionMethod
 {
     use ReflectionFunctionAbstract;
 
-    private MethodNode $methodNode;
-
     /** @var list<ReflectionAttribute> */
     private array $attributes;
 
+    private int $flags;
+
+    private string $name;
+
     private function __construct(
         private Reflector $reflector,
-        private MethodNode|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
+        MethodNode|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
         private LocatedSource $locatedSource,
-        private ?NamespaceNode $declaringNamespace,
+        ?NamespaceNode $declaringNamespace,
         private ReflectionClass $declaringClass,
         private ReflectionClass $implementingClass,
         private ReflectionClass $currentClass,
         private ?string $aliasName,
     ) {
         assert($node instanceof MethodNode);
+        $this->populateTrait($node, $declaringNamespace);
 
-        $this->methodNode = $node;
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
+        $this->flags = $node->flags;
+        $this->name = $node->name->name;
     }
 
     /**
@@ -76,6 +81,36 @@ class ReflectionMethod
         );
     }
 
+    public function forTrait(
+        ReflectionClass $class,
+        int $newFlags,
+        ?string $aliasMethodName,
+    ): self
+    {
+        $self = clone $this;
+        $self->cachedName = null;
+        $self->implementingClass = $class;
+        $self->currentClass = $class;
+        $self->flags = $newFlags;
+        $self->aliasName = $aliasMethodName;
+
+        return $self;
+    }
+
+    public function forClass(ReflectionClass $class): self
+    {
+        $self = clone $this;
+        $self->currentClass = $class;
+        $self->returnType = $this->createReturnType($this->astReturnType);
+
+        return $self;
+    }
+
+    public function getFlags(): int
+    {
+        return $this->flags;
+    }
+
     /**
      * Create a reflection of a method by it's name using a named class
      *
@@ -99,11 +134,6 @@ class ReflectionMethod
         return ReflectionClass::createFromInstance($instance)->getMethod($methodName);
     }
 
-    public function getAst(): MethodNode
-    {
-        return $this->methodNode;
-    }
-
     /**
      * @return list<ReflectionAttribute>
      */
@@ -114,11 +144,7 @@ class ReflectionMethod
 
     public function getShortName(): string
     {
-        if ($this->aliasName !== null) {
-            return $this->aliasName;
-        }
-
-        return $this->methodNode->name->name;
+        return $this->aliasName !== null ? $this->aliasName : $this->name;
     }
 
     public function getAliasName(): ?string
@@ -224,7 +250,7 @@ class ReflectionMethod
      */
     public function isAbstract(): bool
     {
-        return $this->methodNode->isAbstract() || $this->declaringClass->isInterface();
+        return (bool) ($this->flags & Class_::MODIFIER_ABSTRACT) || $this->declaringClass->isInterface();
     }
 
     /**
@@ -232,7 +258,7 @@ class ReflectionMethod
      */
     public function isFinal(): bool
     {
-        return $this->methodNode->isFinal();
+        return (bool) ($this->flags & Class_::MODIFIER_FINAL);
     }
 
     /**
@@ -240,7 +266,7 @@ class ReflectionMethod
      */
     public function isPrivate(): bool
     {
-        return $this->methodNode->isPrivate();
+        return (bool) ($this->flags & Class_::MODIFIER_PRIVATE);
     }
 
     /**
@@ -248,7 +274,7 @@ class ReflectionMethod
      */
     public function isProtected(): bool
     {
-        return $this->methodNode->isProtected();
+        return (bool) ($this->flags & Class_::MODIFIER_PROTECTED);
     }
 
     /**
@@ -256,7 +282,8 @@ class ReflectionMethod
      */
     public function isPublic(): bool
     {
-        return $this->methodNode->isPublic();
+        return ($this->flags & Class_::MODIFIER_PUBLIC) !== 0
+            || ($this->flags & Class_::VISIBILITY_MODIFIER_MASK) === 0;
     }
 
     /**
@@ -264,7 +291,7 @@ class ReflectionMethod
      */
     public function isStatic(): bool
     {
-        return $this->methodNode->isStatic();
+        return (bool) ($this->flags & Class_::MODIFIER_STATIC);
     }
 
     /**

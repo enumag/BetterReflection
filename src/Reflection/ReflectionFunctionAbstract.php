@@ -4,22 +4,16 @@ declare(strict_types=1);
 
 namespace Roave\BetterReflection\Reflection;
 
-use PhpParser\Comment\Doc;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Yield_ as YieldNode;
 use PhpParser\Node\Expr\YieldFrom as YieldFromNode;
-use PhpParser\Node\Stmt\Throw_ as NodeThrow;
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\FindingVisitor;
-use PhpParser\PrettyPrinter\Standard as StandardPrettyPrinter;
-use PhpParser\PrettyPrinterAbstract;
+use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
 use Roave\BetterReflection\Reflection\Annotation\AnnotationHelper;
 use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
-use Roave\BetterReflection\Reflection\Exception\Uncloneable;
 use Roave\BetterReflection\SourceLocator\Located\LocatedSource;
 use Roave\BetterReflection\Util\CalculateReflectionColumn;
+use Roave\BetterReflection\Util\Exception\NoNodePosition;
 use Roave\BetterReflection\Util\GetLastDocComment;
-use Roave\BetterReflection\Util\Visitor\ReturnNodeVisitor;
 
 use function array_filter;
 use function assert;
@@ -29,6 +23,64 @@ use function is_array;
 trait ReflectionFunctionAbstract
 {
     private ?string $cachedName = null;
+
+    private string $namespaceName;
+
+    private bool $inNamespace;
+
+    /** @var list<ReflectionParameter> */
+    private array $parameters;
+
+    private string $docComment;
+
+    private bool $isClosure;
+
+    private bool $isGenerator;
+
+    private int $startLine;
+
+    private int $endLine;
+
+    private int $startColumn;
+
+    private int $endColumn;
+
+    private bool $byRef;
+
+    private Node\Identifier|Node\Name|Node\ComplexType|null $astReturnType;
+
+    private ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null $returnType;
+
+    protected function populateTrait(
+        Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
+        ?NamespaceNode $declaringNamespace,
+    ): void
+    {
+        $this->namespaceName = $declaringNamespace?->name?->toString() ?? '';
+        $this->inNamespace = $declaringNamespace !== null
+            && $declaringNamespace->name !== null;
+        $this->parameters = $this->getParametersInternal($node);
+        $this->docComment = GetLastDocComment::forNode($node);
+        $this->isClosure = $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction;
+        $this->isGenerator = $this->nodeIsOrContainsYield($node);
+        $this->startLine = $node->getStartLine();
+        $this->endLine = $node->getEndLine();
+        try {
+            $this->startColumn = CalculateReflectionColumn::getStartColumn($this->locatedSource->getSource(), $node);
+        } catch (NoNodePosition $e) {
+            $this->startColumn = -1;
+        }
+
+        try {
+            $this->endColumn = CalculateReflectionColumn::getEndColumn($this->locatedSource->getSource(), $node);
+        } catch (NoNodePosition $e) {
+            $this->endColumn = -1;
+        }
+
+        $this->byRef = $node->byRef;
+        $this->astReturnType = $node->getReturnType();
+        $this->returnType = $this->createReturnType($node->getReturnType());
+    }
 
     abstract public function __toString(): string;
 
@@ -57,7 +109,7 @@ trait ReflectionFunctionAbstract
      */
     public function getNamespaceName(): string
     {
-        return $this->declaringNamespace?->name?->toString() ?? '';
+        return $this->namespaceName;
     }
 
     /**
@@ -66,8 +118,7 @@ trait ReflectionFunctionAbstract
      */
     public function inNamespace(): bool
     {
-        return $this->declaringNamespace !== null
-            && $this->declaringNamespace->name !== null;
+        return $this->inNamespace;
     }
 
     /**
@@ -97,20 +148,57 @@ trait ReflectionFunctionAbstract
      */
     public function getParameters(): array
     {
+        return $this->parameters;
+    }
+
+    /**
+     * @return list<ReflectionParameter>
+     */
+    private function getParametersInternal(Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node): array
+    {
         $parameters = [];
 
         /** @var list<Node\Param> $nodeParams */
-        $nodeParams = $this->node->params;
+        $nodeParams = $node->params;
         foreach ($nodeParams as $paramIndex => $paramNode) {
             $parameters[] = ReflectionParameter::createFromNode(
                 $this->reflector,
                 $paramNode,
                 $this,
                 $paramIndex,
+                $this->isParameterOptional($nodeParams, $paramNode, $paramIndex),
             );
         }
 
         return $parameters;
+    }
+
+    /**
+     * @param list<Node\Param> $nodeParams
+     */
+    private function isParameterOptional(array $nodeParams, Node\Param $paramNode, int $paramIndex): bool
+    {
+        if ($paramNode->variadic) {
+            return true;
+        }
+
+        if ($paramNode->default === null) {
+            return false;
+        }
+
+        foreach ($nodeParams as $otherParameterIndex => $otherParameterNode) {
+            if ($otherParameterIndex <= $paramIndex) {
+                continue;
+            }
+
+            // When we find next parameter that does not have a default or is not variadic,
+            // it means current parameter cannot be optional EVEN if it has a default value
+            if ($otherParameterNode->default === null && ! $otherParameterNode->variadic) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -130,12 +218,7 @@ trait ReflectionFunctionAbstract
 
     public function getDocComment(): string
     {
-        return GetLastDocComment::forNode($this->node);
-    }
-
-    public function setDocCommentFromString(string $string): void
-    {
-        $this->node->setDocComment(new Doc($string));
+        return $this->docComment;
     }
 
     public function getFileName(): ?string
@@ -153,7 +236,7 @@ trait ReflectionFunctionAbstract
      */
     public function isClosure(): bool
     {
-        return $this->node instanceof Node\Expr\Closure || $this->node instanceof Node\Expr\ArrowFunction;
+        return $this->isClosure;
     }
 
     public function isDeprecated(): bool
@@ -194,17 +277,6 @@ trait ReflectionFunctionAbstract
         }
 
         return false;
-    }
-
-    /** Checks if the function/method contains `throw` expressions. */
-    public function couldThrow(): bool
-    {
-        $visitor   = new FindingVisitor(static fn (Node $node): bool => $node instanceof NodeThrow);
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-        $traverser->traverse($this->getBodyAst());
-
-        return $visitor->getFoundNodes() !== [];
     }
 
     /**
@@ -250,7 +322,7 @@ trait ReflectionFunctionAbstract
      */
     public function isGenerator(): bool
     {
-        return $this->nodeIsOrContainsYield($this->node);
+        return $this->isGenerator;
     }
 
     /**
@@ -258,7 +330,7 @@ trait ReflectionFunctionAbstract
      */
     public function getStartLine(): int
     {
-        return $this->node->getStartLine();
+        return $this->startLine;
     }
 
     /**
@@ -266,17 +338,17 @@ trait ReflectionFunctionAbstract
      */
     public function getEndLine(): int
     {
-        return $this->node->getEndLine();
+        return $this->endLine;
     }
 
     public function getStartColumn(): int
     {
-        return CalculateReflectionColumn::getStartColumn($this->locatedSource->getSource(), $this->node);
+        return $this->startColumn;
     }
 
     public function getEndColumn(): int
     {
-        return CalculateReflectionColumn::getEndColumn($this->locatedSource->getSource(), $this->node);
+        return $this->endColumn;
     }
 
     /**
@@ -284,7 +356,7 @@ trait ReflectionFunctionAbstract
      */
     public function returnsReference(): bool
     {
-        return $this->node->byRef;
+        return $this->byRef;
     }
 
     /**
@@ -296,7 +368,7 @@ trait ReflectionFunctionAbstract
             return null;
         }
 
-        return $this->createReturnType();
+        return $this->returnType;
     }
 
     /**
@@ -308,7 +380,7 @@ trait ReflectionFunctionAbstract
             return false;
         }
 
-        return $this->node->getReturnType() !== null;
+        return $this->returnType !== null;
     }
 
     public function hasTentativeReturnType(): bool
@@ -326,13 +398,11 @@ trait ReflectionFunctionAbstract
             return null;
         }
 
-        return $this->createReturnType();
+        return $this->returnType;
     }
 
-    private function createReturnType(): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
+    private function createReturnType(Node\Identifier|Node\Name|Node\ComplexType|null $returnType): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
     {
-        $returnType = $this->node->getReturnType();
-
         if ($returnType === null) {
             return null;
         }
@@ -341,57 +411,6 @@ trait ReflectionFunctionAbstract
 
         return ReflectionType::createFromNode($this->reflector, $this, $returnType);
     }
-
-    /**
-     * @throws Uncloneable
-     */
-    public function __clone()
-    {
-        throw Uncloneable::fromClass(self::class);
-    }
-
-    /**
-     * Retrieves the body of this function as AST nodes
-     *
-     * @return Node[]
-     */
-    public function getBodyAst(): array
-    {
-        return $this->node->getStmts() ?? [];
-    }
-
-    /**
-     * Retrieves the body of this function as code.
-     *
-     * If a PrettyPrinter is provided as a parameter, it will be used, otherwise
-     * a default will be used.
-     *
-     * Note that the formatting of the code may not be the same as the original
-     * function. If specific formatting is required, you should provide your
-     * own implementation of a PrettyPrinter to unparse the AST.
-     */
-    public function getBodyCode(?PrettyPrinterAbstract $printer = null): string
-    {
-        if ($printer === null) {
-            $printer = new StandardPrettyPrinter();
-        }
-
-        if ($this->node instanceof Node\Expr\ArrowFunction) {
-            /** @var non-empty-list<Node\Stmt\Return_> $ast */
-            $ast  = $this->getBodyAst();
-            $expr = $ast[0]->expr;
-            assert($expr instanceof Node\Expr);
-
-            return $printer->prettyPrintExpr($expr);
-        }
-
-        return $printer->prettyPrint($this->getBodyAst());
-    }
-
-    /**
-     * Fetch the AST for this method or function.
-     */
-    abstract public function getAst(): Node\FunctionLike;
 
     /**
      * @return list<ReflectionAttribute>
@@ -409,31 +428,5 @@ trait ReflectionFunctionAbstract
     public function getAttributesByInstance(string $className): array
     {
         return ReflectionAttributeHelper::filterAttributesByInstance($this->getAttributes(), $className);
-    }
-
-    /**
-     * Fetch an array of all return statements found within this function.
-     *
-     * Note that return statements within smaller scopes contained (e.g. anonymous classes, closures) are not returned
-     * here as they are not within the immediate scope.
-     *
-     * @return Node\Stmt\Return_[]
-     */
-    public function getReturnStatementsAst(): array
-    {
-        $visitor = new ReturnNodeVisitor();
-
-        $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
-
-        $stmts = $this->node->getStmts();
-
-        if ($stmts === null) {
-            return [];
-        }
-
-        $traverser->traverse($stmts);
-
-        return $visitor->getReturnNodes();
     }
 }

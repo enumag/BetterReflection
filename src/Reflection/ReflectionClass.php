@@ -335,25 +335,14 @@ class ReflectionClass implements Reflection
         $traitPrecedences = $this->getTraitPrecedences();
         $traitModifiers   = $this->getTraitModifiers();
 
-        $methodAst = $method->getAst();
-
         $methodHash = $this->methodHash($method->getImplementingClass()->getName(), $method->getName());
 
+        $newFlags = $method->getFlags();
         if (array_key_exists($methodHash, $traitModifiers)) {
-            $methodAst        = clone $methodAst;
-            $methodAst->flags = ($methodAst->flags & ~ Node\Stmt\Class_::VISIBILITY_MODIFIER_MASK) | $traitModifiers[$methodHash];
+            $newFlags = ($newFlags & ~ Node\Stmt\Class_::VISIBILITY_MODIFIER_MASK) | $traitModifiers[$methodHash];
         }
 
-        $createMethod = fn (?string $aliasMethodName): ReflectionMethod => ReflectionMethod::createFromNode(
-            $this->reflector,
-            $methodAst,
-            $method->getLocatedSource(),
-            null, // todo
-            $method->getDeclaringClass(),
-            $this,
-            $this,
-            $aliasMethodName,
-        );
+        $createMethod = fn (?string $aliasMethodName): ReflectionMethod => $method->forTrait($this, $newFlags, $aliasMethodName);
 
         $methods = [];
         foreach ($traitAliases as $aliasMethodName => $traitAliasDefinition) {
@@ -381,16 +370,7 @@ class ReflectionClass implements Reflection
             ...array_map(
                 function (ReflectionClass $ancestor): array {
                     return array_map(
-                        fn (ReflectionMethod $method): ReflectionMethod => ReflectionMethod::createFromNode(
-                            $this->reflector,
-                            $method->getAst(),
-                            $method->getLocatedSource(),
-                            null, // todo
-                            $method->getDeclaringClass(),
-                            $method->getImplementingClass(),
-                            $this,
-                            $method->getAliasName(),
-                        ),
+                        fn (ReflectionMethod $method): ReflectionMethod => $method->forClass($this),
                         $ancestor->getMethods(),
                     );
                 },

@@ -172,8 +172,8 @@ class ReflectionClass implements Reflection
 
         $this->immediateInterfacesNames = $this->getImmediateInterfacesNamesInternal($node);
         $this->namespaceName = $declaringNamespace !== null && $declaringNamespace->name ? implode('\\', $declaringNamespace->name->parts) : '';
-        $this->immediateProperties = $this->getImmediatePropertiesInternal($node);
         $this->immediateReflectionConstants = $this->getImmediateReflectionConstantsInternal($node);
+        $this->immediateProperties = $this->getImmediatePropertiesInternal($node);
         $this->parseTraitUsages($node);
         $this->immediateMethods = $this->getImmediateMethodsInternal($node, $declaringNamespace);
 
@@ -975,14 +975,7 @@ class ReflectionClass implements Reflection
                     ),
                     ...array_map(
                         function (ReflectionClass $trait) use ($filter) {
-                            return array_map(fn (ReflectionProperty $property): ReflectionProperty => ReflectionProperty::createFromNode(
-                                $this->reflector,
-                                $property->getAst(),
-                                $property->getPositionInAst(),
-                                $property->getDeclaringClass(),
-                                $this,
-                                $property->isPromoted(),
-                            ), $trait->getProperties($filter));
+                            return array_map(fn (ReflectionProperty $property): ReflectionProperty => $property->forClass($this), $trait->getProperties($filter));
                         },
                         $this->getTraits(),
                     ),

@@ -18,7 +18,6 @@ use Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist;
 use Roave\BetterReflection\Reflection\Exception\NoObjectProvided;
 use Roave\BetterReflection\Reflection\Exception\NotAnObject;
 use Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
-use Roave\BetterReflection\Reflection\Exception\Uncloneable;
 use Roave\BetterReflection\Reflection\ReflectionProperty;
 use Roave\BetterReflection\Reflector\DefaultReflector;
 use Roave\BetterReflection\Reflector\Reflector;
@@ -62,10 +61,10 @@ class ReflectionPropertyTest extends TestCase
 
     public function testCreateFromName(): void
     {
-        $property = ReflectionProperty::createFromName(ReflectionProperty::class, 'node');
+        $property = ReflectionProperty::createFromName(ReflectionProperty::class, 'name');
 
         self::assertInstanceOf(ReflectionProperty::class, $property);
-        self::assertSame('node', $property->getName());
+        self::assertSame('name', $property->getName());
     }
 
     public function testCreateFromNameThrowsExceptionWhenPropertyDoesNotExist(): void
@@ -267,15 +266,6 @@ class ReflectionPropertyTest extends TestCase
         self::assertSame($defaultValue, $property->getDefaultValue());
     }
 
-    public function testCannotClone(): void
-    {
-        $classInfo  = $this->reflector->reflectClass(ExampleClass::class);
-        $publicProp = $classInfo->getProperty('publicProperty');
-
-        $this->expectException(Uncloneable::class);
-        clone $publicProp;
-    }
-
     /**
      * @dataProvider startEndLineProvider
      */
@@ -324,45 +314,6 @@ class ReflectionPropertyTest extends TestCase
 
         self::assertEquals($startColumn, $constantReflection->getStartColumn());
         self::assertEquals($endColumn, $constantReflection->getEndColumn());
-    }
-
-    /**
-     * @return list<array{0: string, 1: int}>
-     */
-    public function getAstProvider(): array
-    {
-        return [
-            ['a', 0],
-            ['b', 1],
-            ['c', 0],
-            ['d', 1],
-        ];
-    }
-
-    /**
-     * @dataProvider getAstProvider
-     */
-    public function testGetAst(string $propertyName, int $positionInAst): void
-    {
-        $php = <<<'PHP'
-<?php
-class Foo
-{
-    private $a = 0,
-            $b = 1;
-    protected $c = 3,
-              $d = 4;
-}
-PHP;
-
-        $classReflection    = (new DefaultReflector(new StringSourceLocator($php, $this->astLocator)))->reflectClass('Foo');
-        $propertyReflection = $classReflection->getProperty($propertyName);
-
-        $ast = $propertyReflection->getAst();
-
-        self::assertInstanceOf(Property::class, $ast);
-        self::assertSame($positionInAst, $propertyReflection->getPositionInAst());
-        self::assertSame($propertyName, $ast->props[$positionInAst]->name->name);
     }
 
     public function testGetDeclaringAndImplementingClassWithPropertyFromTrait(): void

@@ -21,12 +21,12 @@ use Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist;
 use Roave\BetterReflection\Reflection\Exception\NoObjectProvided;
 use Roave\BetterReflection\Reflection\Exception\NotAnObject;
 use Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
-use Roave\BetterReflection\Reflection\Exception\Uncloneable;
 use Roave\BetterReflection\Reflection\StringCast\ReflectionPropertyStringCast;
 use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use Roave\BetterReflection\Reflector\Reflector;
 use Roave\BetterReflection\Util\CalculateReflectionColumn;
 use Roave\BetterReflection\Util\ClassExistenceChecker;
+use Roave\BetterReflection\Util\Exception\NoNodePosition;
 use Roave\BetterReflection\Util\GetLastDocComment;
 
 use function assert;
@@ -42,9 +42,37 @@ class ReflectionProperty
     /** @var list<ReflectionAttribute> */
     private array $attributes;
 
+    private string $name;
+
+    private bool $isPrivate;
+
+    private bool $isProtected;
+
+    private bool $isPublic;
+
+    private bool $isStatic;
+
+    private bool $isReadOnly;
+
+    private string $docComment;
+
+    private Node\Expr|null $defaultExpr;
+
+    private int $startLine;
+
+    private int $endLine;
+
+    private int $startColumn;
+
+    private int $endColumn;
+
+    private bool $allowsNull;
+
+    private ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null $type;
+
     private function __construct(
         private Reflector $reflector,
-        private PropertyNode $node,
+        PropertyNode $node,
         private int $positionInNode,
         private ReflectionClass $declaringClass,
         private ReflectionClass $implementingClass,
@@ -52,6 +80,38 @@ class ReflectionProperty
         private bool $declaredAtCompileTime,
     ) {
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
+        $this->name = $node->props[$this->positionInNode]->name->name;
+        $this->isPrivate = $node->isPrivate();
+        $this->isProtected = $node->isProtected();
+        $this->isPublic = $node->isPublic();
+        $this->isStatic = $node->isStatic();
+        $this->isReadOnly = $node->isReadonly();
+        $this->docComment = GetLastDocComment::forNode($node);
+        $this->defaultExpr = $node->props[$this->positionInNode]->default;
+        $this->startLine = $node->getStartLine();
+        $this->endLine = $node->getEndLine();
+        try {
+            $this->startColumn = CalculateReflectionColumn::getStartColumn($this->declaringClass->getLocatedSource()->getSource(), $node);
+        } catch (NoNodePosition $e) {
+            $this->startColumn = -1;
+        }
+
+        try {
+            $this->endColumn = CalculateReflectionColumn::getEndColumn($this->declaringClass->getLocatedSource()->getSource(), $node);
+        } catch (NoNodePosition $e) {
+            $this->endColumn = -1;
+        }
+
+        $this->allowsNull = $node->type instanceof NullableType;
+        $this->type = $this->createType($node);
+    }
+
+    public function forClass(ReflectionClass $class): self
+    {
+        $self = clone $this;
+        $self->implementingClass = $class;
+
+        return $self;
     }
 
     /**
@@ -148,7 +208,7 @@ class ReflectionProperty
      */
     public function getName(): string
     {
-        return $this->node->props[$this->positionInNode]->name->name;
+        return $this->name;
     }
 
     /**
@@ -156,7 +216,7 @@ class ReflectionProperty
      */
     public function isPrivate(): bool
     {
-        return $this->node->isPrivate();
+        return $this->isPrivate;
     }
 
     /**
@@ -164,7 +224,7 @@ class ReflectionProperty
      */
     public function isProtected(): bool
     {
-        return $this->node->isProtected();
+        return $this->isProtected;
     }
 
     /**
@@ -172,7 +232,7 @@ class ReflectionProperty
      */
     public function isPublic(): bool
     {
-        return $this->node->isPublic();
+        return $this->isPublic;
     }
 
     /**
@@ -180,7 +240,7 @@ class ReflectionProperty
      */
     public function isStatic(): bool
     {
-        return $this->node->isStatic();
+        return $this->isStatic;
     }
 
     public function isPromoted(): bool
@@ -211,7 +271,7 @@ class ReflectionProperty
 
     public function isReadOnly(): bool
     {
-        return $this->node->isReadonly();
+        return $this->isReadOnly;
     }
 
     public function getDeclaringClass(): ReflectionClass
@@ -226,12 +286,12 @@ class ReflectionProperty
 
     public function getDocComment(): string
     {
-        return GetLastDocComment::forNode($this->node);
+        return $this->docComment;
     }
 
     public function hasDefaultValue(): bool
     {
-        return ! $this->hasType() || $this->node->props[$this->positionInNode]->default !== null;
+        return ! $this->hasType() || $this->defaultExpr !== null;
     }
 
     /**
@@ -240,7 +300,7 @@ class ReflectionProperty
      */
     public function getDefaultValue(): mixed
     {
-        $defaultValueNode = $this->node->props[$this->positionInNode]->default;
+        $defaultValueNode = $this->defaultExpr;
 
         if ($defaultValueNode === null) {
             return null;
@@ -272,7 +332,7 @@ class ReflectionProperty
      */
     public function getStartLine(): int
     {
-        return $this->node->getStartLine();
+        return $this->startLine;
     }
 
     /**
@@ -280,22 +340,17 @@ class ReflectionProperty
      */
     public function getEndLine(): int
     {
-        return $this->node->getEndLine();
+        return $this->endLine;
     }
 
     public function getStartColumn(): int
     {
-        return CalculateReflectionColumn::getStartColumn($this->declaringClass->getLocatedSource()->getSource(), $this->node);
+        return $this->startColumn;
     }
 
     public function getEndColumn(): int
     {
-        return CalculateReflectionColumn::getEndColumn($this->declaringClass->getLocatedSource()->getSource(), $this->node);
-    }
-
-    public function getAst(): PropertyNode
-    {
-        return $this->node;
+        return $this->endColumn;
     }
 
     public function getPositionInAst(): int
@@ -327,16 +382,6 @@ class ReflectionProperty
     public function getAttributesByInstance(string $className): array
     {
         return ReflectionAttributeHelper::filterAttributesByInstance($this->getAttributes(), $className);
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @throws Uncloneable
-     */
-    public function __clone()
-    {
-        throw Uncloneable::fromClass(self::class);
     }
 
     /**
@@ -412,7 +457,7 @@ class ReflectionProperty
             return true;
         }
 
-        return $this->node->type instanceof NullableType;
+        return $this->allowsNull;
     }
 
     /**
@@ -423,8 +468,12 @@ class ReflectionProperty
      */
     public function getType(): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
     {
-        $type = $this->node->type;
+        return $this->type;
+    }
 
+    private function createType(PropertyNode $node): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
+    {
+        $type = $node->type;
         if ($type === null) {
             return null;
         }
@@ -441,7 +490,7 @@ class ReflectionProperty
      */
     public function hasType(): bool
     {
-        return $this->node->type !== null;
+        return $this->type !== null;
     }
 
     /**

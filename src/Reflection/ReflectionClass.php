@@ -83,6 +83,9 @@ class ReflectionClass implements Reflection
     /** @var list<class-string>|null */
     private ?array $cachedInterfaceNames = null;
 
+    /** @var list<ReflectionClass>|null */
+    private ?array $cachedTraits = null;
+
     /** @var self[]|null */
     private ?array $cachedInheritanceClassHierarchy = null;
 
@@ -1189,7 +1192,10 @@ class ReflectionClass implements Reflection
      */
     public function getTraits(): array
     {
-        return array_values(array_map(
+        if ($this->cachedTraits !== null) {
+            return $this->cachedTraits;
+        }
+        return $this->cachedTraits = array_values(array_map(
             fn (string $importedTrait): ReflectionClass => $this->reflector->reflectClass($importedTrait),
             $this->traitNames,
         ));

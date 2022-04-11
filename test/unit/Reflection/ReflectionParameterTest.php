@@ -10,7 +10,6 @@ use LogicException;
 use OutOfBoundsException;
 use PhpParser\Node\Param;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\Uncloneable;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionParameter;
 use Roave\BetterReflection\Reflector\DefaultReflector;
@@ -653,16 +652,6 @@ class ReflectionParameterTest extends TestCase
         $parameterReflection = $methodReflection->getParameter($parameterName);
 
         self::assertSame($className, $parameterReflection->getClass()?->getName());
-    }
-
-    public function testCannotClone(): void
-    {
-        $classInfo  = $this->reflector->reflectClass(Methods::class);
-        $methodInfo = $classInfo->getMethod('methodWithParameters');
-        $paramInfo  = $methodInfo->getParameter('parameter1');
-
-        $this->expectException(Uncloneable::class);
-        clone $paramInfo;
     }
 
     public function testGetClassFromSelfTypeHintedProperty(): void

@@ -108,7 +108,7 @@ class ReflectionMethod
     {
         $self = clone $this;
         $self->currentClass = $class;
-        $self->returnType = $this->createReturnType($this->astReturnType);
+        $self->returnType = $self->createReturnType($this->astReturnType);
 
         return $self;
     }

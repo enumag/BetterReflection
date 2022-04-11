@@ -94,6 +94,13 @@ class ReflectionMethod
         $self->flags = $newFlags;
         $self->aliasName = $aliasMethodName;
 
+        $parameters = [];
+        foreach ($this->parameters as $parameter) {
+            $parameters[] = $parameter->changeFunction($self);
+        }
+
+        $self->parameters = $parameters;
+
         return $self;
     }
 

@@ -49,11 +49,11 @@ class ReflectionMethod
         private ?string $aliasName,
     ) {
         assert($node instanceof MethodNode);
+        $this->name = $node->name->name;
+        $this->flags = $node->flags;
         $this->populateTrait($node, $declaringNamespace);
 
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
-        $this->flags = $node->flags;
-        $this->name = $node->name->name;
     }
 
     /**

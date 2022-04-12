@@ -8,7 +8,6 @@ use Foo;
 use InvalidArgumentException;
 use LogicException;
 use OutOfBoundsException;
-use PhpParser\Node\Param;
 use PHPUnit\Framework\TestCase;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionParameter;
@@ -726,20 +725,6 @@ class ReflectionParameterTest extends TestCase
 
         self::assertSame($startColumn, $parameter->getStartColumn());
         self::assertSame($endColumn, $parameter->getEndColumn());
-    }
-
-    public function testGetAst(): void
-    {
-        $php = '<?php function foo($boo) {}';
-
-        $reflector = new DefaultReflector(new StringSourceLocator($php, $this->astLocator));
-        $function  = $reflector->reflectFunction('foo');
-        $parameter = $function->getParameter('boo');
-
-        $ast = $parameter->getAst();
-
-        self::assertInstanceOf(Param::class, $ast);
-        self::assertSame('boo', $ast->var->name);
     }
 
     public function testGetAttributesWithoutAttributes(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Roave\BetterReflection\Reflection;
 
+use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\ClassConst;
 use ReflectionClassConstant as CoreReflectionClassConstant;
 use Roave\BetterReflection\BetterReflection;
@@ -15,6 +16,7 @@ use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
 use Roave\BetterReflection\Reflection\StringCast\ReflectionClassConstantStringCast;
 use Roave\BetterReflection\Reflector\Reflector;
 use Roave\BetterReflection\Util\CalculateReflectionColumn;
+use Roave\BetterReflection\Util\Exception\NoNodePosition;
 use Roave\BetterReflection\Util\GetLastDocComment;
 
 class ReflectionClassConstant
@@ -26,13 +28,56 @@ class ReflectionClassConstant
     /** @var list<ReflectionAttribute> */
     private array $attributes;
 
+    private string $name;
+
+    private Expr $valueExpr;
+
+    private bool $isPublic;
+
+    private bool $isPrivate;
+
+    private bool $isProtected;
+
+    private bool $isFinal;
+
+    private string $docComment;
+
+    private int $startLine;
+
+    private int $endLine;
+
+    private int $startColumn;
+
+    private int $endColumn;
+
     private function __construct(
         private Reflector $reflector,
-        private ClassConst $node,
+        ClassConst $node,
         private ReflectionClass $owner,
         private int $positionInNode,
     ) {
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
+        $this->name = $node->consts[$this->positionInNode]->name->name;
+        $this->valueExpr = $node->consts[$this->positionInNode]->value;
+        $this->isPublic = $node->isPublic();
+        $this->isPrivate = $node->isPrivate();
+        $this->isProtected = $node->isProtected();
+        $this->isFinal = $this->isFinalInternal($node);
+        $this->docComment = GetLastDocComment::forNode($node);
+        $this->startLine = $node->getStartLine();
+        $this->endLine = $node->getEndLine();
+
+        try {
+            $this->startColumn = CalculateReflectionColumn::getStartColumn($this->owner->getLocatedSource()->getSource(), $node);
+        } catch (NoNodePosition $e) {
+            $this->startColumn = -1;
+        }
+
+        try {
+            $this->endColumn = CalculateReflectionColumn::getEndColumn($this->owner->getLocatedSource()->getSource(), $node);
+        } catch (NoNodePosition $e) {
+            $this->endColumn = -1;
+        }
     }
 
     /**
@@ -60,7 +105,7 @@ class ReflectionClassConstant
      */
     public function getName(): string
     {
-        return $this->node->consts[$this->positionInNode]->name->name;
+        return $this->name;
     }
 
     /**
@@ -70,7 +115,7 @@ class ReflectionClassConstant
     {
         if ($this->compiledValue === null) {
             $this->compiledValue = (new CompileNodeToValue())->__invoke(
-                $this->node->consts[$this->positionInNode]->value,
+                $this->valueExpr,
                 new CompilerContext($this->reflector, $this),
             );
         }
@@ -83,7 +128,7 @@ class ReflectionClassConstant
      */
     public function isPublic(): bool
     {
-        return $this->node->isPublic();
+        return $this->isPublic;
     }
 
     /**
@@ -91,7 +136,7 @@ class ReflectionClassConstant
      */
     public function isPrivate(): bool
     {
-        return $this->node->isPrivate();
+        return $this->isPrivate;
     }
 
     /**
@@ -99,12 +144,17 @@ class ReflectionClassConstant
      */
     public function isProtected(): bool
     {
-        return $this->node->isProtected();
+        return $this->isProtected;
     }
 
     public function isFinal(): bool
     {
-        $final = $this->node->isFinal();
+        return $this->isFinal;
+    }
+
+    public function isFinalInternal(ClassConst $node): bool
+    {
+        $final = $node->isFinal();
         if ($final) {
             return true;
         }
@@ -134,7 +184,7 @@ class ReflectionClassConstant
      */
     public function getStartLine(): int
     {
-        return $this->node->getStartLine();
+        return $this->startLine;
     }
 
     /**
@@ -142,17 +192,17 @@ class ReflectionClassConstant
      */
     public function getEndLine(): int
     {
-        return $this->node->getEndLine();
+        return $this->endLine;
     }
 
     public function getStartColumn(): int
     {
-        return CalculateReflectionColumn::getStartColumn($this->owner->getLocatedSource()->getSource(), $this->node);
+        return $this->startColumn;
     }
 
     public function getEndColumn(): int
     {
-        return CalculateReflectionColumn::getEndColumn($this->owner->getLocatedSource()->getSource(), $this->node);
+        return $this->endColumn;
     }
 
     /**
@@ -168,7 +218,7 @@ class ReflectionClassConstant
      */
     public function getDocComment(): string
     {
-        return GetLastDocComment::forNode($this->node);
+        return $this->docComment;
     }
 
     public function isDeprecated(): bool
@@ -179,11 +229,6 @@ class ReflectionClassConstant
     public function __toString(): string
     {
         return ReflectionClassConstantStringCast::toString($this);
-    }
-
-    public function getAst(): ClassConst
-    {
-        return $this->node;
     }
 
     public function getPositionInAst(): int

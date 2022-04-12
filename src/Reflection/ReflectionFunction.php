@@ -42,12 +42,11 @@ class ReflectionFunction implements Reflection
         ?NamespaceNode $declaringNamespace = null,
     ) {
         assert($node instanceof Node\Stmt\Function_ || $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction);
+        $this->shortName = $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction ? self::CLOSURE_NAME : $node->name->name;
+        $this->isStatic = ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction) && $node->static;
         $this->populateTrait($node, $declaringNamespace);
 
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
-
-        $this->shortName = $node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction ? self::CLOSURE_NAME : $node->name->name;
-        $this->isStatic = ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction) && $node->static;
     }
 
     /**

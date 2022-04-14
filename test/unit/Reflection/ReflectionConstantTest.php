@@ -304,33 +304,6 @@ class ReflectionConstantTest extends TestCase
         self::assertSame($endColumn, $reflection->getEndColumn());
     }
 
-    public function testGetAstByConst(): void
-    {
-        $php = '<?php const FOO = 1;';
-
-        $reflector  = new DefaultReflector(new StringSourceLocator($php, $this->astLocator));
-        $reflection = $reflector->reflectConstant('FOO');
-
-        $ast = $reflection->getAst();
-
-        self::assertInstanceOf(Node\Stmt\Const_::class, $ast);
-        self::assertSame('FOO', $ast->consts[0]->name->name);
-    }
-
-    public function testGetAstByDefine(): void
-    {
-        $php = '<?php define("FOO", 1);';
-
-        $reflector  = new DefaultReflector(new StringSourceLocator($php, $this->astLocator));
-        $reflection = $reflector->reflectConstant('FOO');
-
-        $ast = $reflection->getAst();
-
-        self::assertInstanceOf(Node\Expr\FuncCall::class, $ast);
-        self::assertInstanceOf(Node\Scalar\String_::class, $ast->args[0]->value);
-        self::assertSame('FOO', $ast->args[0]->value->value);
-    }
-
     /**
      * @return list<array{0: string, 1: bool}>
      */

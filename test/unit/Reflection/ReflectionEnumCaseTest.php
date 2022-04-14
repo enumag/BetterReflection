@@ -104,22 +104,6 @@ class ReflectionEnumCaseTest extends TestCase
     }
 
     /**
-     * @dataProvider data
-     */
-    public function testGetAst(string $enumName, string $caseName): void
-    {
-        $enumReflection = $this->reflector->reflectClass($enumName);
-
-        self::assertInstanceOf(ReflectionEnum::class, $enumReflection);
-
-        $caseReflection = $enumReflection->getCase($caseName);
-        $ast            = $caseReflection->getAst();
-
-        self::assertInstanceOf(Node\Stmt\EnumCase::class, $ast);
-        self::assertSame($caseName, $ast->name->toString());
-    }
-
-    /**
      * @return list<array{0: class-string, 1: string, 2: int, 3: int, 4: int, 5: int}>
      */
     public function dataLinesAndColums(): array

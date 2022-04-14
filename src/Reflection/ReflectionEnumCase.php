@@ -29,7 +29,7 @@ class ReflectionEnumCase
 
     private function __construct(
         private Reflector $reflector,
-        private EnumCase $node,
+        EnumCase $node,
         private ReflectionEnum $enum,
     ) {
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
@@ -76,11 +76,6 @@ class ReflectionEnumCase
         }
 
         return $this->compiledValue;
-    }
-
-    public function getAst(): EnumCase
-    {
-        return $this->node;
     }
 
     public function getStartLine(): int

@@ -22,19 +22,30 @@ use function assert;
 
 class ReflectionEnum extends ReflectionClass
 {
-    /** @var array<string, ReflectionEnumCase>|null */
-    private ?array $cachedCases = null;
+    /** @var array<string, ReflectionEnumCase> */
+    private array $cases;
+
+    private ?ReflectionNamedType $backingType;
 
     /**
      * @phpcs:disable Generic.CodeAnalysis.UselessOverridingMethod.Found
      */
     protected function __construct(
         private Reflector $reflector,
-        private EnumNode $node,
+        EnumNode $node,
         LocatedSource $locatedSource,
         ?NamespaceNode $declaringNamespace = null,
     ) {
         parent::__construct($reflector, $node, $locatedSource, $declaringNamespace);
+        $this->cases = $this->getCasesInternal($node);
+
+        if ($node->scalarType !== null) {
+            $backingType = ReflectionNamedType::createFromNode($this->reflector, $this, $node->scalarType);
+            assert($backingType instanceof ReflectionNamedType);
+            $this->backingType = $backingType;
+        } else {
+            $this->backingType = null;
+        }
     }
 
     /**
@@ -71,32 +82,33 @@ class ReflectionEnum extends ReflectionClass
      */
     public function getCases(): array
     {
-        if ($this->cachedCases === null) {
-            $casesNodes = array_filter($this->node->stmts, static fn (Node\Stmt $stmt): bool => $stmt instanceof Node\Stmt\EnumCase);
+        return $this->cases;
+    }
 
-            $this->cachedCases = array_combine(
-                array_map(static fn (Node\Stmt\EnumCase $node): string => $node->name->toString(), $casesNodes),
-                array_map(fn (Node\Stmt\EnumCase $node): ReflectionEnumCase => ReflectionEnumCase::createFromNode($this->reflector, $node, $this), $casesNodes),
-            );
-        }
+    /**
+     * @return array<string, ReflectionEnumCase>
+     */
+    private function getCasesInternal(EnumNode $node): array
+    {
+        $casesNodes = array_filter($node->stmts, static fn (Node\Stmt $stmt): bool => $stmt instanceof Node\Stmt\EnumCase);
 
-        return $this->cachedCases;
+        return array_combine(
+            array_map(static fn (Node\Stmt\EnumCase $node): string => $node->name->toString(), $casesNodes),
+            array_map(fn (Node\Stmt\EnumCase $node): ReflectionEnumCase => ReflectionEnumCase::createFromNode($this->reflector, $node, $this), $casesNodes),
+        );
     }
 
     public function isBacked(): bool
     {
-        return $this->node->scalarType !== null;
+        return $this->backingType !== null;
     }
 
     public function getBackingType(): ReflectionNamedType
     {
-        if ($this->node->scalarType === null) {
+        if ($this->backingType === null) {
             throw new LogicException('This enum does not have a backing type available');
         }
 
-        $backingType = ReflectionNamedType::createFromNode($this->reflector, $this, $this->node->scalarType);
-        assert($backingType instanceof ReflectionNamedType);
-
-        return $backingType;
+        return $this->backingType;
     }
 }

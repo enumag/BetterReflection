@@ -14,17 +14,32 @@ use Roave\BetterReflection\Reflector\Reflector;
 
 class ReflectionAttribute
 {
+    private string $name;
+
+    /** @var array<int|string, Node\Expr> */
+    private array $argumentExprs;
+
+    /** @var array<int|string, mixed> */
+    private ?array $cachedArguments = null;
+
     public function __construct(
         private Reflector $reflector,
-        private Node\Attribute $node,
+        Node\Attribute $node,
         private ReflectionClass|ReflectionMethod|ReflectionFunction|ReflectionClassConstant|ReflectionEnumCase|ReflectionProperty|ReflectionParameter $owner,
         private bool $isRepeated,
     ) {
+        $this->name = $node->name->toString();
+
+        $argumentExprs = [];
+        foreach ($node->args as $argNo => $arg) {
+            $argumentExprs[$arg->name?->toString() ?? $argNo] = $arg->value;
+        }
+        $this->argumentExprs = $argumentExprs;
     }
 
     public function getName(): string
     {
-        return $this->node->name->toString();
+        return $this->name;
     }
 
     public function getClass(): ReflectionClass
@@ -37,17 +52,21 @@ class ReflectionAttribute
      */
     public function getArguments(): array
     {
+        if ($this->cachedArguments !== null) {
+            return $this->cachedArguments;
+        }
+
         $arguments = [];
 
         $compiler = new CompileNodeToValue();
         $context  = new CompilerContext($this->reflector, $this->owner);
 
-        foreach ($this->node->args as $argNo => $arg) {
+        foreach ($this->argumentExprs as $key => $expr) {
             /** @psalm-suppress MixedAssignment */
-            $arguments[$arg->name?->toString() ?? $argNo] = $compiler->__invoke($arg->value, $context)->value;
+            $arguments[$key] = $compiler->__invoke($expr, $context)->value;
         }
 
-        return $arguments;
+        return $this->cachedArguments = $arguments;
     }
 
     public function getTarget(): int

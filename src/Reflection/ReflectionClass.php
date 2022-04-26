@@ -1195,10 +1195,17 @@ class ReflectionClass implements Reflection
         if ($this->cachedTraits !== null) {
             return $this->cachedTraits;
         }
-        return $this->cachedTraits = array_values(array_map(
-            fn (string $importedTrait): ReflectionClass => $this->reflector->reflectClass($importedTrait),
-            $this->traitNames,
-        ));
+
+        $traits = [];
+        foreach ($this->traitNames as $traitName) {
+            try {
+                $traits[] = $this->reflector->reflectClass($traitName);
+            } catch (IdentifierNotFound) {
+                // pass
+            }
+        }
+
+        return $this->cachedTraits = $traits;
     }
 
     /**
@@ -1461,11 +1468,11 @@ class ReflectionClass implements Reflection
         foreach ($this->implementsNames as $name) {
             try {
                 $interface = $this->reflector->reflectClass($name);
+                foreach ($interface->getInterfacesHierarchy() as $n => $i) {
+                    $interfaces[$n] = $i;
+                }
             } catch (IdentifierNotFound $e) {
                 continue;
-            }
-            foreach ($interface->getInterfacesHierarchy() as $n => $i) {
-                $interfaces[$n] = $i;
             }
         }
 
@@ -1508,16 +1515,19 @@ class ReflectionClass implements Reflection
             throw NotAnInterfaceReflection::fromReflectionClass($this);
         }
 
-        /** @var array<class-string, self> */
-        return array_merge(
-            [$this->getName() => $this],
-            ...array_map(
-                fn (string $interfaceName): array => $this
-                    ->reflector->reflectClass($interfaceName)
-                    ->getInterfacesHierarchy(),
-                $this->interfaceExtendsNames,
-            ),
-        );
+        $interfaces = [$this->getName() => $this];
+        foreach ($this->interfaceExtendsNames as $interfaceName) {
+            try {
+                $interface = $this->reflector->reflectClass($interfaceName);
+                foreach ($interface->getInterfacesHierarchy() as $hName => $hInterface) {
+                    $interfaces[$hName] = $hInterface;
+                }
+            } catch (IdentifierNotFound) {
+                continue;
+            }
+        }
+
+        return $interfaces;
     }
 
     /**

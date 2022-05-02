@@ -52,6 +52,7 @@ final class ReflectionClass extends CoreReflectionClass
         throw new OutOfBoundsException(sprintf('Property %s::$%s does not exist.', self::class, $name));
     }
 
+    /** @return class-string */
     public function getName(): string
     {
         return $this->betterReflectionClass->getName();
@@ -120,6 +121,7 @@ final class ReflectionClass extends CoreReflectionClass
         return $this->betterReflectionClass->getDocComment() ?? false;
     }
 
+    /** @return ReflectionMethod|null */
     public function getConstructor(): CoreReflectionMethod|null
     {
         $constructor = $this->betterReflectionClass->getConstructor();
@@ -144,9 +146,10 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $name
+     * @return ReflectionMethod
      */
-    public function getMethod($name): \ReflectionMethod
+    public function getMethod($name): CoreReflectionMethod
     {
         $method = $name !== '' ? $this->betterReflectionClass->getMethod($name) : null;
 
@@ -158,8 +161,8 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * {@inheritDoc}
      * @param int-mask-of<ReflectionMethod::IS_*>|null $filter
+     * @return ReflectionMethod[]
      */
     public function getMethods($filter = null): array
     {
@@ -182,7 +185,8 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * {@inheritDoc}
+     * @param string $name
+     * @return ReflectionProperty
      */
     public function getProperty($name): \ReflectionProperty
     {
@@ -196,8 +200,8 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * {@inheritDoc}
      * @param int-mask-of<ReflectionProperty::IS_*>|null $filter
+     * @return ReflectionProperty[]
      */
     public function getProperties($filter = null): array
     {
@@ -271,7 +275,8 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     * @return ReflectionClassConstant|false
      */
     #[ReturnTypeWillChange]
     public function getReflectionConstant($name)
@@ -330,7 +335,7 @@ final class ReflectionClass extends CoreReflectionClass
         return $reflectionConstants;
     }
 
-    /** @return array<class-string, CoreReflectionClass> */
+    /** @return array<class-string, self> */
     public function getInterfaces(): array
     {
         return array_map(
@@ -350,7 +355,7 @@ final class ReflectionClass extends CoreReflectionClass
         return $this->betterReflectionClass->isInterface();
     }
 
-    /** @return array<trait-string, CoreReflectionClass> */
+    /** @return array<trait-string, self> */
     public function getTraits(): array
     {
         $traits = $this->betterReflectionClass->getTraits();
@@ -432,7 +437,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /**
-     * {@inheritDoc}
+     * @return self|false
      */
     #[ReturnTypeWillChange]
     public function getParentClass()

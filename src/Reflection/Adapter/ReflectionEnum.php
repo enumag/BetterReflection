@@ -49,6 +49,7 @@ final class ReflectionEnum extends CoreReflectionEnum
         throw new OutOfBoundsException(sprintf('Property %s::$%s does not exist.', self::class, $name));
     }
 
+    /** @return class-string */
     public function getName(): string
     {
         return $this->betterReflectionEnum->getName();
@@ -279,7 +280,7 @@ final class ReflectionEnum extends CoreReflectionEnum
         return $reflectionConstants;
     }
 
-    /** @return array<class-string, CoreReflectionClass> */
+    /** @return array<class-string, ReflectionClass> */
     public function getInterfaces(): array
     {
         return array_map(
@@ -299,7 +300,7 @@ final class ReflectionEnum extends CoreReflectionEnum
         return $this->betterReflectionEnum->isInterface();
     }
 
-    /** @return array<trait-string, CoreReflectionClass> */
+    /** @return array<trait-string, ReflectionClass> */
     public function getTraits(): array
     {
         $traits = $this->betterReflectionEnum->getTraits();

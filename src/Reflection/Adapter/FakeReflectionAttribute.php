@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Roave\BetterReflection\Reflection\Adapter;
 
+use PhpParser\Node\Expr;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 
 final class FakeReflectionAttribute
@@ -28,6 +29,7 @@ final class FakeReflectionAttribute
     }
 
     /**
+     * @deprecated Use getArgumentsExpressions()
      * @return array<int|string, mixed>
      */
     public function getArguments(): array
@@ -35,11 +37,15 @@ final class FakeReflectionAttribute
         return $this->betterReflectionAttribute->getArguments();
     }
 
+    /** @return array<int|string, Expr> */
+    public function getArgumentsExpressions(): array
+    {
+        return $this->betterReflectionAttribute->getArgumentsExpressions();
+    }
+
     public function newInstance(): object
     {
-        $class = $this->getName();
-
-        return new $class(...$this->getArguments());
+        throw new Exception\NotImplemented('Not implemented');
     }
 
     public function __toString(): string

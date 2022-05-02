@@ -85,12 +85,22 @@ class ReflectionEnumCase
         return $this->name;
     }
 
+    /** @deprecated Use getValueExpr() */
     public function getValue(): string|int
     {
         $value = $this->getCompiledValue()->value;
         assert(is_string($value) || is_int($value));
 
         return $value;
+    }
+
+    public function getValueExpr(): Expr
+    {
+        if ($this->expr === null) {
+            throw new LogicException('This enum case does not have a value');
+        }
+
+        return $this->expr;
     }
 
     /**

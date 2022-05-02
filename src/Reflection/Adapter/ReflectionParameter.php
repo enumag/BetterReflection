@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflection\Reflection\Adapter;
 
 use OutOfBoundsException;
+use PhpParser\Node\Expr;
 use ReflectionClass as CoreReflectionClass;
 use ReflectionFunctionAbstract as CoreReflectionFunctionAbstract;
 use ReflectionParameter as CoreReflectionParameter;
@@ -125,12 +126,17 @@ final class ReflectionParameter extends CoreReflectionParameter
     }
 
     /**
-     * {@inheritDoc}
+     * @deprecated Use getDefaultValueExpr()
      */
     #[ReturnTypeWillChange]
     public function getDefaultValue()
     {
         return $this->betterReflectionParameter->getDefaultValue();
+    }
+
+    public function getDefaultValueExpr(): Expr
+    {
+        return $this->betterReflectionParameter->getDefaultValueExpr();
     }
 
     public function isDefaultValueConstant(): bool

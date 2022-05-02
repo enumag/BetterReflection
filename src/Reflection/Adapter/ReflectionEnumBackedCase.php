@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflection\Reflection\Adapter;
 
 use OutOfBoundsException;
+use PhpParser\Node\Expr;
 use ReflectionEnumBackedCase as CoreReflectionEnumBackedCase;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 use Roave\BetterReflection\Reflection\ReflectionEnumCase as BetterReflectionEnumCase;
@@ -108,6 +109,9 @@ final class ReflectionEnumBackedCase extends CoreReflectionEnumBackedCase
         return new ReflectionEnum($this->betterReflectionEnumCase->getDeclaringEnum());
     }
 
+    /**
+     * @deprecated Use getValueExpr()
+     */
     public function getBackingValue(): int|string
     {
         return $this->betterReflectionEnumCase->getValue();
@@ -124,5 +128,10 @@ final class ReflectionEnumBackedCase extends CoreReflectionEnumBackedCase
         }
 
         throw new OutOfBoundsException(sprintf('Property %s::$%s does not exist.', self::class, $name));
+    }
+
+    public function getValueExpr(): Expr
+    {
+        return $this->betterReflectionEnumCase->getValueExpr();
     }
 }

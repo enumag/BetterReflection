@@ -867,16 +867,7 @@ PHP;
         $method    = $class->getMethod('methodWithInitializer');
         $parameter = $method->getParameter('parameterWithInitializer');
 
-        $value = $parameter->getDefaultValue();
-
-        self::assertInstanceOf(ArrayObject::class, $value);
-        self::assertSame(6, $value->count());
-
-        self::assertSame('a', $value[0]);
-        self::assertSame('b', $value[1]);
-        self::assertSame('constant', $value[2]);
-        self::assertSame(PHP_VERSION_ID, $value[3]);
-        self::assertSame(ClassWithNewInInitializers::class, $value[4]);
-        self::assertInstanceOf(stdClass::class, $value[5]);
+        self::expectException(UnableToCompileNode::class);
+        $parameter->getDefaultValue();
     }
 }

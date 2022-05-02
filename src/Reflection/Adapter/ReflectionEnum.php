@@ -24,7 +24,6 @@ use function array_combine;
 use function array_filter;
 use function array_map;
 use function array_values;
-use function constant;
 use function sprintf;
 use function strtolower;
 
@@ -166,6 +165,7 @@ final class ReflectionEnum extends CoreReflectionEnum
     }
 
     /**
+     * @deprecated Use getReflectionConstants()
      * @return array<string, mixed|null>
      */
     public function getConstants(?int $filter = null): array
@@ -176,6 +176,9 @@ final class ReflectionEnum extends CoreReflectionEnum
         );
     }
 
+    /**
+     * @deprecated Use getReflectionConstant()
+     */
     public function getConstant(string $name): mixed
     {
         $enumCase = $this->betterReflectionEnum->getCase($name);
@@ -189,7 +192,7 @@ final class ReflectionEnum extends CoreReflectionEnum
     private function getConstantValue(BetterReflectionClassConstant|BetterReflectionEnumCase $betterConstantOrEnumCase): mixed
     {
         if ($betterConstantOrEnumCase instanceof BetterReflectionEnumCase) {
-            return constant(sprintf('%s::%s', $betterConstantOrEnumCase->getDeclaringClass()->getName(), $betterConstantOrEnumCase->getName()));
+            throw new Exception\NotImplemented('Not implemented');
         }
 
         return $betterConstantOrEnumCase->getValue();

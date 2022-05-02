@@ -8,12 +8,9 @@ use PhpParser\ConstExprEvaluator;
 use PhpParser\Node;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionClassConstant;
-use Roave\BetterReflection\Reflection\ReflectionEnum;
 use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
 
-use function array_map;
 use function assert;
-use function class_exists;
 use function constant;
 use function defined;
 use function dirname;
@@ -60,10 +57,6 @@ class CompileNodeToValue
 
             if ($node instanceof Node\Expr\ClassConstFetch) {
                 return $this->getClassConstantValue($node, $constantName, $context);
-            }
-
-            if ($node instanceof Node\Expr\New_) {
-                return $this->compileNew($node, $context);
             }
 
             if ($node instanceof Node\Scalar\MagicConst\Dir) {
@@ -207,35 +200,11 @@ class CompileNodeToValue
         $classReflection = $classContext !== null && $classContext->getName() === $className ? $classContext : $context->getReflector()->reflectClass($className);
 
         $reflectionConstant = $classReflection->getReflectionConstant($constantName);
-        if ($classReflection instanceof ReflectionEnum) {
-            if ($classReflection->hasCase($constantName)) {
-                if (defined($classConstantName)) {
-                    return constant($classConstantName);
-                }
-            }
-        }
-
         if (! $reflectionConstant instanceof ReflectionClassConstant) {
             throw Exception\UnableToCompileNode::becauseOfNotFoundClassConstantReference($context, $classReflection, $node);
         }
 
         return $reflectionConstant->getValue();
-    }
-
-    private function compileNew(Node\Expr\New_ $node, CompilerContext $context): object
-    {
-        assert($node->class instanceof Node\Name);
-
-        /** @psalm-var class-string $className */
-        $className = $node->class->toString();
-
-        if (! class_exists($className)) {
-            throw Exception\UnableToCompileNode::becauseOfClassCannotBeLoaded($context, $node, $className);
-        }
-
-        $arguments = array_map(fn (Node\Arg $arg): mixed => $this($arg->value, $context)->value, $node->args);
-
-        return new $className(...$arguments);
     }
 
     /**

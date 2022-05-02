@@ -48,6 +48,7 @@ class ReflectionAttribute
     }
 
     /**
+     * @deprecated Use getArgumentsExpressions()
      * @return array<int|string, mixed>
      */
     public function getArguments(): array
@@ -67,6 +68,12 @@ class ReflectionAttribute
         }
 
         return $this->cachedArguments = $arguments;
+    }
+
+    /** @return array<int|string, Node\Expr> */
+    public function getArgumentsExpressions(): array
+    {
+        return $this->argumentExprs;
     }
 
     public function getTarget(): int

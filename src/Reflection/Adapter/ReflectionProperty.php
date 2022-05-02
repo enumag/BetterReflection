@@ -6,6 +6,7 @@ namespace Roave\BetterReflection\Reflection\Adapter;
 
 use ArgumentCountError;
 use OutOfBoundsException;
+use PhpParser\Node\Expr;
 use ReflectionException as CoreReflectionException;
 use ReflectionProperty as CoreReflectionProperty;
 use ReturnTypeWillChange;
@@ -151,12 +152,18 @@ final class ReflectionProperty extends CoreReflectionProperty
     }
 
     /**
+     * @deprecated Use getDefaultValueExpr()
      * @return mixed
      */
     #[ReturnTypeWillChange]
     public function getDefaultValue()
     {
         return $this->betterReflectionProperty->getDefaultValue();
+    }
+
+    public function getDefaultValueExpr(): Expr
+    {
+        return $this->betterReflectionProperty->getDefaultValueExpr();
     }
 
     /**

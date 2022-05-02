@@ -6,6 +6,7 @@ namespace Roave\BetterReflection\Reflection;
 
 use Closure;
 use Error;
+use LogicException;
 use OutOfBoundsException;
 use PhpParser\Node;
 use PhpParser\Node\NullableType;
@@ -297,6 +298,8 @@ class ReflectionProperty
     /**
      * Get the default value of the property (as defined before constructor is
      * called, when the property is defined)
+     *
+     * @deprecated Use getDefaultValueExpr()
      */
     public function getDefaultValue(): mixed
     {
@@ -320,6 +323,15 @@ class ReflectionProperty
         $value = $this->compiledDefaultValue->value;
 
         return $value;
+    }
+
+    public function getDefaultValueExpr(): Node\Expr
+    {
+        if ($this->defaultExpr === null) {
+            throw new LogicException('This property does not have a default value available');
+        }
+
+        return $this->defaultExpr;
     }
 
     public function isDeprecated(): bool

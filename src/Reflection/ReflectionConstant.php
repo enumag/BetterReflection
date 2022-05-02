@@ -64,7 +64,7 @@ class ReflectionConstant implements Reflection
         $this->inNamespace = $this->inNamespaceInternal($node, $declaringNamespace);
         $this->name = $this->getNameInternal($node);
         $this->namespaceName = $this->getNamespaceNameInternal($node, $declaringNamespace);
-        $this->valueExpr = $this->getValueExpr($node);
+        $this->valueExpr = $this->getValueExprInternal($node);
         $this->startLine = $node->getStartLine();
         $this->endLine = $node->getEndLine();
 
@@ -293,7 +293,12 @@ class ReflectionConstant implements Reflection
         return $this->compiledValue->value;
     }
 
-    private function getValueExpr(Node\Stmt\Const_|Node\Expr\FuncCall $node): Node\Expr
+    public function getValueExpr(): Node\Expr
+    {
+        return $this->valueExpr;
+    }
+
+    private function getValueExprInternal(Node\Stmt\Const_|Node\Expr\FuncCall $node): Node\Expr
     {
         if ($node instanceof Node\Expr\FuncCall) {
             $argumentValueNode = $node->args[1];

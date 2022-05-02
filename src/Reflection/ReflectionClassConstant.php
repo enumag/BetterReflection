@@ -109,6 +109,7 @@ class ReflectionClassConstant
     }
 
     /**
+     * @deprecated Use getValueExpr()
      * Returns constant value
      */
     public function getValue(): mixed
@@ -121,6 +122,11 @@ class ReflectionClassConstant
         }
 
         return $this->compiledValue->value;
+    }
+
+    public function getValueExpr(): Expr
+    {
+        return $this->valueExpr;
     }
 
     /**

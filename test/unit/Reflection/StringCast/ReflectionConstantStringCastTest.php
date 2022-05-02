@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\StringCast;
 
 use PHPUnit\Framework\TestCase;
+use Roave\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
 use Roave\BetterReflection\Reflector\DefaultReflector;
 use Roave\BetterReflection\SourceLocator\Ast\Locator;
 use Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber;
@@ -42,7 +43,6 @@ class ReflectionConstantStringCastTest extends TestCase
             ['Roave\BetterReflectionTest\Fixture\BY_CONST', "Constant [ <user> boolean Roave\BetterReflectionTest\Fixture\BY_CONST ] {\n  @@ %s/Fixture/StringCastConstants.php 5 - 5\n 1 }"],
             ['Roave\BetterReflectionTest\Fixture\BY_CONST_1', "Constant [ <user> integer Roave\BetterReflectionTest\Fixture\BY_CONST_1 ] {\n  @@ %s/Fixture/StringCastConstants.php 6 - 7\n 1 }"],
             ['Roave\BetterReflectionTest\Fixture\BY_CONST_2', "Constant [ <user> integer Roave\BetterReflectionTest\Fixture\BY_CONST_2 ] {\n  @@ %s/Fixture/StringCastConstants.php 6 - 7\n 2 }"],
-            ['Roave\BetterReflectionTest\Fixture\NEW_IN_INITIALIZER', "Constant [ <user> object Roave\BetterReflectionTest\Fixture\NEW_IN_INITIALIZER ] {\n  @@ %s/Fixture/StringCastConstants.php 9 - 9\n Object }"],
             ['BY_DEFINE', "Constant [ <user> string BY_DEFINE ] {\n  @@ %s/Fixture/StringCastConstants.php 11 - 11\n define }"],
             ['E_ALL', 'Constant [ <internal:Core> integer E_ALL ] { %d }'],
         ];

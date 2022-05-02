@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflection\Reflection\Adapter;
 
 use OutOfBoundsException;
+use PhpParser\Node\Expr;
 use ReflectionClassConstant as CoreReflectionClassConstant;
 use ReturnTypeWillChange;
 use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
@@ -13,8 +14,6 @@ use Roave\BetterReflection\Reflection\ReflectionEnumCase as BetterReflectionEnum
 use ValueError;
 
 use function array_map;
-use function constant;
-use function sprintf;
 
 final class ReflectionClassConstant extends CoreReflectionClassConstant
 {
@@ -34,13 +33,21 @@ final class ReflectionClassConstant extends CoreReflectionClassConstant
     }
 
     #[ReturnTypeWillChange]
+    /**
+     * @deprecated Use getValueExpr()
+     */
     public function getValue()
     {
         if ($this->betterClassConstantOrEnumCase instanceof BetterReflectionEnumCase) {
-            return constant(sprintf('%s::%s', $this->betterClassConstantOrEnumCase->getDeclaringClass()->getName(), $this->betterClassConstantOrEnumCase->getName()));
+            throw new Exception\NotImplemented('Not implemented');
         }
 
         return $this->betterClassConstantOrEnumCase->getValue();
+    }
+
+    public function getValueExpr(): Expr
+    {
+        return $this->betterClassConstantOrEnumCase->getValueExpr();
     }
 
     /**

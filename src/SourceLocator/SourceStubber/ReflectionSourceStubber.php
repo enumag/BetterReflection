@@ -65,9 +65,15 @@ final class ReflectionSourceStubber implements SourceStubber
 {
     private const BUILDER_OPTIONS = ['shortArraySyntax' => true];
 
-    private BuilderFactory $builderFactory;
+    /**
+     * @var \PhpParser\BuilderFactory
+     */
+    private $builderFactory;
 
-    private Standard $prettyPrinter;
+    /**
+     * @var \PhpParser\PrettyPrinter\Standard
+     */
+    private $prettyPrinter;
 
     public function __construct()
     {
@@ -216,7 +222,10 @@ final class ReflectionSourceStubber implements SourceStubber
         return null;
     }
 
-    private function createClass(CoreReflectionClass $classReflection): Class_|Interface_|Trait_|Enum_
+    /**
+     * @return \PhpParser\Builder\Class_|\PhpParser\Builder\Enum_|\PhpParser\Builder\Interface_|\PhpParser\Builder\Trait_
+     */
+    private function createClass(CoreReflectionClass $classReflection)
     {
         if ($classReflection instanceof CoreReflectionEnum) {
             return $this->builderFactory->enum($classReflection->getShortName());
@@ -233,13 +242,14 @@ final class ReflectionSourceStubber implements SourceStubber
         return $this->builderFactory->class($classReflection->getShortName());
     }
 
-    private function addDocComment(
-        Class_|Interface_|Trait_|Enum_|Method|Property|Function_ $node,
-        CoreReflectionClass|CoreReflectionMethod|CoreReflectionProperty|CoreReflectionFunction $reflection,
-    ): void {
+    /**
+     * @param \PhpParser\Builder\Class_|\PhpParser\Builder\Enum_|\PhpParser\Builder\Function_|\PhpParser\Builder\Interface_|\PhpParser\Builder\Method|\PhpParser\Builder\Property|\PhpParser\Builder\Trait_ $node
+     * @param CoreReflectionClass|CoreReflectionFunction|CoreReflectionMethod|CoreReflectionProperty $reflection
+     */
+    private function addDocComment($node, $reflection): void
+    {
         $docComment  = $reflection->getDocComment() ?: '';
         $annotations = [];
-
         if (
             ($reflection instanceof CoreReflectionMethod || $reflection instanceof CoreReflectionFunction)
             && $reflection->isInternal()
@@ -252,17 +262,14 @@ final class ReflectionSourceStubber implements SourceStubber
                 $annotations[] = sprintf('@%s', AnnotationHelper::TENTATIVE_RETURN_TYPE_ANNOTATION);
             }
         }
-
         if ($docComment === '' && $annotations === []) {
             return;
         }
-
         if ($docComment === '') {
             $docComment = sprintf("/**\n* %s\n*/", implode("\n *", $annotations));
         } elseif ($annotations !== []) {
             $docComment = preg_replace('~\s+\*/$~', sprintf("\n* %s\n*/", implode("\n *", $annotations)), $docComment);
         }
-
         $node->setDocComment(new Doc($docComment));
     }
 
@@ -292,7 +299,10 @@ final class ReflectionSourceStubber implements SourceStubber
         $classNode->makeFinal();
     }
 
-    private function addExtendsAndImplements(Class_|Interface_|Enum_ $classNode, CoreReflectionClass $classReflection): void
+    /**
+     * @param \PhpParser\Builder\Class_|\PhpParser\Builder\Enum_|\PhpParser\Builder\Interface_ $classNode
+     */
+    private function addExtendsAndImplements($classNode, CoreReflectionClass $classReflection): void
     {
         $interfaces = $classReflection->getInterfaceNames();
 
@@ -320,7 +330,10 @@ final class ReflectionSourceStubber implements SourceStubber
         }
     }
 
-    private function addTraitUse(Class_|Trait_|Enum_ $classNode, CoreReflectionClass $classReflection): void
+    /**
+     * @param \PhpParser\Builder\Class_|\PhpParser\Builder\Enum_|\PhpParser\Builder\Trait_ $classNode
+     */
+    private function addTraitUse($classNode, CoreReflectionClass $classReflection): void
     {
         $traitAliases = $classReflection->getTraitAliases();
         assert(is_array($traitAliases));
@@ -347,7 +360,10 @@ final class ReflectionSourceStubber implements SourceStubber
         }
     }
 
-    private function addProperties(Class_|Trait_ $classNode, CoreReflectionClass $classReflection): void
+    /**
+     * @param \PhpParser\Builder\Class_|\PhpParser\Builder\Trait_ $classNode
+     */
+    private function addProperties($classNode, CoreReflectionClass $classReflection): void
     {
         foreach ($classReflection->getProperties() as $propertyReflection) {
             if (! $this->isPropertyDeclaredInClass($propertyReflection, $classReflection)) {
@@ -361,13 +377,13 @@ final class ReflectionSourceStubber implements SourceStubber
 
             if (method_exists($propertyReflection, 'hasDefaultValue') && $propertyReflection->hasDefaultValue()) {
                 try {
-                    $propertyNode->setDefault($propertyReflection->getDefaultValue());
-                } catch (LogicException) {
+                    $propertyNode->setDefault($propertyReflection->getDeclaringClass()->getDefaultProperties()[$propertyReflection->getName()] ?? null);
+                } catch (LogicException $exception) {
                     // Nothing
                 }
             }
 
-            $propertyType = method_exists($propertyReflection, 'getType') ? $propertyReflection->getType() : null;
+            $propertyType = method_exists($propertyReflection, 'getType') ? method_exists($propertyReflection, 'getType') ? $propertyReflection->getType() : null : null;
 
             assert($propertyType instanceof CoreReflectionNamedType || $propertyType instanceof CoreReflectionUnionType || $propertyType instanceof CoreReflectionIntersectionType || $propertyType === null);
 
@@ -427,7 +443,10 @@ final class ReflectionSourceStubber implements SourceStubber
         }
     }
 
-    private function addClassConstants(Class_|Interface_|Trait_|Enum_ $classNode, CoreReflectionClass $classReflection): void
+    /**
+     * @param \PhpParser\Builder\Class_|\PhpParser\Builder\Enum_|\PhpParser\Builder\Interface_|\PhpParser\Builder\Trait_ $classNode
+     */
+    private function addClassConstants($classNode, CoreReflectionClass $classReflection): void
     {
         foreach ($classReflection->getReflectionConstants() as $constantReflection) {
             if (method_exists($constantReflection, 'isEnumCase') && $constantReflection->isEnumCase()) {
@@ -465,7 +484,10 @@ final class ReflectionSourceStubber implements SourceStubber
         }
     }
 
-    private function addMethods(Class_|Interface_|Trait_|Enum_ $classNode, CoreReflectionClass $classReflection): void
+    /**
+     * @param \PhpParser\Builder\Class_|\PhpParser\Builder\Enum_|\PhpParser\Builder\Interface_|\PhpParser\Builder\Trait_ $classNode
+     */
+    private function addMethods($classNode, CoreReflectionClass $classReflection): void
     {
         foreach ($classReflection->getMethods() as $methodReflection) {
             if (! $this->isMethodDeclaredInClass($methodReflection, $classReflection)) {
@@ -601,7 +623,11 @@ final class ReflectionSourceStubber implements SourceStubber
         $parameterNode->setDefault($parameterReflection->getDefaultValue());
     }
 
-    private function formatType(CoreReflectionNamedType|CoreReflectionUnionType|CoreReflectionIntersectionType $type): Name|FullyQualified|Node\NullableType|Node\UnionType|Node\IntersectionType
+    /**
+     * @param CoreReflectionIntersectionType|CoreReflectionNamedType|CoreReflectionUnionType $type
+     * @return \PhpParser\Node\IntersectionType|\PhpParser\Node\Name|\PhpParser\Node\Name\FullyQualified|\PhpParser\Node\NullableType|\PhpParser\Node\UnionType
+     */
+    private function formatType($type)
     {
         if ($type instanceof CoreReflectionIntersectionType) {
             $types = [];
@@ -634,7 +660,10 @@ final class ReflectionSourceStubber implements SourceStubber
         return new NullableType($nameNode);
     }
 
-    private function formatNamedType(CoreReflectionNamedType $type): Name|FullyQualified
+    /**
+     * @return \PhpParser\Node\Name|\PhpParser\Node\Name\FullyQualified
+     */
+    private function formatNamedType(CoreReflectionNamedType $type)
     {
         $name = $type->getName();
 
@@ -651,11 +680,7 @@ final class ReflectionSourceStubber implements SourceStubber
 
     private function generateStub(Node $node): string
     {
-        return sprintf(
-            "<?php\n\n%s%s\n",
-            $this->prettyPrinter->prettyPrint([$node]),
-            ($node instanceof Node\Expr\FuncCall ? ';' : ''),
-        );
+        return sprintf("<?php\n\n%s%s\n", $this->prettyPrinter->prettyPrint([$node]), ($node instanceof Node\Expr\FuncCall ? ';' : ''));
     }
 
     private function createStubData(string $stub, ?string $extensionName): StubData

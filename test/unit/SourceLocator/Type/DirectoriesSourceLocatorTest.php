@@ -24,34 +24,30 @@ use function uniqid;
  */
 class DirectoriesSourceLocatorTest extends TestCase
 {
-    private DirectoriesSourceLocator $sourceLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Type\DirectoriesSourceLocator
+     */
+    private $sourceLocator;
 
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->sourceLocator = new DirectoriesSourceLocator(
-            [
-                __DIR__ . '/../../Assets/DirectoryScannerAssets',
-                __DIR__ . '/../../Assets/DirectoryScannerAssetsFoo',
-            ],
-            BetterReflectionSingleton::instance()->astLocator(),
-        );
+        $this->sourceLocator = new DirectoriesSourceLocator([
+            __DIR__ . '/../../Assets/DirectoryScannerAssets',
+            __DIR__ . '/../../Assets/DirectoryScannerAssetsFoo',
+        ], BetterReflectionSingleton::instance()->astLocator());
     }
 
     public function testScanDirectoryClasses(): void
     {
-        $classes = $this->sourceLocator->locateIdentifiersByType(
-            new DefaultReflector($this->sourceLocator),
-            new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-        );
+        $classes = $this->sourceLocator->locateIdentifiersByType(new DefaultReflector($this->sourceLocator), new IdentifierType(IdentifierType::IDENTIFIER_CLASS));
 
         self::assertCount(4, $classes);
 
-        $classNames = array_map(
-            static fn (ReflectionClass $reflectionClass): string => $reflectionClass->getName(),
-            $classes,
-        );
+        $classNames = array_map(static function (ReflectionClass $reflectionClass) : string {
+            return $reflectionClass->getName();
+        }, $classes);
 
         sort($classNames);
 
@@ -63,13 +59,7 @@ class DirectoriesSourceLocatorTest extends TestCase
 
     public function testLocateIdentifier(): void
     {
-        $class = $this->sourceLocator->locateIdentifier(
-            new DefaultReflector($this->sourceLocator),
-            new Identifier(
-                DirectoryScannerAssets\Bar\FooBar::class,
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        $class = $this->sourceLocator->locateIdentifier(new DefaultReflector($this->sourceLocator), new Identifier(DirectoryScannerAssets\Bar\FooBar::class, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(ReflectionClass::class, $class);
         self::assertSame(DirectoryScannerAssets\Bar\FooBar::class, $class->getName());

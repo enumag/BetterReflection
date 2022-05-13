@@ -15,7 +15,11 @@ use function count;
 
 abstract class ReflectionType extends CoreReflectionType
 {
-    public static function fromTypeOrNull(BetterReflectionNamedType|BetterReflectionUnionType|BetterReflectionIntersectionType|null $betterReflectionType): ReflectionUnionType|ReflectionNamedType|ReflectionIntersectionType|null
+    /**
+     * @param BetterReflectionIntersectionType|BetterReflectionNamedType|BetterReflectionUnionType|null $betterReflectionType
+     * @return \Roave\BetterReflection\Reflection\Adapter\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\Adapter\ReflectionNamedType|\Roave\BetterReflection\Reflection\Adapter\ReflectionUnionType|null
+     */
+    public static function fromTypeOrNull($betterReflectionType)
     {
         if ($betterReflectionType === null) {
             return null;
@@ -27,10 +31,9 @@ abstract class ReflectionType extends CoreReflectionType
             // rather than `T|null`. This is done to keep BC compatibility with PHP 7.1 (which
             // introduced nullable types), but at reflection level, this is mostly a nuisance.
             // In order to keep parity with core, we stashed this weird behavior in here.
-            $nonNullTypes = array_values(array_filter(
-                $betterReflectionType->getTypes(),
-                static fn (BetterReflectionNamedType $type): bool => $type->getName() !== 'null',
-            ));
+            $nonNullTypes = array_values(array_filter($betterReflectionType->getTypes(), static function (BetterReflectionNamedType $type) : bool {
+                return $type->getName() !== 'null';
+            }));
 
             if ($betterReflectionType->allowsNull() && count($nonNullTypes) === 1) {
                 return new ReflectionNamedType($nonNullTypes[0], true);

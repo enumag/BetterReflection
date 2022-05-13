@@ -39,7 +39,10 @@ use const ARRAY_FILTER_USE_KEY;
  */
 class PhpInternalSourceLocatorTest extends TestCase
 {
-    private PhpInternalSourceLocator $phpInternalSourceLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Type\PhpInternalSourceLocator
+     */
+    private $phpInternalSourceLocator;
 
     protected function setUp(): void
     {
@@ -47,13 +50,13 @@ class PhpInternalSourceLocatorTest extends TestCase
 
         $betterReflection = BetterReflectionSingleton::instance();
 
-        $this->phpInternalSourceLocator = new PhpInternalSourceLocator(
-            $betterReflection->astLocator(),
-            $betterReflection->sourceStubber(),
-        );
+        $this->phpInternalSourceLocator = new PhpInternalSourceLocator($betterReflection->astLocator(), $betterReflection->sourceStubber());
     }
 
-    private function getMockReflector(): Reflector|MockObject
+    /**
+     * @return \PHPUnit\Framework\MockObject\MockObject|\Roave\BetterReflection\Reflector\Reflector
+     */
+    private function getMockReflector()
     {
         return $this->createMock(Reflector::class);
     }
@@ -64,10 +67,7 @@ class PhpInternalSourceLocatorTest extends TestCase
     public function testCanFetchInternalLocatedSourceForClasses(string $className): void
     {
         try {
-            $reflection = $this->phpInternalSourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier($className, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)),
-            );
+            $reflection = $this->phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier($className, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
             self::assertInstanceOf(ReflectionClass::class, $reflection);
 
@@ -76,11 +76,7 @@ class PhpInternalSourceLocatorTest extends TestCase
             self::assertInstanceOf(InternalLocatedSource::class, $source);
             self::assertNotEmpty($source->getSource());
         } catch (ReflectionException $e) {
-            self::markTestIncomplete(sprintf(
-                'Can\'t reflect class "%s" due to an internal reflection exception: "%s".',
-                $className,
-                $e->getMessage(),
-            ));
+            self::markTestIncomplete(sprintf('Can\'t reflect class "%s" due to an internal reflection exception: "%s".', $className, $e->getMessage()));
         }
     }
 
@@ -89,23 +85,15 @@ class PhpInternalSourceLocatorTest extends TestCase
      */
     public function internalClassesProvider(): array
     {
-        $allSymbols = array_merge(
-            get_declared_classes(),
-            get_declared_interfaces(),
-            get_declared_traits(),
-        );
+        $allSymbols = array_merge(get_declared_classes(), get_declared_interfaces(), get_declared_traits());
 
-        return array_map(
-            static fn (string $symbol): array => [$symbol],
-            array_filter(
-                $allSymbols,
-                static function (string $symbol): bool {
-                    $reflection = new CoreReflectionClass($symbol);
+        return array_map(static function (string $symbol) : array {
+            return [$symbol];
+        }, array_filter($allSymbols, static function (string $symbol): bool {
+            $reflection = new CoreReflectionClass($symbol);
 
-                    return $reflection->isInternal();
-                },
-            ),
-        );
+            return $reflection->isInternal();
+        }));
     }
 
     /**
@@ -114,10 +102,7 @@ class PhpInternalSourceLocatorTest extends TestCase
     public function testCanFetchInternalLocatedSourceForFunctions(string $functionName): void
     {
         try {
-            $reflection = $this->phpInternalSourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier($functionName, new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION)),
-            );
+            $reflection = $this->phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier($functionName, new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION)));
 
             self::assertInstanceOf(ReflectionFunction::class, $reflection);
 
@@ -126,11 +111,7 @@ class PhpInternalSourceLocatorTest extends TestCase
             self::assertInstanceOf(InternalLocatedSource::class, $source);
             self::assertNotEmpty($source->getSource());
         } catch (ReflectionException $e) {
-            self::markTestIncomplete(sprintf(
-                'Can\'t reflect function "%s" due to an internal reflection exception: "%s".',
-                $functionName,
-                $e->getMessage(),
-            ));
+            self::markTestIncomplete(sprintf('Can\'t reflect function "%s" due to an internal reflection exception: "%s".', $functionName, $e->getMessage()));
         }
     }
 
@@ -141,10 +122,9 @@ class PhpInternalSourceLocatorTest extends TestCase
     {
         $allSymbols = get_defined_functions()['internal'];
 
-        return array_map(
-            static fn (string $symbol): array => [$symbol],
-            $allSymbols,
-        );
+        return array_map(static function (string $symbol) : array {
+            return [$symbol];
+        }, $allSymbols);
     }
 
     /**
@@ -152,10 +132,7 @@ class PhpInternalSourceLocatorTest extends TestCase
      */
     public function testCanFetchInternalLocatedSourceForConstants(string $constantName): void
     {
-        $reflection = $this->phpInternalSourceLocator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier($constantName, new IdentifierType(IdentifierType::IDENTIFIER_CONSTANT)),
-        );
+        $reflection = $this->phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier($constantName, new IdentifierType(IdentifierType::IDENTIFIER_CONSTANT)));
 
         self::assertInstanceOf(ReflectionConstant::class, $reflection);
 
@@ -173,55 +150,26 @@ class PhpInternalSourceLocatorTest extends TestCase
         /** @var array<string, array<string, int|string|float|bool|array|resource|null>> $allSymbols */
         $allSymbols = get_defined_constants(true);
 
-        return array_map(
-            static fn (string $symbol): array => [$symbol],
-            array_keys(
-                array_merge(
-                    ...array_values(
-                        array_filter($allSymbols, static fn (string $extensionName): bool => $extensionName !== 'user', ARRAY_FILTER_USE_KEY),
-                    ),
-                ),
-            ),
-        );
+        return array_map(static function (string $symbol) : array {
+            return [$symbol];
+        }, array_keys(array_merge(...array_values(array_filter($allSymbols, static function (string $extensionName) : bool {
+            return $extensionName !== 'user';
+        }, ARRAY_FILTER_USE_KEY)))));
     }
 
     public function testReturnsNullForNonExistentClass(): void
     {
-        self::assertNull(
-            $this->phpInternalSourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    'Foo\Bar',
-                    new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-                ),
-            ),
-        );
+        self::assertNull($this->phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier('Foo\Bar', new IdentifierType(IdentifierType::IDENTIFIER_CLASS))));
     }
 
     public function testReturnsNullForNonExistentFunction(): void
     {
-        self::assertNull(
-            $this->phpInternalSourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    'foo',
-                    new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION),
-                ),
-            ),
-        );
+        self::assertNull($this->phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier('foo', new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION))));
     }
 
     public function testReturnsNullForNonExistentConstant(): void
     {
-        self::assertNull(
-            $this->phpInternalSourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    'foo',
-                    new IdentifierType(IdentifierType::IDENTIFIER_CONSTANT),
-                ),
-            ),
-        );
+        self::assertNull($this->phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier('foo', new IdentifierType(IdentifierType::IDENTIFIER_CONSTANT))));
     }
 
     public function testReturnsNullForNonInternal(): void
@@ -234,14 +182,6 @@ class PhpInternalSourceLocatorTest extends TestCase
 
         $phpInternalSourceLocator = new PhpInternalSourceLocator(BetterReflectionSingleton::instance()->astLocator(), $sourceStubber);
 
-        self::assertNull(
-            $phpInternalSourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    'Foo',
-                    new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-                ),
-            ),
-        );
+        self::assertNull($phpInternalSourceLocator->locateIdentifier($this->getMockReflector(), new Identifier('Foo', new IdentifierType(IdentifierType::IDENTIFIER_CLASS))));
     }
 }

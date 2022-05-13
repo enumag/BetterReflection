@@ -43,6 +43,7 @@ final class FakeReflectionAttribute
         return $this->betterReflectionAttribute->getArgumentsExpressions();
     }
 
+    /** @deprecated */
     public function newInstance(): object
     {
         throw new Exception\NotImplemented('Not implemented');

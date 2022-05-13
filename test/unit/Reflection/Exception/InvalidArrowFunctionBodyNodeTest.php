@@ -7,10 +7,10 @@ namespace Roave\BetterReflectionTest\Reflection\Exception;
 use PhpParser\Node\Scalar\String_;
 use PhpParser\Node\Stmt\Echo_;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\InvalidArrowFunctionBodyNode;
+use PHPStan\BetterReflection\Reflection\Exception\InvalidArrowFunctionBodyNode;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\InvalidArrowFunctionBodyNode
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\InvalidArrowFunctionBodyNode
  */
 class InvalidArrowFunctionBodyNodeTest extends TestCase
 {

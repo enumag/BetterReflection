@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\Uncloneable;
+use PHPStan\BetterReflection\Reflection\Exception\Uncloneable;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\Uncloneable
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\Uncloneable
  */
 class UncloneableTest extends TestCase
 {

@@ -532,6 +532,10 @@ class ReflectionClass implements Reflection
                 continue;
             }
 
+            if (array_key_exists($method->getName(), $methodsByName)) {
+                continue;
+            }
+
             $methodsByName[$method->getName()] = $method;
         }
 

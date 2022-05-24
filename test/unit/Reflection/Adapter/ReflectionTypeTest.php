@@ -31,7 +31,9 @@ class ReflectionTypeTest extends TestCase
     {
         $methods = get_class_methods(CoreReflectionType::class);
 
-        return array_combine($methods, array_map(static fn (string $i): array => [$i], $methods));
+        return array_combine($methods, array_map(static function (string $i) : array {
+            return [$i];
+        }, $methods));
     }
 
     /**
@@ -123,11 +125,7 @@ class ReflectionTypeTest extends TestCase
 
     public function testMixedAllowsNull(): void
     {
-        $type = ReflectionTypeAdapter::fromTypeOrNull(new BetterReflectionNamedType(
-            $this->createMock(Reflector::class),
-            $this->createMock(BetterReflectionParameter::class),
-            new Identifier('mixed'),
-        ));
+        $type = ReflectionTypeAdapter::fromTypeOrNull(new BetterReflectionNamedType($this->createMock(Reflector::class), $this->createMock(BetterReflectionParameter::class), new Identifier('mixed')));
         self::assertTrue($type->allowsNull());
     }
 }

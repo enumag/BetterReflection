@@ -21,19 +21,22 @@ use Roave\BetterReflection\SourceLocator\Located\LocatedSource;
 class StringSourceLocator extends AbstractSourceLocator
 {
     /**
+     * @var string
+     */
+    private $source;
+    /**
      * @throws EmptyPhpSourceCode
      */
-    public function __construct(private string $source, Locator $astLocator)
+    public function __construct(string $source, Locator $astLocator)
     {
+        $this->source = $source;
         parent::__construct($astLocator);
 
         if (empty($source)) {
             // Whilst an empty string is still "valid" PHP code, there is no
             // point in us even trying to parse it because we won't find what
             // we are looking for, therefore this throws an exception
-            throw new EmptyPhpSourceCode(
-                'Source code string was empty',
-            );
+            throw new EmptyPhpSourceCode('Source code string was empty');
         }
     }
 
@@ -45,10 +48,6 @@ class StringSourceLocator extends AbstractSourceLocator
      */
     protected function createLocatedSource(Identifier $identifier): ?LocatedSource
     {
-        return new LocatedSource(
-            $this->source,
-            $identifier->getName(),
-            null,
-        );
+        return new LocatedSource($this->source, $identifier->getName(), null);
     }
 }

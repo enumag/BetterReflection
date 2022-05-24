@@ -23,7 +23,9 @@ class ReflectionIntersectionTypeTest extends TestCase
     {
         $methods = get_class_methods(CoreReflectionIntersectionType::class);
 
-        return array_combine($methods, array_map(static fn (string $i): array => [$i], $methods));
+        return array_combine($methods, array_map(static function (string $i) : array {
+            return [$i];
+        }, $methods));
     }
 
     /**
@@ -50,8 +52,9 @@ class ReflectionIntersectionTypeTest extends TestCase
      * @param list<mixed> $args
      *
      * @dataProvider methodExpectationProvider
+     * @param mixed $returnValue
      */
-    public function testAdapterMethods(string $methodName, ?string $expectedException, mixed $returnValue, array $args): void
+    public function testAdapterMethods(string $methodName, ?string $expectedException, $returnValue, array $args): void
     {
         $reflectionStub = $this->createMock(BetterReflectionIntersectionType::class);
 

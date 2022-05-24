@@ -27,18 +27,26 @@ use const PATHINFO_EXTENSION;
  */
 class FileIteratorSourceLocator implements SourceLocator
 {
-    private ?AggregateSourceLocator $aggregateSourceLocator = null;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Type\AggregateSourceLocator|null
+     */
+    private $aggregateSourceLocator;
 
     /** @var Iterator<SplFileInfo> */
-    private Iterator $fileSystemIterator;
+    private $fileSystemIterator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
     /**
      * @param Iterator<SplFileInfo> $fileInfoIterator note: only SplFileInfo allowed in this iterator
      *
      * @throws InvalidFileInfo In case of iterator not contains only SplFileInfo.
      */
-    public function __construct(Iterator $fileInfoIterator, private Locator $astLocator)
+    public function __construct(Iterator $fileInfoIterator, Locator $astLocator)
     {
+        $this->astLocator = $astLocator;
         foreach ($fileInfoIterator as $fileInfo) {
             if (! $fileInfo instanceof SplFileInfo) {
                 throw InvalidFileInfo::fromNonSplFileInfo($fileInfo);
@@ -54,16 +62,13 @@ class FileIteratorSourceLocator implements SourceLocator
     private function getAggregatedSourceLocator(): AggregateSourceLocator
     {
         return $this->aggregateSourceLocator
-            ?? $this->aggregateSourceLocator = new AggregateSourceLocator(array_values(array_filter(array_map(
-                function (SplFileInfo $item): ?SingleFileSourceLocator {
-                    if (! ($item->isFile() && pathinfo($item->getRealPath(), PATHINFO_EXTENSION) === 'php')) {
-                        return null;
-                    }
+            ?? $this->aggregateSourceLocator = new AggregateSourceLocator(array_values(array_filter(array_map(function (SplFileInfo $item): ?SingleFileSourceLocator {
+                if (! ($item->isFile() && pathinfo($item->getRealPath(), PATHINFO_EXTENSION) === 'php')) {
+                    return null;
+                }
 
-                    return new SingleFileSourceLocator($item->getRealPath(), $this->astLocator);
-                },
-                iterator_to_array($this->fileSystemIterator),
-            ))));
+                return new SingleFileSourceLocator($item->getRealPath(), $this->astLocator);
+            }, iterator_to_array($this->fileSystemIterator)))));
     }
 
     /**

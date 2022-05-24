@@ -7,10 +7,10 @@ namespace Roave\BetterReflectionTest\Util\Visitor;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\Visitor\ReturnNodeVisitor;
+use PHPStan\BetterReflection\Util\Visitor\ReturnNodeVisitor;
 
 /**
- * @covers \Roave\BetterReflection\Util\Visitor\ReturnNodeVisitor
+ * @covers \PHPStan\BetterReflection\Util\Visitor\ReturnNodeVisitor
  */
 class ReturnNodeVisitorTest extends TestCase
 {

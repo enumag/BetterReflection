@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Type\Composer\Factory\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\InvalidProjectDirectory;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\InvalidProjectDirectory;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\InvalidProjectDirectory
+ * @covers \PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\InvalidProjectDirectory
  */
 class InvalidProjectDirectoryTest extends TestCase
 {

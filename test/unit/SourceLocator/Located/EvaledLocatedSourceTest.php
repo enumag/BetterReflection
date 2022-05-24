@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Located;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Located\EvaledLocatedSource;
+use PHPStan\BetterReflection\SourceLocator\Located\EvaledLocatedSource;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Located\EvaledLocatedSource
+ * @covers \PHPStan\BetterReflection\SourceLocator\Located\EvaledLocatedSource
  */
 class EvaledLocatedSourceTest extends TestCase
 {

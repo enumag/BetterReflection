@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Located;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Located\AliasLocatedSource;
-use Roave\BetterReflection\Util\FileHelper;
+use PHPStan\BetterReflection\SourceLocator\Located\AliasLocatedSource;
+use PHPStan\BetterReflection\Util\FileHelper;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Located\AliasLocatedSource
+ * @covers \PHPStan\BetterReflection\SourceLocator\Located\AliasLocatedSource
  */
 class AliasLocatedSourceTest extends TestCase
 {

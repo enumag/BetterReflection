@@ -21,8 +21,13 @@ use function array_map;
  */
 final class ReflectionParameter extends CoreReflectionParameter
 {
-    public function __construct(private BetterReflectionParameter $betterReflectionParameter)
+    /**
+     * @var BetterReflectionParameter
+     */
+    private $betterReflectionParameter;
+    public function __construct(BetterReflectionParameter $betterReflectionParameter)
     {
+        $this->betterReflectionParameter = $betterReflectionParameter;
     }
 
     public function __toString(): string
@@ -183,6 +188,8 @@ final class ReflectionParameter extends CoreReflectionParameter
             $attributes = $this->betterReflectionParameter->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
+        return array_map(static function (BetterReflectionAttribute $betterReflectionAttribute) {
+            return ReflectionAttributeFactory::create($betterReflectionAttribute);
+        }, $attributes);
     }
 }

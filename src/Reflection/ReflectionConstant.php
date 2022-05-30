@@ -31,35 +31,80 @@ use function substr_count;
 
 class ReflectionConstant implements Reflection
 {
-    private ?CompiledValue $compiledValue = null;
+    /**
+     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     */
+    private $compiledValue;
 
-    private string $shortName;
+    /**
+     * @var string
+     */
+    private $shortName;
 
-    private bool $inNamespace;
+    /**
+     * @var bool
+     */
+    private $inNamespace;
 
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    private string $namespaceName;
+    /**
+     * @var string
+     */
+    private $namespaceName;
 
-    private Node\Expr $valueExpr;
+    /**
+     * @var \PhpParser\Node\Expr
+     */
+    private $valueExpr;
 
-    private int $startLine;
+    /**
+     * @var int
+     */
+    private $startLine;
 
-    private int $endLine;
+    /**
+     * @var int
+     */
+    private $endLine;
 
-    private int $startColumn;
+    /**
+     * @var int
+     */
+    private $startColumn;
 
-    private int $endColumn;
+    /**
+     * @var int
+     */
+    private $endColumn;
 
-    private string $docComment;
-
-    private function __construct(
-        private Reflector $reflector,
-        Node\Stmt\Const_|Node\Expr\FuncCall $node,
-        private LocatedSource $locatedSource,
-        ?NamespaceNode $declaringNamespace = null,
-        private ?int $positionInNode = null,
-    ) {
+    /**
+     * @var string
+     */
+    private $docComment;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Located\LocatedSource
+     */
+    private $locatedSource;
+    /**
+     * @var int|null
+     */
+    private $positionInNode;
+    /**
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_ $node
+     */
+    private function __construct(Reflector $reflector, $node, LocatedSource $locatedSource, ?NamespaceNode $declaringNamespace = null, ?int $positionInNode = null)
+    {
+        $this->reflector = $reflector;
+        $this->locatedSource = $locatedSource;
+        $this->positionInNode = $positionInNode;
         $this->shortName = $this->getShortNameInternal($node);
         $this->inNamespace = $this->inNamespaceInternal($node, $declaringNamespace);
         $this->name = $this->getNameInternal($node);
@@ -67,19 +112,16 @@ class ReflectionConstant implements Reflection
         $this->valueExpr = $this->getValueExprInternal($node);
         $this->startLine = $node->getStartLine();
         $this->endLine = $node->getEndLine();
-
         try {
             $this->startColumn = CalculateReflectionColumn::getStartColumn($this->locatedSource->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->startColumn = -1;
         }
-
         try {
             $this->endColumn = CalculateReflectionColumn::getEndColumn($this->locatedSource->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->endColumn = -1;
         }
-
         $this->docComment = GetLastDocComment::forNode($node);
     }
 
@@ -102,53 +144,28 @@ class ReflectionConstant implements Reflection
      *
      * @param Node\Stmt\Const_|Node\Expr\FuncCall $node Node has to be processed by the PhpParser\NodeVisitor\NameResolver
      */
-    public static function createFromNode(
-        Reflector $reflector,
-        Node $node,
-        LocatedSource $locatedSource,
-        ?NamespaceNode $namespace = null,
-        ?int $positionInNode = null,
-    ): self {
+    public static function createFromNode(Reflector $reflector, Node $node, LocatedSource $locatedSource, ?NamespaceNode $namespace = null, ?int $positionInNode = null): self
+    {
         if ($node instanceof Node\Stmt\Const_) {
             assert(is_int($positionInNode));
 
             return self::createFromConstKeyword($reflector, $node, $locatedSource, $namespace, $positionInNode);
         }
-
         return self::createFromDefineFunctionCall($reflector, $node, $locatedSource);
     }
 
-    private static function createFromConstKeyword(
-        Reflector $reflector,
-        Node\Stmt\Const_ $node,
-        LocatedSource $locatedSource,
-        ?NamespaceNode $namespace,
-        int $positionInNode,
-    ): self {
-        return new self(
-            $reflector,
-            $node,
-            $locatedSource,
-            $namespace,
-            $positionInNode,
-        );
+    private static function createFromConstKeyword(Reflector $reflector, Node\Stmt\Const_ $node, LocatedSource $locatedSource, ?NamespaceNode $namespace, int $positionInNode): self
+    {
+        return new self($reflector, $node, $locatedSource, $namespace, $positionInNode);
     }
 
     /**
      * @throws InvalidConstantNode
      */
-    private static function createFromDefineFunctionCall(
-        Reflector $reflector,
-        Node\Expr\FuncCall $node,
-        LocatedSource $locatedSource,
-    ): self {
+    private static function createFromDefineFunctionCall(Reflector $reflector, Node\Expr\FuncCall $node, LocatedSource $locatedSource): self
+    {
         ConstantNodeChecker::assertValidDefineFunctionCall($node);
-
-        return new self(
-            $reflector,
-            $node,
-            $locatedSource,
-        );
+        return new self($reflector, $node, $locatedSource);
     }
 
     /**
@@ -160,7 +177,10 @@ class ReflectionConstant implements Reflection
         return $this->shortName;
     }
 
-    private function getShortNameInternal(Node\Stmt\Const_|Node\Expr\FuncCall $node): string
+    /**
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_ $node
+     */
+    private function getShortNameInternal($node): string
     {
         if ($node instanceof Node\Expr\FuncCall) {
             $nameParts = explode('\\', $this->getNameFromDefineFunctionCall($node));
@@ -184,8 +204,9 @@ class ReflectionConstant implements Reflection
     /**
      * Get the "full" name of the constant (e.g. for A\B\FOO, this will return
      * "A\B\FOO").
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_ $node
      */
-    private function getNameInternal(Node\Stmt\Const_|Node\Expr\FuncCall $node): string
+    private function getNameInternal($node): string
     {
         if (! $this->inNamespace()) {
             return $this->getShortName();
@@ -211,8 +232,9 @@ class ReflectionConstant implements Reflection
     /**
      * Get the "namespace" name of the constant (e.g. for A\B\FOO, this will
      * return "A\B").
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_ $node
      */
-    private function getNamespaceNameInternal(Node\Stmt\Const_|Node\Expr\FuncCall $node, ?NamespaceNode $declaringNamespace): string
+    private function getNamespaceNameInternal($node, ?NamespaceNode $declaringNamespace): string
     {
         if ($node instanceof Node\Expr\FuncCall) {
             return implode('\\', array_slice(explode('\\', $this->getNameFromDefineFunctionCall($node)), 0, -1));
@@ -237,7 +259,10 @@ class ReflectionConstant implements Reflection
         return $this->inNamespace;
     }
 
-    public function inNamespaceInternal(Node\Stmt\Const_|Node\Expr\FuncCall $node, ?NamespaceNode $declaringNamespace): bool
+    /**
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_ $node
+     */
+    public function inNamespaceInternal($node, ?NamespaceNode $declaringNamespace): bool
     {
         if ($node instanceof Node\Expr\FuncCall) {
             return substr_count($this->getNameFromDefineFunctionCall($node), '\\') !== 0;
@@ -274,7 +299,10 @@ class ReflectionConstant implements Reflection
         return AnnotationHelper::isDeprecated($this->getDocComment());
     }
 
-    public function populateValue(mixed $value): void
+    /**
+     * @param mixed $value
+     */
+    public function populateValue($value): void
     {
         $this->compiledValue = new CompiledValue($value);
     }
@@ -283,16 +311,13 @@ class ReflectionConstant implements Reflection
      * @deprecated Use getValueExpr()
      * @return mixed
      */
-    public function getValue(): mixed
+    public function getValue()
     {
         if ($this->compiledValue !== null) {
             return $this->compiledValue->value;
         }
 
-        $this->compiledValue = (new CompileNodeToValue())->__invoke(
-            $this->valueExpr,
-            new CompilerContext($this->reflector, $this),
-        );
+        $this->compiledValue = (new CompileNodeToValue())->__invoke($this->valueExpr, new CompilerContext($this->reflector, $this));
 
         return $this->compiledValue->value;
     }
@@ -302,7 +327,10 @@ class ReflectionConstant implements Reflection
         return $this->valueExpr;
     }
 
-    private function getValueExprInternal(Node\Stmt\Const_|Node\Expr\FuncCall $node): Node\Expr
+    /**
+     * @param \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_ $node
+     */
+    private function getValueExprInternal($node): Node\Expr
     {
         if ($node instanceof Node\Expr\FuncCall) {
             $argumentValueNode = $node->args[1];

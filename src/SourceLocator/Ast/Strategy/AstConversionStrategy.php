@@ -19,12 +19,8 @@ interface AstConversionStrategy
     /**
      * Take an AST node in some located source (potentially in a namespace) and
      * convert it to something (concrete implementation decides)
+     * @param \PhpParser\Node\Expr\ArrowFunction|\PhpParser\Node\Expr\Closure|\PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Class_|\PhpParser\Node\Stmt\Const_|\PhpParser\Node\Stmt\Enum_|\PhpParser\Node\Stmt\Function_|\PhpParser\Node\Stmt\Interface_|\PhpParser\Node\Stmt\Trait_ $node
+     * @return \Roave\BetterReflection\Reflection\ReflectionClass|\Roave\BetterReflection\Reflection\ReflectionConstant|\Roave\BetterReflection\Reflection\ReflectionFunction
      */
-    public function __invoke(
-        Reflector $reflector,
-        Node\Stmt\Class_|Node\Stmt\Interface_|Node\Stmt\Trait_|Node\Stmt\Enum_|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction|Node\Stmt\Const_|Node\Expr\FuncCall $node,
-        LocatedSource $locatedSource,
-        ?Node\Stmt\Namespace_ $namespace,
-        ?int $positionInNode = null,
-    ): ReflectionClass|ReflectionConstant|ReflectionFunction;
+    public function __invoke(Reflector $reflector, $node, LocatedSource $locatedSource, ?Node\Stmt\Namespace_ $namespace, ?int $positionInNode = null);
 }

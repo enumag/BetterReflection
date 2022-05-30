@@ -26,9 +26,15 @@ use function uniqid;
  */
 class EvaledCodeSourceLocatorTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private SourceStubber $sourceStubber;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber
+     */
+    private $sourceStubber;
 
     protected function setUp(): void
     {
@@ -40,7 +46,10 @@ class EvaledCodeSourceLocatorTest extends TestCase
         $this->sourceStubber = $betterReflection->sourceStubber();
     }
 
-    private function getMockReflector(): Reflector|MockObject
+    /**
+     * @return \PHPUnit\Framework\MockObject\MockObject|\Roave\BetterReflection\Reflector\Reflector
+     */
+    private function getMockReflector()
     {
         return $this->createMock(Reflector::class);
     }
@@ -53,10 +62,7 @@ class EvaledCodeSourceLocatorTest extends TestCase
 
         $locator = new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber);
 
-        $reflection = $locator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier($className, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)),
-        );
+        $reflection = $locator->locateIdentifier($this->getMockReflector(), new Identifier($className, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(ReflectionClass::class, $reflection);
 
@@ -74,10 +80,7 @@ class EvaledCodeSourceLocatorTest extends TestCase
 
         $locator = new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber);
 
-        $reflection = $locator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier($interfaceName, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)),
-        );
+        $reflection = $locator->locateIdentifier($this->getMockReflector(), new Identifier($interfaceName, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(EvaledLocatedSource::class, $reflection->getLocatedSource());
         self::assertStringMatchesFormat('%Ainterface%A' . $interfaceName . '%A', $reflection->getLocatedSource()->getSource());
@@ -91,10 +94,7 @@ class EvaledCodeSourceLocatorTest extends TestCase
 
         $locator = new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber);
 
-        $reflection = $locator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier($traitName, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)),
-        );
+        $reflection = $locator->locateIdentifier($this->getMockReflector(), new Identifier($traitName, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(EvaledLocatedSource::class, $reflection->getLocatedSource());
         self::assertStringMatchesFormat('%Atrait%A' . $traitName . '%A', $reflection->getLocatedSource()->getSource());
@@ -111,10 +111,7 @@ class EvaledCodeSourceLocatorTest extends TestCase
 
         $locator = new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber);
 
-        $reflection = $locator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier($enumName, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)),
-        );
+        $reflection = $locator->locateIdentifier($this->getMockReflector(), new Identifier($enumName, new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(EvaledLocatedSource::class, $reflection->getLocatedSource());
         self::assertStringMatchesFormat('%Aenum%A' . $enumName . '%A', $reflection->getLocatedSource()->getSource());
@@ -139,38 +136,20 @@ class EvaledCodeSourceLocatorTest extends TestCase
 
     public function testCannotReflectRequiredClass(): void
     {
-        self::assertNull(
-            (new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber))
-                ->locateIdentifier($this->getMockReflector(), new Identifier(self::class, new IdentifierType(IdentifierType::IDENTIFIER_CLASS))),
-        );
+        self::assertNull((new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber))
+            ->locateIdentifier($this->getMockReflector(), new Identifier(self::class, new IdentifierType(IdentifierType::IDENTIFIER_CLASS))));
     }
 
     public function testReturnsNullForNonExistentCode(): void
     {
         $locator = new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber);
-        self::assertNull(
-            $locator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    'Foo\Bar',
-                    new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-                ),
-            ),
-        );
+        self::assertNull($locator->locateIdentifier($this->getMockReflector(), new Identifier('Foo\Bar', new IdentifierType(IdentifierType::IDENTIFIER_CLASS))));
     }
 
     public function testReturnsNullForFunctions(): void
     {
         $locator = new EvaledCodeSourceLocator($this->astLocator, $this->sourceStubber);
-        self::assertNull(
-            $locator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    'foo',
-                    new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION),
-                ),
-            ),
-        );
+        self::assertNull($locator->locateIdentifier($this->getMockReflector(), new Identifier('foo', new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION))));
     }
 
     public function testReturnsNullForMissingStub(): void
@@ -183,14 +162,6 @@ class EvaledCodeSourceLocatorTest extends TestCase
 
         $sourceLocator = new EvaledCodeSourceLocator($this->astLocator, $sourceStubber);
 
-        self::assertNull(
-            $sourceLocator->locateIdentifier(
-                $this->getMockReflector(),
-                new Identifier(
-                    CoreReflectionClass::class,
-                    new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-                ),
-            ),
-        );
+        self::assertNull($sourceLocator->locateIdentifier($this->getMockReflector(), new Identifier(CoreReflectionClass::class, new IdentifierType(IdentifierType::IDENTIFIER_CLASS))));
     }
 }

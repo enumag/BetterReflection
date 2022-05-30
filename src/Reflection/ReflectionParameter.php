@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use Closure;
 use Exception;
@@ -11,16 +11,16 @@ use LogicException;
 use OutOfBoundsException;
 use PhpParser\Node;
 use PhpParser\Node\Param as ParamNode;
-use Roave\BetterReflection\NodeCompiler\CompiledValue;
-use Roave\BetterReflection\NodeCompiler\CompileNodeToValue;
-use Roave\BetterReflection\NodeCompiler\CompilerContext;
-use Roave\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
-use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
-use Roave\BetterReflection\Reflection\StringCast\ReflectionParameterStringCast;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\Util\CalculateReflectionColumn;
+use PHPStan\BetterReflection\NodeCompiler\CompiledValue;
+use PHPStan\BetterReflection\NodeCompiler\CompileNodeToValue;
+use PHPStan\BetterReflection\NodeCompiler\CompilerContext;
+use PHPStan\BetterReflection\NodeCompiler\Exception\UnableToCompileNode;
+use PHPStan\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
+use PHPStan\BetterReflection\Reflection\StringCast\ReflectionParameterStringCast;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 
-use Roave\BetterReflection\Util\Exception\NoNodePosition;
+use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
 use function assert;
 use function count;
 use function is_array;
@@ -37,7 +37,7 @@ class ReflectionParameter
     private $isOptional;
 
     /**
-     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     * @var \PHPStan\BetterReflection\NodeCompiler\CompiledValue|null
      */
     private $compiledDefaultValue;
 
@@ -55,7 +55,7 @@ class ReflectionParameter
     private $astType;
 
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null
      */
     private $type;
 
@@ -89,11 +89,11 @@ class ReflectionParameter
      */
     private $endColumn;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionMethod
      */
     private $function;
     /**
@@ -105,7 +105,7 @@ class ReflectionParameter
      */
     private $optional;
     /**
-     * @param \Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod $function
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionMethod $function
      */
     private function __construct(Reflector $reflector, ParamNode $node, $function, int $parameterIndex, bool $optional)
     {
@@ -137,7 +137,7 @@ class ReflectionParameter
     }
 
     /**
-     * @param \Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod $function
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionMethod $function
      */
     public function changeFunction($function): self
     {
@@ -249,7 +249,7 @@ class ReflectionParameter
      * @internal
      *
      * @param ParamNode $node Node has to be processed by the PhpParser\NodeVisitor\NameResolver
-     * @param \Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod $function
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionMethod $function
      */
     public static function createFromNode(Reflector $reflector, ParamNode $node, $function, int $parameterIndex, bool $optional): self
     {
@@ -283,7 +283,7 @@ class ReflectionParameter
 
     /**
      * Get the function (or method) that declared this parameter.
-     * @return \Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod
+     * @return \PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionMethod
      */
     public function getDeclaringFunction()
     {
@@ -395,7 +395,7 @@ class ReflectionParameter
      * this parameter
      *
      * (note: this has nothing to do with DocBlocks).
-     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     * @return \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null
      */
     public function getType()
     {
@@ -404,7 +404,7 @@ class ReflectionParameter
 
     /**
      * @param \PhpParser\Node\ComplexType|\PhpParser\Node\Identifier|\PhpParser\Node\Name|null $type
-     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     * @return \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null
      */
     public function createType($type)
     {
@@ -447,7 +447,7 @@ class ReflectionParameter
 
     /**
      * For isArray() and isCallable().
-     * @param \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null $typeReflection
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null $typeReflection
      */
     private function isType($typeReflection, string $type): bool
     {

@@ -8,22 +8,22 @@ use PhpParser\Node\Identifier;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass as CoreReflectionClass;
 use ReflectionType as CoreReflectionType;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionIntersectionType as ReflectionIntersectionTypeAdapter;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionNamedType as ReflectionNamedTypeAdapter;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionType as ReflectionTypeAdapter;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionUnionType as ReflectionUnionTypeAdapter;
-use Roave\BetterReflection\Reflection\ReflectionIntersectionType as BetterReflectionIntersectionType;
-use Roave\BetterReflection\Reflection\ReflectionNamedType as BetterReflectionNamedType;
-use Roave\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
-use Roave\BetterReflection\Reflection\ReflectionUnionType as BetterReflectionUnionType;
-use Roave\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionIntersectionType as ReflectionIntersectionTypeAdapter;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionNamedType as ReflectionNamedTypeAdapter;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionType as ReflectionTypeAdapter;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionUnionType as ReflectionUnionTypeAdapter;
+use PHPStan\BetterReflection\Reflection\ReflectionIntersectionType as BetterReflectionIntersectionType;
+use PHPStan\BetterReflection\Reflection\ReflectionNamedType as BetterReflectionNamedType;
+use PHPStan\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
+use PHPStan\BetterReflection\Reflection\ReflectionUnionType as BetterReflectionUnionType;
+use PHPStan\BetterReflection\Reflector\Reflector;
 
 use function array_combine;
 use function array_map;
 use function get_class_methods;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Adapter\ReflectionType
+ * @covers \PHPStan\BetterReflection\Reflection\Adapter\ReflectionType
  */
 class ReflectionTypeTest extends TestCase
 {

@@ -8,14 +8,14 @@ use Error;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass as CoreReflectionClass;
 use ReflectionEnumUnitCase as CoreReflectionEnumUnitCase;
-use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionAttribute as ReflectionAttributeAdapter;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionEnum as ReflectionEnumAdapter;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionEnumUnitCase as ReflectionEnumUnitCaseAdapter;
-use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
-use Roave\BetterReflection\Reflection\ReflectionClass as BetterReflectionClass;
-use Roave\BetterReflection\Reflection\ReflectionEnum as BetterReflectionEnum;
-use Roave\BetterReflection\Reflection\ReflectionEnumCase as BetterReflectionEnumCase;
+use PHPStan\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute as ReflectionAttributeAdapter;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnum as ReflectionEnumAdapter;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumUnitCase as ReflectionEnumUnitCaseAdapter;
+use PHPStan\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
+use PHPStan\BetterReflection\Reflection\ReflectionClass as BetterReflectionClass;
+use PHPStan\BetterReflection\Reflection\ReflectionEnum as BetterReflectionEnum;
+use PHPStan\BetterReflection\Reflection\ReflectionEnumCase as BetterReflectionEnumCase;
 
 use function array_combine;
 use function array_map;
@@ -24,7 +24,7 @@ use function get_class_methods;
 use const PHP_VERSION_ID;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Adapter\ReflectionEnumUnitCase
+ * @covers \PHPStan\BetterReflection\Reflection\Adapter\ReflectionEnumUnitCase
  */
 class ReflectionEnumUnitCaseTest extends TestCase
 {

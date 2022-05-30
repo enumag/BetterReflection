@@ -8,10 +8,10 @@ use PhpParser\Comment;
 use PhpParser\Comment\Doc;
 use PhpParser\Node\Stmt\Function_;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\GetLastDocComment;
+use PHPStan\BetterReflection\Util\GetLastDocComment;
 
 /**
- * @covers \Roave\BetterReflection\Util\GetLastDocComment
+ * @covers \PHPStan\BetterReflection\Util\GetLastDocComment
  */
 class GetLastDocCommentTest extends TestCase
 {

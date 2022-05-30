@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
-use Roave\BetterReflection\BetterReflection;
-use Roave\BetterReflection\NodeCompiler\CompiledValue;
-use Roave\BetterReflection\NodeCompiler\CompileNodeToValue;
-use Roave\BetterReflection\NodeCompiler\CompilerContext;
-use Roave\BetterReflection\Reflection\Annotation\AnnotationHelper;
-use Roave\BetterReflection\Reflection\Exception\InvalidConstantNode;
-use Roave\BetterReflection\Reflection\StringCast\ReflectionConstantStringCast;
-use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\SourceLocator\Located\LocatedSource;
-use Roave\BetterReflection\Util\CalculateReflectionColumn;
-use Roave\BetterReflection\Util\ConstantNodeChecker;
-use Roave\BetterReflection\Util\Exception\NoNodePosition;
-use Roave\BetterReflection\Util\GetLastDocComment;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\NodeCompiler\CompiledValue;
+use PHPStan\BetterReflection\NodeCompiler\CompileNodeToValue;
+use PHPStan\BetterReflection\NodeCompiler\CompilerContext;
+use PHPStan\BetterReflection\Reflection\Annotation\AnnotationHelper;
+use PHPStan\BetterReflection\Reflection\Exception\InvalidConstantNode;
+use PHPStan\BetterReflection\Reflection\StringCast\ReflectionConstantStringCast;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
+use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
+use PHPStan\BetterReflection\Util\ConstantNodeChecker;
+use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
+use PHPStan\BetterReflection\Util\GetLastDocComment;
 
 use function array_slice;
 use function assert;
@@ -32,7 +32,7 @@ use function substr_count;
 class ReflectionConstant implements Reflection
 {
     /**
-     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     * @var \PHPStan\BetterReflection\NodeCompiler\CompiledValue|null
      */
     private $compiledValue;
 
@@ -86,11 +86,11 @@ class ReflectionConstant implements Reflection
      */
     private $docComment;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
     /**
-     * @var \Roave\BetterReflection\SourceLocator\Located\LocatedSource
+     * @var \PHPStan\BetterReflection\SourceLocator\Located\LocatedSource
      */
     private $locatedSource;
     /**

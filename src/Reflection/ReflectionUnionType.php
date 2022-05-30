@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use PhpParser\Node;
 use PhpParser\Node\UnionType;
-use Roave\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\Reflector\Reflector;
 
 use function array_filter;
 use function array_map;
@@ -19,7 +19,7 @@ class ReflectionUnionType extends ReflectionType
     private $types;
 
     /**
-     * @param \Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionEnum|\PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionMethod|\PHPStan\BetterReflection\Reflection\ReflectionParameter|\PHPStan\BetterReflection\Reflection\ReflectionProperty $owner
      */
     public function __construct(Reflector $reflector, $owner, UnionType $type)
     {

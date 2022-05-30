@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\NotAnInterfaceReflection;
-use Roave\BetterReflection\Reflector\DefaultReflector;
-use Roave\BetterReflection\SourceLocator\Ast\Locator;
-use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
+use PHPStan\BetterReflection\Reflection\Exception\NotAnInterfaceReflection;
+use PHPStan\BetterReflection\Reflector\DefaultReflector;
+use PHPStan\BetterReflection\SourceLocator\Ast\Locator;
+use PHPStan\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 use Roave\BetterReflectionTest\Fixture;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\NotAnInterfaceReflection
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\NotAnInterfaceReflection
  */
 class NotAnInterfaceReflectionTest extends TestCase
 {
     /**
-     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     * @var \PHPStan\BetterReflection\SourceLocator\Ast\Locator
      */
     private $astLocator;
 

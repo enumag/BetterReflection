@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\InvalidFileLocation;
-use Roave\BetterReflection\SourceLocator\FileChecker;
+use PHPStan\BetterReflection\SourceLocator\Exception\InvalidFileLocation;
+use PHPStan\BetterReflection\SourceLocator\FileChecker;
 
 use function chmod;
 use function fileperms;
@@ -16,7 +16,7 @@ use function strpos;
 use const PHP_OS;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\FileChecker
+ * @covers \PHPStan\BetterReflection\SourceLocator\FileChecker
  */
 class FileCheckerTest extends TestCase
 {

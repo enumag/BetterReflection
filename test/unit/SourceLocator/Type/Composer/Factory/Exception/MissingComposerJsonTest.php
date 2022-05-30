@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Type\Composer\Factory\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\MissingComposerJson;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\MissingComposerJson;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\MissingComposerJson
+ * @covers \PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\MissingComposerJson
  */
 class MissingComposerJsonTest extends TestCase
 {

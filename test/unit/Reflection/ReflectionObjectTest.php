@@ -9,11 +9,11 @@ use PhpParser\Node;
 use PHPUnit\Framework\TestCase;
 use ReflectionObject as CoreReflectionObject;
 use ReflectionProperty as CoreReflectionProperty;
-use Roave\BetterReflection\Reflection\Exception\Uncloneable;
-use Roave\BetterReflection\Reflection\ReflectionClass;
-use Roave\BetterReflection\Reflection\ReflectionObject;
-use Roave\BetterReflection\Reflection\ReflectionProperty;
-use Roave\BetterReflection\Util\FileHelper;
+use PHPStan\BetterReflection\Reflection\Exception\Uncloneable;
+use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\BetterReflection\Reflection\ReflectionObject;
+use PHPStan\BetterReflection\Reflection\ReflectionProperty;
+use PHPStan\BetterReflection\Util\FileHelper;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 use Roave\BetterReflectionTest\Fixture\ClassForHinting;
 use Roave\BetterReflectionTest\Fixture\DefaultProperties;
@@ -23,7 +23,7 @@ use stdClass;
 use function realpath;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\ReflectionObject
+ * @covers \PHPStan\BetterReflection\Reflection\ReflectionObject
  */
 class ReflectionObjectTest extends TestCase
 {

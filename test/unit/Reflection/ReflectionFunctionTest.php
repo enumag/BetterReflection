@@ -26,11 +26,20 @@ use stdClass;
  */
 class ReflectionFunctionTest extends TestCase
 {
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private SourceStubber $sourceStubber;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber
+     */
+    private $sourceStubber;
 
     protected function setUp(): void
     {
@@ -159,7 +168,9 @@ class ReflectionFunctionTest extends TestCase
 
     public function testCreateFromClosureWithArrowFunction(): void
     {
-        $myClosure = static fn (): int => 5;
+        $myClosure = static function () : int {
+            return 5;
+        };
 
         $reflection = ReflectionFunction::createFromClosure($myClosure);
 
@@ -168,7 +179,9 @@ class ReflectionFunctionTest extends TestCase
 
     public function testCreateFromClosureWithArrowFunctionCanReflectTypeHints(): void
     {
-        $myClosure = static fn (stdClass $theParam): int => 5;
+        $myClosure = static function (stdClass $theParam) : int {
+            return 5;
+        };
 
         $reflection = ReflectionFunction::createFromClosure($myClosure);
 
@@ -178,7 +191,9 @@ class ReflectionFunctionTest extends TestCase
 
     public function testCreateFromClosureWithArrowFunctionCanReflectTypesInNamespace(): void
     {
-        $myClosure = static fn (ClassWithStaticMethod $theParam): int => 5;
+        $myClosure = static function (ClassWithStaticMethod $theParam) : int {
+            return 5;
+        };
 
         $reflection = ReflectionFunction::createFromClosure($myClosure);
 
@@ -211,7 +226,9 @@ class ReflectionFunctionTest extends TestCase
 
     public function testIsStaticFromArrowFunction(): void
     {
-        $closure = static fn () => 5;
+        $closure = static function () {
+            return 5;
+        };
 
         $reflection = ReflectionFunction::createFromClosure($closure);
         self::assertTrue($reflection->isStatic());
@@ -220,7 +237,9 @@ class ReflectionFunctionTest extends TestCase
     public function testIsNotStaticFromArrowFunction(): void
     {
         // phpcs:disable SlevomatCodingStandard.Functions.StaticClosure.ClosureNotStatic
-        $closure = fn () => 5;
+        $closure = function () {
+            return 5;
+        };
         // phpcs:enable
 
         $reflection = ReflectionFunction::createFromClosure($closure);

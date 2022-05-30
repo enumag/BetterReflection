@@ -28,9 +28,15 @@ use function sprintf;
  */
 class AnonymousClassObjectSourceLocatorTest extends TestCase
 {
-    private Parser $parser;
+    /**
+     * @var \PhpParser\Parser
+     */
+    private $parser;
 
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
     protected function setUp(): void
     {
@@ -62,13 +68,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
      */
     public function testLocateIdentifier(object $class, string $file, int $startLine, int $endLine): void
     {
-        $reflection = (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier(
-            $this->reflector,
-            new Identifier(
-                $class::class,
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        $reflection = (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier($this->reflector, new Identifier(get_class($class), new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(ReflectionClass::class, $reflection);
         self::assertTrue($reflection->isAnonymous());
@@ -82,13 +82,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
     {
         $class = new CoreReflectionClass(stdClass::class);
 
-        $reflection = (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier(
-            $this->reflector,
-            new Identifier(
-                $class::class,
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        $reflection = (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier($this->reflector, new Identifier(get_class($class), new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertNull($reflection);
     }
@@ -98,13 +92,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
         $anonymousClass = new class {
         };
 
-        $reflection = (new AnonymousClassObjectSourceLocator($anonymousClass, $this->parser))->locateIdentifier(
-            $this->reflector,
-            new Identifier(
-                'foo',
-                new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION),
-            ),
-        );
+        $reflection = (new AnonymousClassObjectSourceLocator($anonymousClass, $this->parser))->locateIdentifier($this->reflector, new Identifier('foo', new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION)));
 
         self::assertNull($reflection);
     }
@@ -115,10 +103,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
     public function testLocateIdentifiersByType(object $class, string $file, int $startLine, int $endLine): void
     {
         /** @var list<ReflectionClass> $reflections */
-        $reflections = (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifiersByType(
-            $this->reflector,
-            new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-        );
+        $reflections = (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifiersByType($this->reflector, new IdentifierType(IdentifierType::IDENTIFIER_CLASS));
 
         self::assertCount(1, $reflections);
         self::assertArrayHasKey(0, $reflections);
@@ -136,10 +121,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
         };
 
         /** @var list<ReflectionClass> $reflections */
-        $reflections = (new AnonymousClassObjectSourceLocator($anonymousClass, $this->parser))->locateIdentifiersByType(
-            $this->reflector,
-            new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION),
-        );
+        $reflections = (new AnonymousClassObjectSourceLocator($anonymousClass, $this->parser))->locateIdentifiersByType($this->reflector, new IdentifierType(IdentifierType::IDENTIFIER_FUNCTION));
 
         self::assertCount(0, $reflections);
     }
@@ -192,13 +174,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
         $this->expectException(TwoAnonymousClassesOnSameLine::class);
         $this->expectExceptionMessage(sprintf('Two anonymous classes on line 3 in %s', $file));
 
-        (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier(
-            $this->reflector,
-            new Identifier(
-                $class::class,
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier($this->reflector, new Identifier(get_class($class), new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
     }
 
     public function nestedAnonymousClassInstancesProvider(): array
@@ -218,13 +194,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
 
         $this->expectException(EvaledAnonymousClassCannotBeLocated::class);
 
-        (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier(
-            $this->reflector,
-            new Identifier(
-                $class::class,
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        (new AnonymousClassObjectSourceLocator($class, $this->parser))->locateIdentifier($this->reflector, new Identifier(get_class($class), new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
     }
 
     public function testNamesAreResolved(): void
@@ -234,13 +204,7 @@ class AnonymousClassObjectSourceLocatorTest extends TestCase
         $sourceLocator = new AnonymousClassObjectSourceLocator($class, $this->parser);
         $reflector     = new DefaultReflector(BetterReflectionSingleton::instance()->sourceLocator());
 
-        $reflection = $sourceLocator->locateIdentifier(
-            $reflector,
-            new Identifier(
-                $class::class,
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        $reflection = $sourceLocator->locateIdentifier($reflector, new Identifier(get_class($class), new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertInstanceOf(ReflectionClass::class, $reflection);
         self::assertSame('Roave\BetterReflectionTest\Fixture\AnonymousClassParent', $reflection->getParentClass()->getName());

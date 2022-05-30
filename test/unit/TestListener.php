@@ -22,7 +22,10 @@ class TestListener implements BaseTestListener
 {
     use TestListenerDefaultImplementation;
 
-    private ?TestSuite $currentSuite;
+    /**
+     * @var \PHPUnit\Framework\TestSuite|null
+     */
+    private $currentSuite;
 
     /**
      * Determine the "full" test name (including the suite name if it is set)
@@ -44,10 +47,7 @@ class TestListener implements BaseTestListener
      */
     private function assertClassNotLoaded(string $className, TestCase $test): void
     {
-        TestCase::assertFalse(
-            class_exists($className, false),
-            'Class ' . $className . ' was loaded during test ' . $this->getCurrentTestName($test),
-        );
+        TestCase::assertFalse(class_exists($className, false), 'Class ' . $className . ' was loaded during test ' . $this->getCurrentTestName($test));
     }
 
     /**

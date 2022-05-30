@@ -14,8 +14,13 @@ use function array_map;
 
 final class ReflectionUnionType extends CoreReflectionUnionType
 {
-    public function __construct(private BetterReflectionUnionType $betterReflectionType)
+    /**
+     * @var BetterReflectionUnionType
+     */
+    private $betterReflectionType;
+    public function __construct(BetterReflectionUnionType $betterReflectionType)
     {
+        $this->betterReflectionType = $betterReflectionType;
     }
 
     /**
@@ -23,10 +28,11 @@ final class ReflectionUnionType extends CoreReflectionUnionType
      */
     public function getTypes(): array
     {
-        return array_filter(
-            array_map(static fn (BetterReflectionNamedType|BetterReflectionUnionType|BetterReflectionIntersectionType $type): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null => ReflectionType::fromTypeOrNull($type), $this->betterReflectionType->getTypes()),
-            static fn (ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null $type): bool => $type instanceof ReflectionNamedType,
-        );
+        return array_filter(array_map(static function ($type) {
+            return ReflectionType::fromTypeOrNull($type);
+        }, $this->betterReflectionType->getTypes()), static function ($type) : bool {
+            return $type instanceof ReflectionNamedType;
+        });
     }
 
     public function __toString(): string

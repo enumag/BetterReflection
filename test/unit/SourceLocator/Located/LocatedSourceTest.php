@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Located;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\InvalidFileLocation;
-use Roave\BetterReflection\SourceLocator\Located\LocatedSource;
-use Roave\BetterReflection\Util\FileHelper;
+use PHPStan\BetterReflection\SourceLocator\Exception\InvalidFileLocation;
+use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
+use PHPStan\BetterReflection\Util\FileHelper;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Located\LocatedSource
+ * @covers \PHPStan\BetterReflection\SourceLocator\Located\LocatedSource
  */
 class LocatedSourceTest extends TestCase
 {

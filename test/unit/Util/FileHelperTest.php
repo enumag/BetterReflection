@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Util;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\FileHelper;
+use PHPStan\BetterReflection\Util\FileHelper;
 
 use function strtr;
 
 use const DIRECTORY_SEPARATOR;
 
 /**
- * @covers \Roave\BetterReflection\Util\FileHelper
+ * @covers \PHPStan\BetterReflection\Util\FileHelper
  */
 class FileHelperTest extends TestCase
 {

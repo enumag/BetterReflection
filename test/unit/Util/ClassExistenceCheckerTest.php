@@ -59,7 +59,7 @@ class ClassExistenceCheckerTest extends TestCase
      */
     public function testClassExists(string $name, bool $exists): void
     {
-        self::assertSame($exists, ClassExistenceChecker::classExists($name));
+        self::assertSame($exists, ClassExistenceChecker::classExists($name, false));
     }
 
     public function dataExists(): array
@@ -82,7 +82,7 @@ class ClassExistenceCheckerTest extends TestCase
      */
     public function testExists(string $name, bool $exists): void
     {
-        self::assertSame($exists, ClassExistenceChecker::exists($name));
+        self::assertSame($exists, ClassExistenceChecker::exists($name, false));
     }
 
     public function dataInterfaceExists(): array
@@ -100,7 +100,7 @@ class ClassExistenceCheckerTest extends TestCase
      */
     public function testInterfaceExists(string $name, bool $exists): void
     {
-        self::assertSame($exists, ClassExistenceChecker::interfaceExists($name));
+        self::assertSame($exists, ClassExistenceChecker::interfaceExists($name, false));
     }
 
     public function dataTraitExists(): array
@@ -118,6 +118,6 @@ class ClassExistenceCheckerTest extends TestCase
      */
     public function testTraitExists(string $name, bool $exists): void
     {
-        self::assertSame($exists, ClassExistenceChecker::traitExists($name));
+        self::assertSame($exists, ClassExistenceChecker::traitExists($name, false));
     }
 }

@@ -49,11 +49,20 @@ use function strtolower;
  */
 class AutoloadSourceLocator extends AbstractSourceLocator
 {
-    private Parser $phpParser;
+    /**
+     * @var \PhpParser\Parser
+     */
+    private $phpParser;
 
-    private NodeTraverser $nodeTraverser;
+    /**
+     * @var \PhpParser\NodeTraverser
+     */
+    private $nodeTraverser;
 
-    private NodeVisitorAbstract $constantVisitor;
+    /**
+     * @var \PhpParser\NodeVisitorAbstract
+     */
+    private $constantVisitor;
 
     public function __construct(?AstLocator $astLocator = null, ?Parser $phpParser = null)
     {
@@ -88,19 +97,10 @@ class AutoloadSourceLocator extends AbstractSourceLocator
         }
 
         if (strtolower($identifier->getName()) !== strtolower($locatedData['name'])) {
-            return new AliasLocatedSource(
-                file_get_contents($locatedData['fileName']),
-                $locatedData['name'],
-                $locatedData['fileName'],
-                $identifier->getName(),
-            );
+            return new AliasLocatedSource(file_get_contents($locatedData['fileName']), $locatedData['name'], $locatedData['fileName'], $identifier->getName());
         }
 
-        return new LocatedSource(
-            file_get_contents($locatedData['fileName']),
-            $identifier->getName(),
-            $locatedData['fileName'],
-        );
+        return new LocatedSource(file_get_contents($locatedData['fileName']), $identifier->getName(), $locatedData['fileName']);
     }
 
     /**
@@ -167,25 +167,23 @@ class AutoloadSourceLocator extends AbstractSourceLocator
         $this->silenceErrors();
 
         try {
-            $locatedFile = FileReadTrapStreamWrapper::withStreamWrapperOverride(
-                static function () use ($className): ?string {
-                    foreach (spl_autoload_functions() as $preExistingAutoloader) {
-                        $preExistingAutoloader($className);
+            $locatedFile = FileReadTrapStreamWrapper::withStreamWrapperOverride(static function () use ($className): ?string {
+                foreach (spl_autoload_functions() as $preExistingAutoloader) {
+                    $preExistingAutoloader($className);
 
-                        /**
-                         * This static variable is populated by the side-effect of the stream wrapper
-                         * trying to read the file path when `include()` is used by an autoloader.
-                         *
-                         * This will not be `null` when the autoloader tried to read a file.
-                         */
-                        if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                            return FileReadTrapStreamWrapper::$autoloadLocatedFile;
-                        }
+                    /**
+                     * This static variable is populated by the side-effect of the stream wrapper
+                     * trying to read the file path when `include()` is used by an autoloader.
+                     *
+                     * This will not be `null` when the autoloader tried to read a file.
+                     */
+                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                        return FileReadTrapStreamWrapper::$autoloadLocatedFile;
                     }
+                }
 
-                    return null;
-                },
-            );
+                return null;
+            });
 
             if ($locatedFile === null) {
                 return null;
@@ -199,7 +197,9 @@ class AutoloadSourceLocator extends AbstractSourceLocator
 
     private function silenceErrors(): void
     {
-        set_error_handler(static fn (): bool => true);
+        set_error_handler(static function () : bool {
+            return true;
+        });
     }
 
     /**
@@ -258,7 +258,7 @@ class AutoloadSourceLocator extends AbstractSourceLocator
         foreach (array_reverse(get_included_files()) as $includedFileName) {
             try {
                 FileChecker::assertReadableFile($includedFileName);
-            } catch (InvalidFileLocation) {
+            } catch (InvalidFileLocation $exception) {
                 continue;
             }
 
@@ -285,9 +285,15 @@ class AutoloadSourceLocator extends AbstractSourceLocator
     {
         return new class () extends NodeVisitorAbstract
         {
-            private ?string $constantName = null;
+            /**
+             * @var string|null
+             */
+            private $constantName;
 
-            private Node\Stmt\Const_|Node\Expr\FuncCall|null $node = null;
+            /**
+             * @var \PhpParser\Node\Expr\FuncCall|\PhpParser\Node\Stmt\Const_|null
+             */
+            private $node = null;
 
             public function enterNode(Node $node): ?int
             {
@@ -307,7 +313,7 @@ class AutoloadSourceLocator extends AbstractSourceLocator
                     try {
                         /** @psalm-suppress InternalClass */
                         ConstantNodeChecker::assertValidDefineFunctionCall($node);
-                    } catch (InvalidConstantNode) {
+                    } catch (InvalidConstantNode $exception) {
                         return null;
                     }
 

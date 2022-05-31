@@ -45,13 +45,25 @@ use const PHP_VERSION_ID;
  */
 class CompileNodeToValueTest extends TestCase
 {
-    private Parser $parser;
+    /**
+     * @var \PhpParser\Parser
+     */
+    private $parser;
 
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
-    private SourceStubber $sourceStubber;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber
+     */
+    private $sourceStubber;
 
     protected function setUp(): void
     {
@@ -86,10 +98,7 @@ class CompileNodeToValueTest extends TestCase
         $reflector          = new DefaultReflector(new PhpInternalSourceLocator($this->astLocator, $this->sourceStubber));
         $constantReflection = $reflector->reflectConstant('PHP_VERSION_ID');
 
-        return new CompilerContext(
-            new DefaultReflector(new StringSourceLocator('<?php class EmptyClass {}', $this->astLocator)),
-            $constantReflection,
-        );
+        return new CompilerContext(new DefaultReflector(new StringSourceLocator('<?php class EmptyClass {}', $this->astLocator)), $constantReflection);
     }
 
     public function nodeProvider(): array
@@ -194,8 +203,9 @@ class CompileNodeToValueTest extends TestCase
 
     /**
      * @dataProvider nodeProvider
+     * @param mixed $expectedValue
      */
-    public function testVariousNodeCompilations(string $phpCode, mixed $expectedValue): void
+    public function testVariousNodeCompilations(string $phpCode, $expectedValue): void
     {
         $node = $this->parseCode($phpCode);
 
@@ -249,10 +259,7 @@ class CompileNodeToValueTest extends TestCase
     public function testExceptionThrownWhenInvalidNodeGiven(): void
     {
         $this->expectException(UnableToCompileNode::class);
-        $this->expectExceptionMessageMatches(sprintf(
-            '#^Unable to compile expression in global namespace: unrecognized node type %s in file#',
-            preg_quote(Yield_::class),
-        ));
+        $this->expectExceptionMessageMatches(sprintf('#^Unable to compile expression in global namespace: unrecognized node type %s in file#', preg_quote(Yield_::class)));
 
         (new CompileNodeToValue())->__invoke(new Yield_(), $this->getDummyContextWithGlobalNamespace());
     }
@@ -270,14 +277,7 @@ class CompileNodeToValueTest extends TestCase
         $this->expectException(UnableToCompileNode::class);
         $this->expectExceptionMessageMatches('#^Could not locate constant EmptyClass::FOO while trying to evaluate constant expression in global namespace in file#');
 
-        (new CompileNodeToValue())
-            ->__invoke(
-                new Node\Expr\ClassConstFetch(
-                    new Name\FullyQualified('EmptyClass'),
-                    new Node\Identifier('FOO'),
-                ),
-                $this->getDummyContextWithGlobalNamespace(),
-            );
+        (new CompileNodeToValue())->__invoke(new Node\Expr\ClassConstFetch(new Name\FullyQualified('EmptyClass'), new Node\Identifier('FOO')), $this->getDummyContextWithGlobalNamespace());
     }
 
     public function testConstantValueCompiled(): void
@@ -285,13 +285,7 @@ class CompileNodeToValueTest extends TestCase
         $constName = uniqid('BETTER_REFLECTION_TEST_CONST_', true);
         define($constName, 123);
 
-        self::assertSame(
-            123,
-            (new CompileNodeToValue())->__invoke(
-                new ConstFetch(new Name($constName)),
-                $this->getDummyContext(),
-            )->value,
-        );
+        self::assertSame(123, (new CompileNodeToValue())->__invoke(new ConstFetch(new Name($constName)), $this->getDummyContext())->value);
     }
 
     public function testConstantResolutionWithAnotherConstant(): void
@@ -656,8 +650,9 @@ PHP;
 
     /**
      * @dataProvider magicConstantsWithoutNamespaceProvider
+     * @param mixed $expectedValue
      */
-    public function testMagicConstantsWithoutNamespace(string $constantName, mixed $expectedValue): void
+    public function testMagicConstantsWithoutNamespace(string $constantName, $expectedValue): void
     {
         $reflector = new DefaultReflector(new SingleFileSourceLocator(realpath(__DIR__ . '/../Fixture/MagicConstants.php'), $this->astLocator));
         $constant  = $reflector->reflectConstant($constantName);
@@ -683,8 +678,9 @@ PHP;
 
     /**
      * @dataProvider magicConstantsInNamespaceProvider
+     * @param mixed $expectedValue
      */
-    public function testMagicConstantsInNamespace(string $constantName, mixed $expectedValue): void
+    public function testMagicConstantsInNamespace(string $constantName, $expectedValue): void
     {
         $reflector = new DefaultReflector(new SingleFileSourceLocator(realpath(__DIR__ . '/../Fixture/MagicConstants.php'), $this->astLocator));
         $constant  = $reflector->reflectConstant('Roave\BetterReflectionTest\Fixture\\' . $constantName);
@@ -710,8 +706,9 @@ PHP;
 
     /**
      * @dataProvider magicConstantsInTraitProvider
+     * @param mixed $expectedValue
      */
-    public function testMagicConstantsInTrait(string $propertyName, mixed $expectedValue): void
+    public function testMagicConstantsInTrait(string $propertyName, $expectedValue): void
     {
         $reflector = new DefaultReflector(new SingleFileSourceLocator(realpath(__DIR__ . '/../Fixture/MagicConstants.php'), $this->astLocator));
         $class     = $reflector->reflectClass(MagicConstantsTrait::class);
@@ -738,8 +735,9 @@ PHP;
 
     /**
      * @dataProvider magicConstantsInClassProvider
+     * @param mixed $expectedValue
      */
-    public function testMagicConstantsInClass(string $propertyName, mixed $expectedValue): void
+    public function testMagicConstantsInClass(string $propertyName, $expectedValue): void
     {
         $reflector = new DefaultReflector(new SingleFileSourceLocator(realpath(__DIR__ . '/../Fixture/MagicConstants.php'), $this->astLocator));
         $class     = $reflector->reflectClass(MagicConstantsClass::class);
@@ -766,8 +764,9 @@ PHP;
 
     /**
      * @dataProvider magicConstantsInMethodProvider
+     * @param mixed $expectedValue
      */
-    public function testMagicConstantsInMethod(string $parameterName, mixed $expectedValue): void
+    public function testMagicConstantsInMethod(string $parameterName, $expectedValue): void
     {
         $reflector = new DefaultReflector(new SingleFileSourceLocator(realpath(__DIR__ . '/../Fixture/MagicConstants.php'), $this->astLocator));
         $class     = $reflector->reflectClass(MagicConstantsClass::class);
@@ -795,8 +794,9 @@ PHP;
 
     /**
      * @dataProvider magicConstantsInFunctionProvider
+     * @param mixed $expectedValue
      */
-    public function testMagicConstantsInFunction(string $parameterName, mixed $expectedValue): void
+    public function testMagicConstantsInFunction(string $parameterName, $expectedValue): void
     {
         $reflector = new DefaultReflector(new SingleFileSourceLocator(realpath(__DIR__ . '/../Fixture/MagicConstants.php'), $this->astLocator));
         $function  = $reflector->reflectFunction('Roave\BetterReflectionTest\Fixture\magicConstantsFunction');

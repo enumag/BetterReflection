@@ -16,19 +16,19 @@ use function implode;
 class ReflectionUnionType extends ReflectionType
 {
     /** @var list<ReflectionNamedType> */
-    private array $types;
+    private $types;
 
-    public function __construct(
-        Reflector $reflector,
-        ReflectionParameter|ReflectionMethod|ReflectionFunction|ReflectionEnum|ReflectionProperty $owner,
-        UnionType $type,
-    ) {
+    /**
+     * @param \Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     */
+    public function __construct(Reflector $reflector, $owner, UnionType $type)
+    {
         parent::__construct($reflector, $owner);
-
-        $this->types = array_values(array_filter(
-            array_map(static fn (Node\Identifier|Node\Name $type): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType => ReflectionType::createFromNode($reflector, $owner, $type), $type->types),
-            static fn (ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType $type): bool => $type instanceof ReflectionNamedType,
-        ));
+        $this->types = array_values(array_filter(array_map(static function ($type) use ($reflector, $owner) {
+            return ReflectionType::createFromNode($reflector, $owner, $type);
+        }, $type->types), static function ($type) : bool {
+            return $type instanceof ReflectionNamedType;
+        }));
     }
 
     /**
@@ -52,6 +52,8 @@ class ReflectionUnionType extends ReflectionType
 
     public function __toString(): string
     {
-        return implode('|', array_map(static fn (ReflectionType $type): string => $type->__toString(), $this->types));
+        return implode('|', array_map(static function (ReflectionType $type) : string {
+            return $type->__toString();
+        }, $this->types));
     }
 }

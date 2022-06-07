@@ -25,6 +25,8 @@ use Roave\BetterReflection\Reflection\ReflectionEnumCase as BetterReflectionEnum
 use Roave\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
 use Roave\BetterReflection\Reflection\ReflectionProperty as BetterReflectionProperty;
 use Roave\BetterReflection\Util\FileHelper;
+use Roave\BetterReflectionTest\BetterReflectionSingleton;
+use Roave\BetterReflectionTest\ClassesWithPublicOrNonPublicConstructor\ClassWithConstructorAndArguments;
 use Roave\BetterReflectionTest\Fixture\AutoloadableEnum;
 use stdClass;
 
@@ -102,9 +104,6 @@ class ReflectionClassTest extends TestCase
             ['isFinal', [], true, null, true, null],
             ['getModifiers', [], 123, null, 123, null],
             ['isInstance', [new stdClass()], true, null, true, null],
-            ['newInstance', [], null, NotImplemented::class, null, null],
-            ['newInstanceWithoutConstructor', [], null, NotImplemented::class, null, null],
-            ['newInstanceArgs', [], null, NotImplemented::class, null, null],
             ['getParentClass', [], $mockClassLike, null, null, ReflectionClassAdapter::class],
             ['isSubclassOf', ['\stdClass'], true, null, true, null],
             ['getStaticProperties', [], [], null, [], null],
@@ -1080,5 +1079,38 @@ class ReflectionClassTest extends TestCase
         self::assertCount(2, $traits);
         self::assertArrayHasKey('Trait1', $traits);
         self::assertArrayHasKey('Trait2', $traits);
+    }
+
+    public function testNewInstance(): void
+    {
+        require_once __DIR__ . '/../../Fixture/ClassesWithPublicOrNonPublicConstructor.php';
+        $reflector = BetterReflectionSingleton::instance()->reflector();
+        $adapter = new ReflectionClassAdapter($reflector->reflectClass(ClassWithConstructorAndArguments::class));
+        $instance = $adapter->newInstance(1, 2);
+        self::assertInstanceOf(ClassWithConstructorAndArguments::class, $instance);
+        self::assertSame(1, $instance->foo);
+        self::assertSame(2, $instance->bar);
+    }
+
+    public function testNewInstanceWithoutConstructor(): void
+    {
+        require_once __DIR__ . '/../../Fixture/ClassesWithPublicOrNonPublicConstructor.php';
+        $reflector = BetterReflectionSingleton::instance()->reflector();
+        $adapter = new ReflectionClassAdapter($reflector->reflectClass(ClassWithConstructorAndArguments::class));
+        $instance = $adapter->newInstanceWithoutConstructor();
+        self::assertInstanceOf(ClassWithConstructorAndArguments::class, $instance);
+        self::assertNull($instance->foo);
+        self::assertNull($instance->bar);
+    }
+
+    public function testNewInstanceArgs(): void
+    {
+        require_once __DIR__ . '/../../Fixture/ClassesWithPublicOrNonPublicConstructor.php';
+        $reflector = BetterReflectionSingleton::instance()->reflector();
+        $adapter = new ReflectionClassAdapter($reflector->reflectClass(ClassWithConstructorAndArguments::class));
+        $instance = $adapter->newInstanceArgs([1, 2]);
+        self::assertInstanceOf(ClassWithConstructorAndArguments::class, $instance);
+        self::assertSame(1, $instance->foo);
+        self::assertSame(2, $instance->bar);
     }
 }

@@ -21,10 +21,15 @@ use function unserialize;
 final class MemoizingParser implements Parser
 {
     /** @var array<string, string> indexed by source hash */
-    private array $sourceHashToAst = [];
+    private $sourceHashToAst = [];
+    /**
+     * @var \PhpParser\Parser
+     */
+    private $wrappedParser;
 
-    public function __construct(private Parser $wrappedParser)
+    public function __construct(Parser $wrappedParser)
     {
+        $this->wrappedParser = $wrappedParser;
     }
 
     /**

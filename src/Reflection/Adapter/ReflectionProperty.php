@@ -20,10 +20,18 @@ use function array_map;
 
 final class ReflectionProperty extends CoreReflectionProperty
 {
-    private bool $accessible = false;
+    /**
+     * @var bool
+     */
+    private $accessible = false;
+    /**
+     * @var BetterReflectionProperty
+     */
+    private $betterReflectionProperty;
 
-    public function __construct(private BetterReflectionProperty $betterReflectionProperty)
+    public function __construct(BetterReflectionProperty $betterReflectionProperty)
     {
+        $this->betterReflectionProperty = $betterReflectionProperty;
     }
 
     public function __toString(): string
@@ -48,7 +56,7 @@ final class ReflectionProperty extends CoreReflectionProperty
 
         try {
             return $this->betterReflectionProperty->getValue($object);
-        } catch (NoObjectProvided | TypeError) {
+        } catch (NoObjectProvided | TypeError $exception) {
             return null;
         } catch (Throwable $e) {
             throw new CoreReflectionException($e->getMessage(), 0, $e);
@@ -57,8 +65,10 @@ final class ReflectionProperty extends CoreReflectionProperty
 
     /**
      * @psalm-suppress MethodSignatureMismatch
+     * @param mixed $object
+     * @param mixed $value
      */
-    public function setValue(mixed $object, mixed $value = null): void
+    public function setValue($object, $value = null): void
     {
         if (! $this->isAccessible()) {
             throw new CoreReflectionException('Property not accessible');
@@ -66,7 +76,7 @@ final class ReflectionProperty extends CoreReflectionProperty
 
         try {
             $this->betterReflectionProperty->setValue($object, $value);
-        } catch (NoObjectProvided | NotAnObject) {
+        } catch (NoObjectProvided | NotAnObject $exception) {
             return;
         } catch (Throwable $e) {
             throw new CoreReflectionException($e->getMessage(), 0, $e);
@@ -204,7 +214,9 @@ final class ReflectionProperty extends CoreReflectionProperty
             $attributes = $this->betterReflectionProperty->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
+        return array_map(static function (BetterReflectionAttribute $betterReflectionAttribute) {
+            return ReflectionAttributeFactory::create($betterReflectionAttribute);
+        }, $attributes);
     }
 
     public function isReadOnly(): bool

@@ -15,8 +15,9 @@ class InvalidFileInfoTest extends TestCase
 {
     /**
      * @dataProvider nonSplFileInfoProvider
+     * @param mixed $value
      */
-    public function testFromNonSplFileInfo(string $expectedMessage, mixed $value): void
+    public function testFromNonSplFileInfo(string $expectedMessage, $value): void
     {
         $exception = InvalidFileInfo::fromNonSplFileInfo($value);
 

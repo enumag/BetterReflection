@@ -22,41 +22,80 @@ use function is_array;
 
 trait ReflectionFunctionAbstract
 {
-    private ?string $cachedName = null;
+    /**
+     * @var string|null
+     */
+    private $cachedName;
 
-    private string $namespaceName;
+    /**
+     * @var string
+     */
+    private $namespaceName;
 
-    private bool $inNamespace;
+    /**
+     * @var bool
+     */
+    private $inNamespace;
 
     /** @var list<ReflectionParameter> */
-    private array $parameters;
+    private $parameters;
 
-    private string $docComment;
+    /**
+     * @var string
+     */
+    private $docComment;
 
-    private bool $isClosure;
+    /**
+     * @var bool
+     */
+    private $isClosure;
 
-    private bool $isGenerator;
+    /**
+     * @var bool
+     */
+    private $isGenerator;
 
-    private int $startLine;
+    /**
+     * @var int
+     */
+    private $startLine;
 
-    private int $endLine;
+    /**
+     * @var int
+     */
+    private $endLine;
 
-    private int $startColumn;
+    /**
+     * @var int
+     */
+    private $startColumn;
 
-    private int $endColumn;
+    /**
+     * @var int
+     */
+    private $endColumn;
 
-    private bool $byRef;
+    /**
+     * @var bool
+     */
+    private $byRef;
 
-    private Node\Identifier|Node\Name|Node\ComplexType|null $astReturnType;
+    /**
+     * @var \PhpParser\Node\ComplexType|\PhpParser\Node\Identifier|\PhpParser\Node\Name|null
+     */
+    private $astReturnType;
 
-    private ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null $returnType;
+    /**
+     * @var \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     */
+    private $returnType;
 
-    protected function populateTrait(
-        Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node,
-        ?NamespaceNode $declaringNamespace,
-    ): void
+    /**
+     * @param \PhpParser\Node\Expr\ArrowFunction|\PhpParser\Node\Expr\Closure|\PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Stmt\Function_ $node
+     */
+    protected function populateTrait($node, ?NamespaceNode $declaringNamespace): void
     {
-        $this->namespaceName = $declaringNamespace?->name?->toString() ?? '';
+        $this->namespaceName = (($name = ($declaringNamespace2 = $declaringNamespace) ? $declaringNamespace2->name : null) ? $name->toString() : null) ?? '';
         $this->inNamespace = $declaringNamespace !== null
             && $declaringNamespace->name !== null;
         $this->parameters = $this->getParametersInternal($node);
@@ -70,13 +109,11 @@ trait ReflectionFunctionAbstract
         } catch (NoNodePosition $e) {
             $this->startColumn = -1;
         }
-
         try {
             $this->endColumn = CalculateReflectionColumn::getEndColumn($this->locatedSource->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->endColumn = -1;
         }
-
         $this->byRef = $node->byRef;
         $this->astReturnType = $node->getReturnType();
         $this->returnType = $this->createReturnType($node->getReturnType());
@@ -134,10 +171,9 @@ trait ReflectionFunctionAbstract
      */
     public function getNumberOfRequiredParameters(): int
     {
-        return count(array_filter(
-            $this->getParameters(),
-            static fn (ReflectionParameter $p): bool => ! $p->isOptional(),
-        ));
+        return count(array_filter($this->getParameters(), static function (ReflectionParameter $p) : bool {
+            return ! $p->isOptional();
+        }));
     }
 
     /**
@@ -153,21 +189,16 @@ trait ReflectionFunctionAbstract
 
     /**
      * @return list<ReflectionParameter>
+     * @param \PhpParser\Node\Expr\ArrowFunction|\PhpParser\Node\Expr\Closure|\PhpParser\Node\Stmt\ClassMethod|\PhpParser\Node\Stmt\Function_ $node
      */
-    private function getParametersInternal(Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure|Node\Expr\ArrowFunction $node): array
+    private function getParametersInternal($node): array
     {
         $parameters = [];
 
         /** @var list<Node\Param> $nodeParams */
         $nodeParams = $node->params;
         foreach ($nodeParams as $paramIndex => $paramNode) {
-            $parameters[] = ReflectionParameter::createFromNode(
-                $this->reflector,
-                $paramNode,
-                $this,
-                $paramIndex,
-                $this->isParameterOptional($nodeParams, $paramNode, $paramIndex),
-            );
+            $parameters[] = ReflectionParameter::createFromNode($this->reflector, $paramNode, $this, $paramIndex, $this->isParameterOptional($nodeParams, $paramNode, $paramIndex));
         }
 
         return $parameters;
@@ -361,8 +392,9 @@ trait ReflectionFunctionAbstract
 
     /**
      * Get the return type declaration
+     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
      */
-    public function getReturnType(): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
+    public function getReturnType()
     {
         if ($this->hasTentativeReturnType()) {
             return null;
@@ -392,7 +424,10 @@ trait ReflectionFunctionAbstract
         return AnnotationHelper::hasTentativeReturnType($this->getDocComment());
     }
 
-    public function getTentativeReturnType(): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
+    /**
+     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     */
+    public function getTentativeReturnType()
     {
         if (! $this->hasTentativeReturnType()) {
             return null;
@@ -401,7 +436,11 @@ trait ReflectionFunctionAbstract
         return $this->returnType;
     }
 
-    private function createReturnType(Node\Identifier|Node\Name|Node\ComplexType|null $returnType): ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType|null
+    /**
+     * @param \PhpParser\Node\ComplexType|\PhpParser\Node\Identifier|\PhpParser\Node\Name|null $returnType
+     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     */
+    private function createReturnType($returnType)
     {
         assert($returnType instanceof Node\Identifier || $returnType instanceof Node\Name || $returnType instanceof Node\NullableType || $returnType instanceof Node\UnionType || $returnType instanceof Node\IntersectionType || $returnType === null);
 

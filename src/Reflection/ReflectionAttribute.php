@@ -14,25 +14,40 @@ use Roave\BetterReflection\Reflector\Reflector;
 
 class ReflectionAttribute
 {
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
     /** @var array<int|string, Node\Expr> */
-    private array $argumentExprs;
+    private $argumentExprs;
 
     /** @var array<int|string, mixed> */
-    private ?array $cachedArguments = null;
-
-    public function __construct(
-        private Reflector $reflector,
-        Node\Attribute $node,
-        private ReflectionClass|ReflectionMethod|ReflectionFunction|ReflectionClassConstant|ReflectionEnumCase|ReflectionProperty|ReflectionParameter $owner,
-        private bool $isRepeated,
-    ) {
+    private $cachedArguments;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflection\ReflectionClass|\Roave\BetterReflection\Reflection\ReflectionClassConstant|\Roave\BetterReflection\Reflection\ReflectionEnumCase|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty
+     */
+    private $owner;
+    /**
+     * @var bool
+     */
+    private $isRepeated;
+    /**
+     * @param \Roave\BetterReflection\Reflection\ReflectionClass|\Roave\BetterReflection\Reflection\ReflectionClassConstant|\Roave\BetterReflection\Reflection\ReflectionEnumCase|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     */
+    public function __construct(Reflector $reflector, Node\Attribute $node, $owner, bool $isRepeated)
+    {
+        $this->reflector = $reflector;
+        $this->owner = $owner;
+        $this->isRepeated = $isRepeated;
         $this->name = $node->name->toString();
-
         $argumentExprs = [];
         foreach ($node->args as $argNo => $arg) {
-            $argumentExprs[$arg->name?->toString() ?? $argNo] = $arg->value;
+            $argumentExprs[(($argName = $arg->name) ? $argName->toString() : null) ?? $argNo] = $arg->value;
         }
         $this->argumentExprs = $argumentExprs;
     }
@@ -78,16 +93,24 @@ class ReflectionAttribute
 
     public function getTarget(): int
     {
-        return match (true) {
-            $this->owner instanceof ReflectionClass => Attribute::TARGET_CLASS,
-            $this->owner instanceof ReflectionFunction => Attribute::TARGET_FUNCTION,
-            $this->owner instanceof ReflectionMethod => Attribute::TARGET_METHOD,
-            $this->owner instanceof ReflectionProperty => Attribute::TARGET_PROPERTY,
-            $this->owner instanceof ReflectionClassConstant => Attribute::TARGET_CLASS_CONSTANT,
-            $this->owner instanceof ReflectionEnumCase => Attribute::TARGET_CLASS_CONSTANT,
-            $this->owner instanceof ReflectionParameter => Attribute::TARGET_PARAMETER,
-            default => throw new LogicException('unknown owner'), // @phpstan-ignore-line
-        };
+        switch (true) {
+            case $this->owner instanceof ReflectionClass:
+                return Attribute::TARGET_CLASS;
+            case $this->owner instanceof ReflectionFunction:
+                return Attribute::TARGET_FUNCTION;
+            case $this->owner instanceof ReflectionMethod:
+                return Attribute::TARGET_METHOD;
+            case $this->owner instanceof ReflectionProperty:
+                return Attribute::TARGET_PROPERTY;
+            case $this->owner instanceof ReflectionClassConstant:
+                return Attribute::TARGET_CLASS_CONSTANT;
+            case $this->owner instanceof ReflectionEnumCase:
+                return Attribute::TARGET_CLASS_CONSTANT;
+            case $this->owner instanceof ReflectionParameter:
+                return Attribute::TARGET_PARAMETER;
+            default:
+                throw new LogicException('unknown owner');
+        }
     }
 
     public function isRepeated(): bool

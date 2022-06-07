@@ -35,15 +35,18 @@ class ReflectionNamedType extends ReflectionType
         'false'    => null,
     ];
 
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    public function __construct(
-        Reflector $reflector,
-        ReflectionParameter|ReflectionMethod|ReflectionFunction|ReflectionEnum|ReflectionProperty $owner,
-        Identifier|Name $type,
-    ) {
+    /**
+     * @param \Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     * @param \PhpParser\Node\Identifier|\PhpParser\Node\Name $type
+     */
+    public function __construct(Reflector $reflector, $owner, $type)
+    {
         parent::__construct($reflector, $owner);
-
         $this->name = $type->toString();
     }
 

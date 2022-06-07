@@ -21,8 +21,14 @@ use Roave\BetterReflectionTest\BetterReflectionSingleton;
  */
 class DefaultReflectorTest extends TestCase
 {
-    private Reflector $reflector;
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
     public function setUp(): void
     {
@@ -57,9 +63,7 @@ class DefaultReflectorTest extends TestCase
 
     public function testReflectAllClasses(): void
     {
-        $classes = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/ExampleClass.php', $this->astLocator),
-        ))->reflectAllClasses();
+        $classes = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/ExampleClass.php', $this->astLocator)))->reflectAllClasses();
 
         self::assertContainsOnlyInstancesOf(ReflectionClass::class, $classes);
         self::assertCount(10, $classes);
@@ -89,9 +93,7 @@ class DefaultReflectorTest extends TestCase
 
     public function testReflectAllFunction(): void
     {
-        $functions = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Functions.php', $this->astLocator),
-        ))->reflectAllFunctions();
+        $functions = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Functions.php', $this->astLocator)))->reflectAllFunctions();
 
         self::assertContainsOnlyInstancesOf(ReflectionFunction::class, $functions);
         self::assertCount(2, $functions);
@@ -121,9 +123,7 @@ class DefaultReflectorTest extends TestCase
 
     public function testReflectAllConstants(): void
     {
-        $constants = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Constants.php', $this->astLocator),
-        ))->reflectAllConstants();
+        $constants = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Constants.php', $this->astLocator)))->reflectAllConstants();
 
         self::assertContainsOnlyInstancesOf(ReflectionConstant::class, $constants);
         self::assertCount(5, $constants);

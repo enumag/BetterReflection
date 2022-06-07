@@ -27,9 +27,15 @@ use function file_get_contents;
  */
 class ReflectionClassStringCastTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private SourceStubber $sourceStubber;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber
+     */
+    private $sourceStubber;
 
     protected function setUp(): void
     {
@@ -46,10 +52,7 @@ class ReflectionClassStringCastTest extends TestCase
         $reflector       = new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../../Fixture/StringCastClass.php', $this->astLocator));
         $classReflection = $reflector->reflectClass(StringCastClass::class);
 
-        self::assertStringMatchesFormat(
-            file_get_contents(__DIR__ . '/../../Fixture/StringCastClassExpected.txt'),
-            $classReflection->__toString(),
-        );
+        self::assertStringMatchesFormat(file_get_contents(__DIR__ . '/../../Fixture/StringCastClassExpected.txt'), $classReflection->__toString());
     }
 
     /**
@@ -63,10 +66,7 @@ class ReflectionClassStringCastTest extends TestCase
         ]));
         $classReflection = $reflector->reflectClass(StringCastPureEnum::class);
 
-        self::assertStringMatchesFormat(
-            file_get_contents(__DIR__ . '/../../Fixture/StringCastPureEnumExpected.txt'),
-            $classReflection->__toString(),
-        );
+        self::assertStringMatchesFormat(file_get_contents(__DIR__ . '/../../Fixture/StringCastPureEnumExpected.txt'), $classReflection->__toString());
     }
 
     /**
@@ -80,10 +80,7 @@ class ReflectionClassStringCastTest extends TestCase
         ]));
         $classReflection = $reflector->reflectClass(StringCastBackedEnum::class);
 
-        self::assertStringMatchesFormat(
-            file_get_contents(__DIR__ . '/../../Fixture/StringCastBackedEnumExpected.txt'),
-            $classReflection->__toString(),
-        );
+        self::assertStringMatchesFormat(file_get_contents(__DIR__ . '/../../Fixture/StringCastBackedEnumExpected.txt'), $classReflection->__toString());
     }
 
     public function testFinalClassToString(): void
@@ -141,9 +138,6 @@ class ReflectionClassStringCastTest extends TestCase
 
         $objectReflection = ReflectionObject::createFromInstance($object);
 
-        self::assertStringMatchesFormat(
-            file_get_contents(__DIR__ . '/../../Fixture/StringCastClassObjectExpected.txt'),
-            $objectReflection->__toString(),
-        );
+        self::assertStringMatchesFormat(file_get_contents(__DIR__ . '/../../Fixture/StringCastClassObjectExpected.txt'), $objectReflection->__toString());
     }
 }

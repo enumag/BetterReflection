@@ -6,12 +6,12 @@ namespace Roave\BetterReflectionTest\Reflection;
 
 use Attribute;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\ReflectionClass;
-use Roave\BetterReflection\Reflection\ReflectionEnum;
-use Roave\BetterReflection\Reflector\DefaultReflector;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\SourceLocator\Ast\Locator;
-use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
+use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\BetterReflection\Reflection\ReflectionEnum;
+use PHPStan\BetterReflection\Reflector\DefaultReflector;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\SourceLocator\Ast\Locator;
+use PHPStan\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 use Roave\BetterReflectionTest\Fixture\AnotherAttr;
 use Roave\BetterReflectionTest\Fixture\Attr;
@@ -21,16 +21,16 @@ use Roave\BetterReflectionTest\Fixture\ClassWithRepeatedAttributes;
 use Roave\BetterReflectionTest\Fixture\EnumWithAttributes;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\ReflectionAttribute
+ * @covers \PHPStan\BetterReflection\Reflection\ReflectionAttribute
  */
 class ReflectionAttributeTest extends TestCase
 {
     /**
-     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     * @var \PHPStan\BetterReflection\SourceLocator\Ast\Locator
      */
     private $astLocator;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $eflector;
 

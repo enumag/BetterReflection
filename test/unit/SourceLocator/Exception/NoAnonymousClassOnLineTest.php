@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\NoAnonymousClassOnLine;
+use PHPStan\BetterReflection\SourceLocator\Exception\NoAnonymousClassOnLine;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Exception\NoAnonymousClassOnLine
+ * @covers \PHPStan\BetterReflection\SourceLocator\Exception\NoAnonymousClassOnLine
  */
 class NoAnonymousClassOnLineTest extends TestCase
 {

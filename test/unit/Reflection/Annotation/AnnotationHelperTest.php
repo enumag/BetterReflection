@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Annotation;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Annotation\AnnotationHelper;
+use PHPStan\BetterReflection\Reflection\Annotation\AnnotationHelper;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Annotation\AnnotationHelper
+ * @covers \PHPStan\BetterReflection\Reflection\Annotation\AnnotationHelper
  */
 class AnnotationHelperTest extends TestCase
 {

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Type\Composer\Psr;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Identifier\Identifier;
-use Roave\BetterReflection\Identifier\IdentifierType;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping;
+use PHPStan\BetterReflection\Identifier\Identifier;
+use PHPStan\BetterReflection\Identifier\IdentifierType;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping
+ * @covers \PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping
  */
 class Psr4MappingTest extends TestCase
 {

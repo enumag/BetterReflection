@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection\Adapter;
+namespace PHPStan\BetterReflection\Reflection\Adapter;
 
-use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
+use PHPStan\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 
 use const PHP_VERSION_ID;
 
 final class ReflectionAttributeFactory
 {
     /**
-     * @return \Roave\BetterReflection\Reflection\Adapter\FakeReflectionAttribute|\Roave\BetterReflection\Reflection\Adapter\ReflectionAttribute
+     * @return \PHPStan\BetterReflection\Reflection\Adapter\FakeReflectionAttribute|\PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute
      */
     public static function create(BetterReflectionAttribute $betterReflectionAttribute)
     {

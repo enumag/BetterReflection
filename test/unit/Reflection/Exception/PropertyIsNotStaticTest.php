@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\PropertyIsNotStatic;
+use PHPStan\BetterReflection\Reflection\Exception\PropertyIsNotStatic;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\PropertyIsNotStatic
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\PropertyIsNotStatic
  */
 class PropertyIsNotStaticTest extends TestCase
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use Closure;
 use Error;
@@ -13,22 +13,22 @@ use PhpParser\Node\NullableType;
 use PhpParser\Node\Stmt\Property as PropertyNode;
 use ReflectionException;
 use ReflectionProperty as CoreReflectionProperty;
-use Roave\BetterReflection\NodeCompiler\CompiledValue;
-use Roave\BetterReflection\NodeCompiler\CompileNodeToValue;
-use Roave\BetterReflection\NodeCompiler\CompilerContext;
-use Roave\BetterReflection\Reflection\Annotation\AnnotationHelper;
-use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
-use Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist;
-use Roave\BetterReflection\Reflection\Exception\NoObjectProvided;
-use Roave\BetterReflection\Reflection\Exception\NotAnObject;
-use Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
-use Roave\BetterReflection\Reflection\StringCast\ReflectionPropertyStringCast;
-use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\Util\CalculateReflectionColumn;
-use Roave\BetterReflection\Util\ClassExistenceChecker;
-use Roave\BetterReflection\Util\Exception\NoNodePosition;
-use Roave\BetterReflection\Util\GetLastDocComment;
+use PHPStan\BetterReflection\NodeCompiler\CompiledValue;
+use PHPStan\BetterReflection\NodeCompiler\CompileNodeToValue;
+use PHPStan\BetterReflection\NodeCompiler\CompilerContext;
+use PHPStan\BetterReflection\Reflection\Annotation\AnnotationHelper;
+use PHPStan\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
+use PHPStan\BetterReflection\Reflection\Exception\ClassDoesNotExist;
+use PHPStan\BetterReflection\Reflection\Exception\NoObjectProvided;
+use PHPStan\BetterReflection\Reflection\Exception\NotAnObject;
+use PHPStan\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
+use PHPStan\BetterReflection\Reflection\StringCast\ReflectionPropertyStringCast;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
+use PHPStan\BetterReflection\Util\ClassExistenceChecker;
+use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
+use PHPStan\BetterReflection\Util\GetLastDocComment;
 
 use function assert;
 use function func_num_args;
@@ -39,7 +39,7 @@ use function str_contains;
 class ReflectionProperty
 {
     /**
-     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     * @var \PHPStan\BetterReflection\NodeCompiler\CompiledValue|null
      */
     private $compiledDefaultValue;
 
@@ -112,11 +112,11 @@ class ReflectionProperty
     private $allowsNull;
 
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null
      */
     private $type;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
     /**
@@ -124,11 +124,11 @@ class ReflectionProperty
      */
     private $positionInNode;
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionClass
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionClass
      */
     private $declaringClass;
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionClass
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionClass
      */
     private $implementingClass;
     /**
@@ -529,7 +529,7 @@ class ReflectionProperty
      * this property
      *
      * (note: this has nothing to do with DocBlocks).
-     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     * @return \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null
      */
     public function getType()
     {
@@ -537,7 +537,7 @@ class ReflectionProperty
     }
 
     /**
-     * @return \Roave\BetterReflection\Reflection\ReflectionIntersectionType|\Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|null
+     * @return \PHPStan\BetterReflection\Reflection\ReflectionIntersectionType|\PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|null
      */
     private function createType(PropertyNode $node)
     {

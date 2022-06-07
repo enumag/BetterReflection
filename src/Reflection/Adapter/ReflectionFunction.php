@@ -24,8 +24,13 @@ use function func_get_args;
 
 final class ReflectionFunction extends CoreReflectionFunction
 {
-    public function __construct(private BetterReflectionFunction $betterReflectionFunction)
+    /**
+     * @var BetterReflectionFunction
+     */
+    private $betterReflectionFunction;
+    public function __construct(BetterReflectionFunction $betterReflectionFunction)
     {
+        $this->betterReflectionFunction = $betterReflectionFunction;
     }
 
     public function __toString(): string
@@ -152,10 +157,9 @@ final class ReflectionFunction extends CoreReflectionFunction
      */
     public function getParameters(): array
     {
-        return array_map(
-            static fn (BetterReflectionParameter $parameter): ReflectionParameter => new ReflectionParameter($parameter),
-            $this->betterReflectionFunction->getParameters(),
-        );
+        return array_map(static function (BetterReflectionParameter $parameter) : ReflectionParameter {
+            return new ReflectionParameter($parameter);
+        }, $this->betterReflectionFunction->getParameters());
     }
 
     public function hasReturnType(): bool
@@ -285,6 +289,8 @@ final class ReflectionFunction extends CoreReflectionFunction
             $attributes = $this->betterReflectionFunction->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
+        return array_map(static function (BetterReflectionAttribute $betterReflectionAttribute) {
+            return ReflectionAttributeFactory::create($betterReflectionAttribute);
+        }, $attributes);
     }
 }

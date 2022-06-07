@@ -36,7 +36,9 @@ class ReflectionPropertyTest extends TestCase
     {
         $methods = get_class_methods(CoreReflectionProperty::class);
 
-        return array_combine($methods, array_map(static fn (string $i): array => [$i], $methods));
+        return array_combine($methods, array_map(static function (string $i) : array {
+            return [$i];
+        }, $methods));
     }
 
     /**
@@ -80,40 +82,29 @@ class ReflectionPropertyTest extends TestCase
      * @param list<mixed> $args
      *
      * @dataProvider methodExpectationProvider
+     * @param mixed $returnValue
+     * @param mixed $expectedReturnValue
      */
-    public function testAdapterMethods(
-        string $methodName,
-        array $args,
-        mixed $returnValue,
-        ?string $expectedException,
-        mixed $expectedReturnValue,
-        ?string $expectedReturnValueInstance,
-    ): void {
+    public function testAdapterMethods(string $methodName, array $args, $returnValue, ?string $expectedException, $expectedReturnValue, ?string $expectedReturnValueInstance): void
+    {
         $reflectionStub = $this->createMock(BetterReflectionProperty::class);
-
         if ($expectedException === null) {
             $reflectionStub->expects($this->once())
                 ->method($methodName)
                 ->with(...$args)
                 ->willReturn($returnValue);
         }
-
         $adapter = new ReflectionPropertyAdapter($reflectionStub);
-
         if ($expectedException !== null) {
             $this->expectException($expectedException);
         }
-
         $actualReturnValue = $adapter->{$methodName}(...$args);
-
         if ($expectedReturnValue !== null) {
             self::assertSame($expectedReturnValue, $actualReturnValue);
         }
-
         if ($expectedReturnValueInstance === null) {
             return;
         }
-
         if (is_array($actualReturnValue)) {
             self::assertNotEmpty($actualReturnValue);
             self::assertContainsOnlyInstancesOf($expectedReturnValueInstance, $actualReturnValue);
@@ -361,7 +352,7 @@ class ReflectionPropertyTest extends TestCase
             ->willReturn($betterReflectionAttributes);
 
         $reflectionPropertyAdapter = new ReflectionPropertyAdapter($betterReflectionProperty);
-        $attributes                = $reflectionPropertyAdapter->getAttributes();
+        $attributes                = method_exists($reflectionPropertyAdapter, 'getAttributes') ? $reflectionPropertyAdapter->getAttributes() : [];
 
         self::assertCount(2, $attributes);
         self::assertSame('SomeAttribute', $attributes[0]->getName());
@@ -391,7 +382,7 @@ class ReflectionPropertyTest extends TestCase
             ->willReturn($betterReflectionAttributes);
 
         $reflectionPropertyAdapter = new ReflectionPropertyAdapter($betterReflectionProperty);
-        $attributes                = $reflectionPropertyAdapter->getAttributes('SomeAttribute');
+        $attributes                = method_exists($reflectionPropertyAdapter, 'getAttributes') ? $reflectionPropertyAdapter->getAttributes('SomeAttribute') : [];
 
         self::assertCount(1, $attributes);
         self::assertSame('SomeAttribute', $attributes[0]->getName());
@@ -486,9 +477,9 @@ class ReflectionPropertyTest extends TestCase
 
         $reflectionPropertyAdapter = new ReflectionPropertyAdapter($betterReflectionProperty);
 
-        self::assertCount(1, $reflectionPropertyAdapter->getAttributes('ClassName', ReflectionAttributeAdapter::IS_INSTANCEOF));
-        self::assertCount(2, $reflectionPropertyAdapter->getAttributes('ParentClassName', ReflectionAttributeAdapter::IS_INSTANCEOF));
-        self::assertCount(2, $reflectionPropertyAdapter->getAttributes('InterfaceName', ReflectionAttributeAdapter::IS_INSTANCEOF));
+        self::assertCount(1, method_exists($reflectionPropertyAdapter, 'getAttributes') ? $reflectionPropertyAdapter->getAttributes('ClassName', ReflectionAttributeAdapter::IS_INSTANCEOF) : []);
+        self::assertCount(2, method_exists($reflectionPropertyAdapter, 'getAttributes') ? $reflectionPropertyAdapter->getAttributes('ParentClassName', ReflectionAttributeAdapter::IS_INSTANCEOF) : []);
+        self::assertCount(2, method_exists($reflectionPropertyAdapter, 'getAttributes') ? $reflectionPropertyAdapter->getAttributes('InterfaceName', ReflectionAttributeAdapter::IS_INSTANCEOF) : []);
     }
 
     public function testGetAttributesThrowsExceptionForInvalidFlags(): void
@@ -497,6 +488,6 @@ class ReflectionPropertyTest extends TestCase
         $reflectionPropertyAdapter = new ReflectionPropertyAdapter($betterReflectionProperty);
 
         self::expectException(Error::class);
-        $reflectionPropertyAdapter->getAttributes(null, 123);
+        method_exists($reflectionPropertyAdapter, 'getAttributes') ? $reflectionPropertyAdapter->getAttributes(null, 123) : [];
     }
 }

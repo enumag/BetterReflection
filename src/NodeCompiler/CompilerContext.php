@@ -20,12 +20,22 @@ use Roave\BetterReflection\Util\FileHelper;
  */
 class CompilerContext
 {
-    public function __construct(
-        private Reflector $reflector,
-        private ReflectionClass|ReflectionProperty|ReflectionClassConstant|ReflectionEnumCase|ReflectionMethod|ReflectionFunction|ReflectionParameter|ReflectionConstant $contextReflection,
-    ) {
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflection\ReflectionClass|\Roave\BetterReflection\Reflection\ReflectionClassConstant|\Roave\BetterReflection\Reflection\ReflectionConstant|\Roave\BetterReflection\Reflection\ReflectionEnumCase|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty
+     */
+    private $contextReflection;
+    /**
+     * @param \Roave\BetterReflection\Reflection\ReflectionClass|\Roave\BetterReflection\Reflection\ReflectionClassConstant|\Roave\BetterReflection\Reflection\ReflectionConstant|\Roave\BetterReflection\Reflection\ReflectionEnumCase|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty $contextReflection
+     */
+    public function __construct(Reflector $reflector, $contextReflection)
+    {
+        $this->reflector = $reflector;
+        $this->contextReflection = $contextReflection;
     }
-
     public function getReflector(): Reflector
     {
         return $this->reflector;
@@ -42,7 +52,7 @@ class CompilerContext
             return $this->realPath($fileName);
         }
 
-        $fileName = $this->getClass()?->getFileName() ?? $this->getFunction()?->getFileName();
+        $fileName = (($getClass = $this->getClass()) ? $getClass->getFileName() : null) ?? (($getFunction = $this->getFunction()) ? $getFunction->getFileName() : null);
         if ($fileName === null) {
             return null;
         }
@@ -61,7 +71,7 @@ class CompilerContext
             return $this->contextReflection->getNamespaceName();
         }
 
-        return $this->getClass()?->getNamespaceName() ?? $this->getFunction()?->getNamespaceName() ?? '';
+        return (($getClass = $this->getClass()) ? $getClass->getNamespaceName() : null) ?? (($getFunction = $this->getFunction()) ? $getFunction->getNamespaceName() : null) ?? '';
     }
 
     public function getClass(): ?ReflectionClass
@@ -89,7 +99,10 @@ class CompilerContext
         return $this->contextReflection->getImplementingClass();
     }
 
-    public function getFunction(): ReflectionMethod|ReflectionFunction|null
+    /**
+     * @return \Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|null
+     */
+    public function getFunction()
     {
         if ($this->contextReflection instanceof ReflectionMethod) {
             return $this->contextReflection;

@@ -24,59 +24,82 @@ use function is_string;
 
 class ReflectionEnumCase
 {
-    private ?CompiledValue $compiledValue = null;
+    /**
+     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     */
+    private $compiledValue;
 
     /** @var list<ReflectionAttribute> */
-    private array $attributes;
+    private $attributes;
 
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    private ?Expr $expr;
+    /**
+     * @var \PhpParser\Node\Expr|null
+     */
+    private $expr;
 
-    private int $startLine;
+    /**
+     * @var int
+     */
+    private $startLine;
 
-    private int $endLine;
+    /**
+     * @var int
+     */
+    private $endLine;
 
-    private int $startColumn;
+    /**
+     * @var int
+     */
+    private $startColumn;
 
-    private int $endColumn;
+    /**
+     * @var int
+     */
+    private $endColumn;
 
-    private string $docComment;
-
-    private function __construct(
-        private Reflector $reflector,
-        EnumCase $node,
-        private ReflectionEnum $enum,
-    ) {
+    /**
+     * @var string
+     */
+    private $docComment;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflection\ReflectionEnum
+     */
+    private $enum;
+    private function __construct(Reflector $reflector, EnumCase $node, ReflectionEnum $enum)
+    {
+        $this->reflector = $reflector;
+        $this->enum = $enum;
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
         $this->name = $node->name->toString();
         $this->expr = $node->expr;
         $this->startLine = $node->getStartLine();
         $this->endLine = $node->getEndLine();
-
         try {
             $this->startColumn = CalculateReflectionColumn::getStartColumn($this->enum->getLocatedSource()->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->startColumn = -1;
         }
-
         try {
             $this->endColumn = CalculateReflectionColumn::getEndColumn($this->enum->getLocatedSource()->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->endColumn = -1;
         }
-
         $this->docComment = GetLastDocComment::forNode($node);
     }
-
     /**
      * @internal
      */
-    public static function createFromNode(
-        Reflector $reflector,
-        EnumCase $node,
-        ReflectionEnum $enum,
-    ): self {
+    public static function createFromNode(Reflector $reflector, EnumCase $node, ReflectionEnum $enum): self
+    {
         return new self($reflector, $node, $enum);
     }
 
@@ -85,8 +108,9 @@ class ReflectionEnumCase
         return $this->name;
     }
 
-    /** @deprecated Use getValueExpr() */
-    public function getValue(): string|int
+    /** @deprecated Use getValueExpr()
+     * @return int|string */
+    public function getValue()
     {
         $value = $this->getCompiledValue()->value;
         assert(is_string($value) || is_int($value));
@@ -113,10 +137,7 @@ class ReflectionEnumCase
         }
 
         if ($this->compiledValue === null) {
-            $this->compiledValue = (new CompileNodeToValue())->__invoke(
-                $this->expr,
-                new CompilerContext($this->reflector, $this),
-            );
+            $this->compiledValue = (new CompileNodeToValue())->__invoke($this->expr, new CompilerContext($this->reflector, $this));
         }
 
         return $this->compiledValue;

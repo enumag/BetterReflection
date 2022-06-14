@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\TwoClosuresOnSameLine;
+use PHPStan\BetterReflection\SourceLocator\Exception\TwoClosuresOnSameLine;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Exception\TwoClosuresOnSameLine
+ * @covers \PHPStan\BetterReflection\SourceLocator\Exception\TwoClosuresOnSameLine
  */
 class TwoClosuresOnSameLineTest extends TestCase
 {

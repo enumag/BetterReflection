@@ -6,10 +6,10 @@ namespace Roave\BetterReflectionTest\Identifier;
 
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Identifier\IdentifierType;
+use PHPStan\BetterReflection\Identifier\IdentifierType;
 
 /**
- * @covers \Roave\BetterReflection\Identifier\IdentifierType
+ * @covers \PHPStan\BetterReflection\Identifier\IdentifierType
  */
 class IdentifierTypeTest extends TestCase
 {

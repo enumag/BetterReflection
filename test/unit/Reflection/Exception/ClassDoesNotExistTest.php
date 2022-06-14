@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist;
-use Roave\BetterReflection\Reflection\Reflection;
+use PHPStan\BetterReflection\Reflection\Exception\ClassDoesNotExist;
+use PHPStan\BetterReflection\Reflection\Reflection;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\ClassDoesNotExist
  */
 class ClassDoesNotExistTest extends TestCase
 {

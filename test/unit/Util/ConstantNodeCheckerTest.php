@@ -6,11 +6,11 @@ namespace Roave\BetterReflectionTest\Util;
 
 use PhpParser\Node;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\InvalidConstantNode;
-use Roave\BetterReflection\Util\ConstantNodeChecker;
+use PHPStan\BetterReflection\Reflection\Exception\InvalidConstantNode;
+use PHPStan\BetterReflection\Util\ConstantNodeChecker;
 
 /**
- * @covers \Roave\BetterReflection\Util\ConstantNodeChecker
+ * @covers \PHPStan\BetterReflection\Util\ConstantNodeChecker
  */
 class ConstantNodeCheckerTest extends TestCase
 {

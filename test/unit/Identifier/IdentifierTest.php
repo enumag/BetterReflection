@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Identifier;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Identifier\Exception\InvalidIdentifierName;
-use Roave\BetterReflection\Identifier\Identifier;
-use Roave\BetterReflection\Identifier\IdentifierType;
-use Roave\BetterReflection\Reflection\ReflectionClass;
-use Roave\BetterReflection\Reflection\ReflectionFunction;
+use PHPStan\BetterReflection\Identifier\Exception\InvalidIdentifierName;
+use PHPStan\BetterReflection\Identifier\Identifier;
+use PHPStan\BetterReflection\Identifier\IdentifierType;
+use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\BetterReflection\Reflection\ReflectionFunction;
 
 /**
- * @covers \Roave\BetterReflection\Identifier\Identifier
+ * @covers \PHPStan\BetterReflection\Identifier\Identifier
  */
 class IdentifierTest extends TestCase
 {

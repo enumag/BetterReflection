@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\FunctionDoesNotExist;
+use PHPStan\BetterReflection\Reflection\Exception\FunctionDoesNotExist;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\FunctionDoesNotExist
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\FunctionDoesNotExist
  */
 class FunctionDoesNotExistTest extends TestCase
 {

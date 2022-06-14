@@ -14,8 +14,18 @@ use function strtolower;
  */
 final class ReflectionNamedType extends CoreReflectionNamedType
 {
-    public function __construct(private BetterReflectionNamedType $betterReflectionType, private bool $allowsNull)
+    /**
+     * @var BetterReflectionNamedType
+     */
+    private $betterReflectionType;
+    /**
+     * @var bool
+     */
+    private $allowsNull;
+    public function __construct(BetterReflectionNamedType $betterReflectionType, bool $allowsNull)
     {
+        $this->betterReflectionType = $betterReflectionType;
+        $this->allowsNull = $allowsNull;
     }
 
     public function getName(): string

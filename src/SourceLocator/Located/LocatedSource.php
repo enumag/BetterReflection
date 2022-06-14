@@ -16,14 +16,27 @@ use Roave\BetterReflection\Util\FileHelper;
  */
 class LocatedSource
 {
-    private ?string $filename;
+    /**
+     * @var string|null
+     */
+    private $filename;
+    /**
+     * @var string
+     */
+    private $source;
+    /**
+     * @var string|null
+     */
+    private $name;
 
     /**
      * @throws InvalidArgumentException
      * @throws InvalidFileLocation
      */
-    public function __construct(private string $source, private ?string $name, ?string $filename = null)
+    public function __construct(string $source, ?string $name, ?string $filename = null)
     {
+        $this->source = $source;
+        $this->name = $name;
         if ($filename !== null) {
             FileChecker::assertReadableFile($filename);
 

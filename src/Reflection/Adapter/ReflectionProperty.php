@@ -24,8 +24,13 @@ use function sprintf;
 
 final class ReflectionProperty extends CoreReflectionProperty
 {
-    public function __construct(private BetterReflectionProperty $betterReflectionProperty)
+    /**
+     * @var BetterReflectionProperty
+     */
+    private $betterReflectionProperty;
+    public function __construct(BetterReflectionProperty $betterReflectionProperty)
     {
+        $this->betterReflectionProperty = $betterReflectionProperty;
         unset($this->name);
         unset($this->class);
     }
@@ -48,7 +53,7 @@ final class ReflectionProperty extends CoreReflectionProperty
     {
         try {
             return $this->betterReflectionProperty->getValue($object);
-        } catch (NoObjectProvided | TypeError) {
+        } catch (NoObjectProvided | TypeError $exception) {
             return null;
         } catch (Throwable $e) {
             throw new CoreReflectionException($e->getMessage(), 0, $e);
@@ -57,14 +62,15 @@ final class ReflectionProperty extends CoreReflectionProperty
 
     /**
      * @psalm-suppress MethodSignatureMismatch
-     */
-    public function setValue(mixed $objectOrValue, mixed $value = null): void
+     * @param mixed $objectOrValue
+     * @param mixed $value*/
+    public function setValue($objectOrValue, $value = null): void
     {
         try {
             $this->betterReflectionProperty->setValue($objectOrValue, $value);
-        } catch (NoObjectProvided) {
+        } catch (NoObjectProvided $exception) {
             throw new ArgumentCountError('ReflectionProperty::setValue() expects exactly 2 arguments, 1 given');
-        } catch (NotAnObject) {
+        } catch (NotAnObject $exception) {
             throw new TypeError(sprintf('ReflectionProperty::setValue(): Argument #1 ($objectOrValue) must be of type object, %s given', gettype($objectOrValue)));
         } catch (Throwable $e) {
             throw new CoreReflectionException($e->getMessage(), 0, $e);
@@ -203,7 +209,9 @@ final class ReflectionProperty extends CoreReflectionProperty
             $attributes = $this->betterReflectionProperty->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
+        return array_map(static function (BetterReflectionAttribute $betterReflectionAttribute) {
+            return ReflectionAttributeFactory::create($betterReflectionAttribute);
+        }, $attributes);
     }
 
     public function isReadOnly(): bool
@@ -211,7 +219,10 @@ final class ReflectionProperty extends CoreReflectionProperty
         return $this->betterReflectionProperty->isReadOnly();
     }
 
-    public function __get(string $name): mixed
+    /**
+     * @return mixed
+     */
+    public function __get(string $name)
     {
         if ($name === 'name') {
             return $this->betterReflectionProperty->getName();

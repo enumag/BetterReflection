@@ -26,11 +26,6 @@ parameters:
 			path: src/Reflection/ReflectionClass.php
 
 		-
-			message: "#^Using nullsafe method call on non\\-nullable type PhpParser\\\\Node\\\\Name\\. Use \\-\\> instead\\.$#"
-			count: 1
-			path: src/Reflection/ReflectionClass.php
-
-		-
 			message: "#^Trying to invoke string but it might not be a callable\\.$#"
 			count: 2
 			path: src/Reflection/ReflectionFunction.php
@@ -59,6 +54,16 @@ parameters:
 			message: "#^Parameter \\#1 \\$code of method PhpParser\\\\Parser\\:\\:parse\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: src/SourceLocator/SourceStubber/PhpStormStubsSourceStubber.php
+
+		-
+			message: "#^Result of && is always false\\.$#"
+			count: 1
+			path: src/SourceLocator/SourceStubber/ReflectionSourceStubber.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
+			count: 1
+			path: src/SourceLocator/SourceStubber/ReflectionSourceStubber.php
 
 		-
 			message: "#^Parameter \\#1 \\$code of method PhpParser\\\\Parser\\:\\:parse\\(\\) expects string, string\\|false given\\.$#"
@@ -166,11 +171,6 @@ parameters:
 			path: test/unit/NodeCompiler/CompileNodeToValueTest.php
 
 		-
-			message: "#^You should use assertCount\\(\\$expectedCount, \\$variable\\) instead of assertSame\\(\\$expectedCount, \\$variable\\-\\>count\\(\\)\\)\\.$#"
-			count: 1
-			path: test/unit/NodeCompiler/CompileNodeToValueTest.php
-
-		-
 			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
 			count: 1
 			path: test/unit/Reflection/Adapter/ReflectionAttributeTest.php
@@ -226,6 +226,11 @@ parameters:
 			path: test/unit/Reflection/Adapter/ReflectionIntersectionTypeTest.php
 
 		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertSame\\(\\) with 'DeclaringClass' and class\\-string will always evaluate to false\\.$#"
+			count: 1
+			path: test/unit/Reflection/Adapter/ReflectionMethodTest.php
+
+		-
 			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
 			count: 1
 			path: test/unit/Reflection/Adapter/ReflectionMethodTest.php
@@ -261,6 +266,11 @@ parameters:
 			path: test/unit/Reflection/Adapter/ReflectionParameterTest.php
 
 		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertSame\\(\\) with 'DeclaringClass' and class\\-string will always evaluate to false\\.$#"
+			count: 1
+			path: test/unit/Reflection/Adapter/ReflectionPropertyTest.php
+
+		-
 			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
 			count: 1
 			path: test/unit/Reflection/Adapter/ReflectionPropertyTest.php
@@ -274,6 +284,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$exception of method PHPUnit\\\\Framework\\\\TestCase\\:\\:expectException\\(\\) expects class\\-string\\<Throwable\\>, string given\\.$#"
 			count: 1
 			path: test/unit/Reflection/Adapter/ReflectionUnionTypeTest.php
+
+		-
+			message: "#^Access to an undefined property PhpParser\\\\Node\\\\Stmt\\:\\:\\$expr\\.$#"
+			count: 1
+			path: test/unit/Reflection/ReflectionClassTest.php
 
 		-
 			message: "#^Cannot access offset 0 on iterable\\<int, PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionClass\\>\\.$#"
@@ -296,14 +311,9 @@ parameters:
 			path: test/unit/Reflection/ReflectionClassTest.php
 
 		-
-			message: "#^Access to an undefined property PhpParser\\\\Node\\\\Arg\\|PhpParser\\\\Node\\\\VariadicPlaceholder\\:\\:\\$value\\.$#"
+			message: "#^Parameter \\#2 \\$node of static method PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionClass\\:\\:createFromNode\\(\\) expects PhpParser\\\\Node\\\\Stmt\\\\Class_\\|PhpParser\\\\Node\\\\Stmt\\\\Enum_\\|PhpParser\\\\Node\\\\Stmt\\\\Interface_\\|PhpParser\\\\Node\\\\Stmt\\\\Trait_, PhpParser\\\\Node\\\\Expr\\|PhpParser\\\\Node\\\\Name\\|PhpParser\\\\Node\\\\Stmt\\\\Class_ given\\.$#"
 			count: 1
-			path: test/unit/Reflection/ReflectionConstantTest.php
-
-		-
-			message: "#^Binary operation \"\\+\" between 0\\|0\\.0\\|''\\|'0'\\|array\\{\\}\\|false\\|null and 3 results in an error\\.$#"
-			count: 1
-			path: test/unit/Reflection/ReflectionFunctionAbstractTest.php
+			path: test/unit/Reflection/ReflectionClassTest.php
 
 		-
 			message: "#^Call to an undefined method PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionIntersectionType\\|PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionNamedType\\|PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionUnionType\\:\\:isBuiltin\\(\\)\\.$#"
@@ -316,19 +326,9 @@ parameters:
 			path: test/unit/Reflection/ReflectionNamedTypeTest.php
 
 		-
-			message: "#^Method Roave\\\\BetterReflectionTest\\\\Reflection\\\\ReflectionObjectTest\\:\\:reflectionClassMethodProvider\\(\\) should return array\\<string, array\\{string\\}\\> but returns array\\<int\\|string, array\\{mixed\\}\\>\\.$#"
-			count: 1
-			path: test/unit/Reflection/ReflectionObjectTest.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of static method PHPStan\\\\BetterReflection\\\\Util\\\\FileHelper\\:\\:normalizeWindowsPath\\(\\) expects string, string\\|false given\\.$#"
 			count: 2
 			path: test/unit/Reflection/ReflectionObjectTest.php
-
-		-
-			message: "#^Access to an undefined property PhpParser\\\\Node\\\\Expr\\\\Error\\|PhpParser\\\\Node\\\\Expr\\\\Variable\\:\\:\\$name\\.$#"
-			count: 1
-			path: test/unit/Reflection/ReflectionParameterTest.php
 
 		-
 			message: "#^Call to an undefined method PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionIntersectionType\\|PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionNamedType\\|PHPStan\\\\BetterReflection\\\\Reflection\\\\ReflectionUnionType\\:\\:isBuiltin\\(\\)\\.$#"

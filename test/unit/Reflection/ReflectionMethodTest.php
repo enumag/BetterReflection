@@ -55,11 +55,20 @@ use function basename;
  */
 class ReflectionMethodTest extends TestCase
 {
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private SourceStubber $sourceStubber;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber
+     */
+    private $sourceStubber;
 
     public function setUp(): void
     {
@@ -115,18 +124,10 @@ class ReflectionMethodTest extends TestCase
     /**
      * @dataProvider visibilityProvider
      */
-    public function testVisibilityOfMethods(
-        string $methodName,
-        bool $shouldBePublic,
-        bool $shouldBePrivate,
-        bool $shouldBeProtected,
-        bool $shouldBeFinal,
-        bool $shouldBeAbstract,
-        bool $shouldBeStatic,
-    ): void {
+    public function testVisibilityOfMethods(string $methodName, bool $shouldBePublic, bool $shouldBePrivate, bool $shouldBeProtected, bool $shouldBeFinal, bool $shouldBeAbstract, bool $shouldBeStatic): void
+    {
         $classInfo        = $this->reflector->reflectClass(Methods::class);
         $reflectionMethod = $classInfo->getMethod($methodName);
-
         self::assertSame($shouldBePublic, $reflectionMethod->isPublic());
         self::assertSame($shouldBePrivate, $reflectionMethod->isPrivate());
         self::assertSame($shouldBeProtected, $reflectionMethod->isProtected());
@@ -307,10 +308,7 @@ class ReflectionMethodTest extends TestCase
         $method    = $classInfo->getMethod($methodName);
 
         self::assertSame($expectedModifier, $method->getModifiers());
-        self::assertSame(
-            $expectedModifierNames,
-            Reflection::getModifierNames($method->getModifiers()),
-        );
+        self::assertSame($expectedModifierNames, Reflection::getModifierNames($method->getModifiers()));
     }
 
     /**
@@ -712,10 +710,7 @@ PHP;
         $classReflection  = $reflector->reflectClass('Bar');
         $methodReflection = $classReflection->getMethod('method');
 
-        self::assertStringMatchesFormat(
-            '%Aclass Foo%A{%A}%A',
-            $methodReflection->getLocatedSource()->getSource(),
-        );
+        self::assertStringMatchesFormat('%Aclass Foo%A{%A}%A', $methodReflection->getLocatedSource()->getSource());
     }
 
     public function testLocatedSourceForTraitMethod(): void
@@ -748,10 +743,7 @@ PHP;
         $classReflection  = $reflector->reflectClass('Bar');
         $methodReflection = $classReflection->getMethod('method');
 
-        self::assertStringMatchesFormat(
-            '%Atrait Foo%A{%A}%A',
-            $methodReflection->getLocatedSource()->getSource(),
-        );
+        self::assertStringMatchesFormat('%Atrait Foo%A{%A}%A', $methodReflection->getLocatedSource()->getSource());
     }
 
     public function testUnionTypeWithNullDefaultValue(): void

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection\Adapter;
+namespace PHPStan\BetterReflection\Reflection\Adapter;
 
 use OutOfBoundsException;
 use PhpParser\Node\Expr;
@@ -10,9 +10,9 @@ use ReflectionClass as CoreReflectionClass;
 use ReflectionFunctionAbstract as CoreReflectionFunctionAbstract;
 use ReflectionParameter as CoreReflectionParameter;
 use ReturnTypeWillChange;
-use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
-use Roave\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
-use Roave\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
+use PHPStan\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
+use PHPStan\BetterReflection\Reflection\ReflectionMethod as BetterReflectionMethod;
+use PHPStan\BetterReflection\Reflection\ReflectionParameter as BetterReflectionParameter;
 use ValueError;
 
 use function array_map;

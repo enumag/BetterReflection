@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Util\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\Exception\InvalidNodePosition;
+use PHPStan\BetterReflection\Util\Exception\InvalidNodePosition;
 
 /**
- * @covers \Roave\BetterReflection\Util\Exception\InvalidNodePosition
+ * @covers \PHPStan\BetterReflection\Util\Exception\InvalidNodePosition
  */
 class InvalidNodePositionTest extends TestCase
 {

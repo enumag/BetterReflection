@@ -41,20 +41,9 @@ final class UnableToCompileNodeTest extends TestCase
     {
         $className = 'SomeClassThatCannotBeFound';
 
-        $exception = UnableToCompileNode::becauseOfClassCannotBeLoaded(
-            $context,
-            new New_(new Name($className)),
-            $className,
-        );
+        $exception = UnableToCompileNode::becauseOfClassCannotBeLoaded($context, new New_(new Name($className)), $className);
 
-        self::assertStringContainsString(
-            sprintf(
-                'Cound not load class "%s" while evaluating expression in %s in file',
-                $className,
-                $contextName,
-            ),
-            $exception->getMessage(),
-        );
+        self::assertStringContainsString(sprintf('Cound not load class "%s" while evaluating expression in %s in file', $className, $contextName), $exception->getMessage());
     }
 
     /** @dataProvider supportedContextTypes */
@@ -62,20 +51,9 @@ final class UnableToCompileNodeTest extends TestCase
     {
         $constantName = 'FOO';
 
-        $exception = UnableToCompileNode::becauseOfNotFoundConstantReference(
-            $context,
-            new ConstFetch(new Name($constantName)),
-            $constantName,
-        );
+        $exception = UnableToCompileNode::becauseOfNotFoundConstantReference($context, new ConstFetch(new Name($constantName)), $constantName);
 
-        self::assertStringContainsString(
-            sprintf(
-                'Could not locate constant "%s" while evaluating expression in %s in file',
-                $constantName,
-                $contextName,
-            ),
-            $exception->getMessage(),
-        );
+        self::assertStringContainsString(sprintf('Could not locate constant "%s" while evaluating expression in %s in file', $constantName, $contextName), $exception->getMessage());
 
         self::assertSame($constantName, $exception->constantName());
     }
@@ -90,53 +68,21 @@ final class UnableToCompileNodeTest extends TestCase
             ->method('getName')
             ->willReturn('An\\Example');
 
-        self::assertStringContainsString(
-            sprintf(
-                'Could not locate constant An\Example::SOME_CONSTANT while trying to evaluate constant expression in %s in file',
-                $contextName,
-            ),
-            UnableToCompileNode::becauseOfNotFoundClassConstantReference(
-                $context,
-                $targetClass,
-                new ClassConstFetch(
-                    new Name\FullyQualified('A'),
-                    new Identifier('SOME_CONSTANT'),
-                ),
-            )->getMessage(),
-        );
+        self::assertStringContainsString(sprintf('Could not locate constant An\Example::SOME_CONSTANT while trying to evaluate constant expression in %s in file', $contextName), UnableToCompileNode::becauseOfNotFoundClassConstantReference($context, $targetClass, new ClassConstFetch(new Name\FullyQualified('A'), new Identifier('SOME_CONSTANT')))->getMessage());
     }
 
     /** @dataProvider supportedContextTypes */
     public function testForUnRecognizedExpressionInContext(CompilerContext $context, string $contextName): void
     {
-        self::assertStringContainsString(
-            sprintf(
-                'Unable to compile expression in %s: unrecognized node type %s in file',
-                $contextName,
-                Yield_::class,
-            ),
-            UnableToCompileNode::forUnRecognizedExpressionInContext(
-                new Yield_(new String_('')),
-                $context,
-            )->getMessage(),
-        );
+        self::assertStringContainsString(sprintf('Unable to compile expression in %s: unrecognized node type %s in file', $contextName, Yield_::class), UnableToCompileNode::forUnRecognizedExpressionInContext(new Yield_(new String_('')), $context)->getMessage());
     }
 
     /** @dataProvider supportedContextTypes */
     public function testBecauseOfMissingFileName(CompilerContext $context, string $contextName): void
     {
-        $exception = UnableToCompileNode::becauseOfMissingFileName(
-            $context,
-            new File(),
-        );
+        $exception = UnableToCompileNode::becauseOfMissingFileName($context, new File());
 
-        self::assertSame(
-            sprintf(
-                'No file name for %s (line -1)',
-                $contextName,
-            ),
-            $exception->getMessage(),
-        );
+        self::assertSame(sprintf('No file name for %s (line -1)', $contextName), $exception->getMessage());
     }
 
     /** @return list<array{0: CompilerContext, 1: string}> */

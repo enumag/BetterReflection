@@ -25,8 +25,14 @@ use Roave\BetterReflectionTest\Fixture\EnumWithAttributes;
  */
 class ReflectionAttributeTest extends TestCase
 {
-    private Locator $astLocator;
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
     public function setUp(): void
     {

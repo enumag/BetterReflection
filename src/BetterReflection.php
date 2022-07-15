@@ -27,35 +27,63 @@ use const PHP_VERSION_ID;
 
 final class BetterReflection
 {
-    public static int $phpVersion = PHP_VERSION_ID;
+    /**
+     * @var int
+     */
+    public static $phpVersion = PHP_VERSION_ID;
 
-    private static ?SourceLocator $sharedSourceLocator = null;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Type\SourceLocator|null
+     */
+    private static $sharedSourceLocator;
 
-    private ?SourceLocator $sourceLocator = null;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Type\SourceLocator|null
+     */
+    private $sourceLocator;
 
-    private static ?Reflector $sharedReflector = null;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector|null
+     */
+    private static $sharedReflector;
 
-    private ?Reflector $reflector = null;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector|null
+     */
+    private $reflector;
 
-    private static ?Parser $sharedPhpParser = null;
+    /**
+     * @var \PhpParser\Parser|null
+     */
+    private static $sharedPhpParser;
 
-    private ?Parser $phpParser = null;
+    /**
+     * @var \PhpParser\Parser|null
+     */
+    private $phpParser;
 
-    private ?AstLocator $astLocator = null;
+    /**
+     * @var AstLocator|null
+     */
+    private $astLocator;
 
-    private ?FindReflectionOnLine $findReflectionOnLine = null;
+    /**
+     * @var \Roave\BetterReflection\Util\FindReflectionOnLine|null
+     */
+    private $findReflectionOnLine;
 
-    private static ?SourceStubber $sharedSourceStubber = null;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber|null
+     */
+    private static $sharedSourceStubber;
 
-    private ?SourceStubber $sourceStubber = null;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber|null
+     */
+    private $sourceStubber;
 
-    public static function populate(
-        int $phpVersion,
-        SourceLocator $sourceLocator,
-        Reflector $classReflector,
-        Parser $phpParser,
-        SourceStubber $sourceStubber,
-    ): void {
+    public static function populate(int $phpVersion, SourceLocator $sourceLocator, Reflector $classReflector, Parser $phpParser, SourceStubber $sourceStubber): void
+    {
         self::$phpVersion          = $phpVersion;
         self::$sharedSourceLocator = $sourceLocator;
         self::$sharedReflector     = $classReflector;
@@ -93,11 +121,9 @@ final class BetterReflection
     public function phpParser(): Parser
     {
         return $this->phpParser
-            ?? $this->phpParser = new MemoizingParser(
-                (new ParserFactory())->create(ParserFactory::ONLY_PHP7, new Emulative([
-                    'usedAttributes' => ['comments', 'startLine', 'endLine', 'startFilePos', 'endFilePos'],
-                ])),
-            );
+            ?? $this->phpParser = new MemoizingParser((new ParserFactory())->create(ParserFactory::ONLY_PHP7, new Emulative([
+                'usedAttributes' => ['comments', 'startLine', 'endLine', 'startFilePos', 'endFilePos'],
+            ])));
     }
 
     public function astLocator(): AstLocator
@@ -115,9 +141,6 @@ final class BetterReflection
     public function sourceStubber(): SourceStubber
     {
         return $this->sourceStubber
-            ?? $this->sourceStubber = new AggregateSourceStubber(
-                new PhpStormStubsSourceStubber($this->phpParser(), self::$phpVersion),
-                new ReflectionSourceStubber(),
-            );
+            ?? $this->sourceStubber = new AggregateSourceStubber(new PhpStormStubsSourceStubber($this->phpParser(), self::$phpVersion), new ReflectionSourceStubber());
     }
 }

@@ -22,10 +22,18 @@ use function strtolower;
  */
 class Locator
 {
-    private FindReflectionsInTree $findReflectionsInTree;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\FindReflectionsInTree
+     */
+    private $findReflectionsInTree;
+    /**
+     * @var \PhpParser\Parser
+     */
+    private $parser;
 
-    public function __construct(private Parser $parser)
+    public function __construct(Parser $parser)
     {
+        $this->parser = $parser;
         $this->findReflectionsInTree = new FindReflectionsInTree(new NodeToReflection());
     }
 
@@ -33,20 +41,9 @@ class Locator
      * @throws IdentifierNotFound
      * @throws Exception\ParseToAstFailure
      */
-    public function findReflection(
-        Reflector $reflector,
-        LocatedSource $locatedSource,
-        Identifier $identifier,
-    ): Reflection {
-        return $this->findInArray(
-            $this->findReflectionsOfType(
-                $reflector,
-                $locatedSource,
-                $identifier->getType(),
-            ),
-            $identifier,
-            $locatedSource->getName(),
-        );
+    public function findReflection(Reflector $reflector, LocatedSource $locatedSource, Identifier $identifier): Reflection
+    {
+        return $this->findInArray($this->findReflectionsOfType($reflector, $locatedSource, $identifier->getType()), $identifier, $locatedSource->getName());
     }
 
     /**
@@ -56,21 +53,13 @@ class Locator
      *
      * @throws Exception\ParseToAstFailure
      */
-    public function findReflectionsOfType(
-        Reflector $reflector,
-        LocatedSource $locatedSource,
-        IdentifierType $identifierType,
-    ): array {
+    public function findReflectionsOfType(Reflector $reflector, LocatedSource $locatedSource, IdentifierType $identifierType): array
+    {
         try {
             /** @var list<Node\Stmt> $ast */
             $ast = $this->parser->parse($locatedSource->getSource());
 
-            return $this->findReflectionsInTree->__invoke(
-                $reflector,
-                $ast,
-                $identifierType,
-                $locatedSource,
-            );
+            return $this->findReflectionsInTree->__invoke($reflector, $ast, $identifierType, $locatedSource);
         } catch (Throwable $exception) {
             throw Exception\ParseToAstFailure::fromLocatedSource($locatedSource, $exception);
         }

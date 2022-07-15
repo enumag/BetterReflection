@@ -7,7 +7,7 @@ namespace Roave\BetterReflectionTest\Util;
 use Closure;
 use IteratorAggregate;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\ClassExistenceChecker;
+use PHPStan\BetterReflection\Util\ClassExistenceChecker;
 use Roave\BetterReflectionTest\Fixture\ExampleClass;
 use Roave\BetterReflectionTest\Fixture\ExampleInterface;
 use Roave\BetterReflectionTest\Fixture\ExampleTrait;
@@ -18,7 +18,7 @@ use function spl_autoload_register;
 use function spl_autoload_unregister;
 
 /**
- * @covers \Roave\BetterReflection\Util\ClassExistenceChecker
+ * @covers \PHPStan\BetterReflection\Util\ClassExistenceChecker
  */
 class ClassExistenceCheckerTest extends TestCase
 {

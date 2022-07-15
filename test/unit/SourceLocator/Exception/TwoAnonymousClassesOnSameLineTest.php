@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\TwoAnonymousClassesOnSameLine;
+use PHPStan\BetterReflection\SourceLocator\Exception\TwoAnonymousClassesOnSameLine;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Exception\TwoAnonymousClassesOnSameLine
+ * @covers \PHPStan\BetterReflection\SourceLocator\Exception\TwoAnonymousClassesOnSameLine
  */
 class TwoAnonymousClassesOnSameLineTest extends TestCase
 {

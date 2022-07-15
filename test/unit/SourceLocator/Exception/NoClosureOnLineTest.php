@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\NoClosureOnLine;
+use PHPStan\BetterReflection\SourceLocator\Exception\NoClosureOnLine;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Exception\NoClosureOnLine
+ * @covers \PHPStan\BetterReflection\SourceLocator\Exception\NoClosureOnLine
  */
 class NoClosureOnLineTest extends TestCase
 {

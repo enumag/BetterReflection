@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use Closure;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Namespace_ as NamespaceNode;
-use Roave\BetterReflection\BetterReflection;
-use Roave\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
-use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
-use Roave\BetterReflection\Reflection\Exception\FunctionDoesNotExist;
-use Roave\BetterReflection\Reflection\StringCast\ReflectionFunctionStringCast;
-use Roave\BetterReflection\Reflector\DefaultReflector;
-use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\SourceLocator\Located\LocatedSource;
-use Roave\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
-use Roave\BetterReflection\SourceLocator\Type\ClosureSourceLocator;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\Reflection\Adapter\Exception\NotImplemented;
+use PHPStan\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
+use PHPStan\BetterReflection\Reflection\Exception\FunctionDoesNotExist;
+use PHPStan\BetterReflection\Reflection\StringCast\ReflectionFunctionStringCast;
+use PHPStan\BetterReflection\Reflector\DefaultReflector;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\SourceLocator\Located\LocatedSource;
+use PHPStan\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\ClosureSourceLocator;
 
 use function assert;
 use function function_exists;
@@ -41,11 +41,11 @@ class ReflectionFunction implements Reflection
      */
     private $isStatic;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
     /**
-     * @var \Roave\BetterReflection\SourceLocator\Located\LocatedSource
+     * @var \PHPStan\BetterReflection\SourceLocator\Located\LocatedSource
      */
     private $locatedSource;
     /**

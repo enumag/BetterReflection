@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\InvalidDirectory;
+use PHPStan\BetterReflection\SourceLocator\Exception\InvalidDirectory;
 use stdClass;
 
 use function sprintf;
@@ -13,7 +13,7 @@ use function sys_get_temp_dir;
 use function uniqid;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Exception\InvalidDirectory
+ * @covers \PHPStan\BetterReflection\SourceLocator\Exception\InvalidDirectory
  */
 class InvalidDirectoryTest extends TestCase
 {

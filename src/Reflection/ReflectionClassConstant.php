@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use PhpParser\Node\Expr;
 use PhpParser\Node\Stmt\ClassConst;
 use ReflectionClassConstant as CoreReflectionClassConstant;
-use Roave\BetterReflection\BetterReflection;
-use Roave\BetterReflection\NodeCompiler\CompiledValue;
-use Roave\BetterReflection\NodeCompiler\CompileNodeToValue;
-use Roave\BetterReflection\NodeCompiler\CompilerContext;
-use Roave\BetterReflection\Reflection\Annotation\AnnotationHelper;
-use Roave\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
-use Roave\BetterReflection\Reflection\StringCast\ReflectionClassConstantStringCast;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\Util\CalculateReflectionColumn;
-use Roave\BetterReflection\Util\Exception\NoNodePosition;
-use Roave\BetterReflection\Util\GetLastDocComment;
+use PHPStan\BetterReflection\BetterReflection;
+use PHPStan\BetterReflection\NodeCompiler\CompiledValue;
+use PHPStan\BetterReflection\NodeCompiler\CompileNodeToValue;
+use PHPStan\BetterReflection\NodeCompiler\CompilerContext;
+use PHPStan\BetterReflection\Reflection\Annotation\AnnotationHelper;
+use PHPStan\BetterReflection\Reflection\Attribute\ReflectionAttributeHelper;
+use PHPStan\BetterReflection\Reflection\StringCast\ReflectionClassConstantStringCast;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
+use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
+use PHPStan\BetterReflection\Util\GetLastDocComment;
 
 class ReflectionClassConstant
 {
     public const IS_FINAL = 32;
 
     /**
-     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     * @var \PHPStan\BetterReflection\NodeCompiler\CompiledValue|null
      */
     private $compiledValue;
 
@@ -86,11 +86,11 @@ class ReflectionClassConstant
      */
     private $endColumn;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionClass
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionClass
      */
     private $owner;
     /**

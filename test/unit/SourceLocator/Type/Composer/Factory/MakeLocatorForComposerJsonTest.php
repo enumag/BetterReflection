@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Type\Composer\Factory;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\FailedToParseJson;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\InvalidProjectDirectory;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\MissingComposerJson;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Factory\MakeLocatorForComposerJson;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Psr\Psr0Mapping;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping;
-use Roave\BetterReflection\SourceLocator\Type\Composer\PsrAutoloaderLocator;
-use Roave\BetterReflection\SourceLocator\Type\DirectoriesSourceLocator;
-use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
-use Roave\BetterReflection\SourceLocator\Type\SourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\AggregateSourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\FailedToParseJson;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\InvalidProjectDirectory;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\Exception\MissingComposerJson;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\MakeLocatorForComposerJson;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Psr0Mapping;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Psr4Mapping;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\PsrAutoloaderLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\DirectoriesSourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\SourceLocator;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 
 use function array_column;
@@ -23,7 +23,7 @@ use function array_combine;
 use function realpath;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Type\Composer\Factory\MakeLocatorForComposerJson
+ * @covers \PHPStan\BetterReflection\SourceLocator\Type\Composer\Factory\MakeLocatorForComposerJson
  */
 class MakeLocatorForComposerJsonTest extends TestCase
 {

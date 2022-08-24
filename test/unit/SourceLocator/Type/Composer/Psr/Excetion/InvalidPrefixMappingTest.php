@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Type\Composer\Psr\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Type\Composer\Psr\Exception\InvalidPrefixMapping;
+use PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Exception\InvalidPrefixMapping;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Type\Composer\Psr\Exception\InvalidPrefixMapping
+ * @covers \PHPStan\BetterReflection\SourceLocator\Type\Composer\Psr\Exception\InvalidPrefixMapping
  */
 final class InvalidPrefixMappingTest extends TestCase
 {

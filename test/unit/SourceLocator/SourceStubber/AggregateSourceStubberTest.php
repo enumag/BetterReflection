@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\SourceStubber;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\SourceStubber\AggregateSourceStubber;
-use Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber;
-use Roave\BetterReflection\SourceLocator\SourceStubber\StubData;
+use PHPStan\BetterReflection\SourceLocator\SourceStubber\AggregateSourceStubber;
+use PHPStan\BetterReflection\SourceLocator\SourceStubber\SourceStubber;
+use PHPStan\BetterReflection\SourceLocator\SourceStubber\StubData;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\SourceStubber\AggregateSourceStubber
+ * @covers \PHPStan\BetterReflection\SourceLocator\SourceStubber\AggregateSourceStubber
  */
 class AggregateSourceStubberTest extends TestCase
 {

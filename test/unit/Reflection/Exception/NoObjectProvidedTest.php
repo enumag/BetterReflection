@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\NoObjectProvided;
+use PHPStan\BetterReflection\Reflection\Exception\NoObjectProvided;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\Exception\NoObjectProvided
+ * @covers \PHPStan\BetterReflection\Reflection\Exception\NoObjectProvided
  */
 class NoObjectProvidedTest extends TestCase
 {

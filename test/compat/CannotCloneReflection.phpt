@@ -8,7 +8,7 @@ if (!extension_loaded('reflection')) print 'skip';
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
 
-$classInfo = \Roave\BetterReflection\Reflection\ReflectionClass::createFromName('stdClass');
+$classInfo = \PHPStan\BetterReflection\Reflection\ReflectionClass::createFromName('stdClass');
 $clone = clone($classInfo);
 ?>
 --EXPECTF--

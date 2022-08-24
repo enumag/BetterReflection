@@ -9,7 +9,20 @@ namespace Roave\BetterReflection\NodeCompiler;
  */
 class CompiledValue
 {
-    public function __construct(public mixed $value, public ?string $constantName = null)
+    /**
+     * @var mixed
+     */
+    public $value;
+    /**
+     * @var string|null
+     */
+    public $constantName;
+    /**
+     * @param mixed $value
+     */
+    public function __construct($value, ?string $constantName = null)
     {
+        $this->value = $value;
+        $this->constantName = $constantName;
     }
 }

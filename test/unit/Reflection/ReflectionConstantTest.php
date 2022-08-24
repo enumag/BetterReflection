@@ -29,9 +29,15 @@ use const E_ALL;
  */
 class ReflectionConstantTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private SourceStubber $sourceStubber;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\SourceStubber\SourceStubber
+     */
+    private $sourceStubber;
 
     protected function setUp(): void
     {
@@ -157,11 +163,7 @@ class ReflectionConstantTest extends TestCase
     public function testCreateFromNodeWithInvalidDefine(): void
     {
         self::expectException(InvalidConstantNode::class);
-        ReflectionConstant::createFromNode(
-            $this->createMock(Reflector::class),
-            new Node\Expr\FuncCall(new Node\Expr\Variable('foo')),
-            $this->createMock(LocatedSource::class),
-        );
+        ReflectionConstant::createFromNode($this->createMock(Reflector::class), new Node\Expr\FuncCall(new Node\Expr\Variable('foo')), $this->createMock(LocatedSource::class));
     }
 
     public function testStaticCreationFromNameByConst(): void

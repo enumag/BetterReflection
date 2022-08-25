@@ -17,8 +17,16 @@ use function array_map;
 
 final class ReflectionClassConstant extends CoreReflectionClassConstant
 {
-    public function __construct(private BetterReflectionClassConstant|BetterReflectionEnumCase $betterClassConstantOrEnumCase)
+    /**
+     * @var BetterReflectionClassConstant|BetterReflectionEnumCase
+     */
+    private $betterClassConstantOrEnumCase;
+    /**
+     * @param BetterReflectionClassConstant|BetterReflectionEnumCase $betterClassConstantOrEnumCase
+     */
+    public function __construct($betterClassConstantOrEnumCase)
     {
+        $this->betterClassConstantOrEnumCase = $betterClassConstantOrEnumCase;
         unset($this->name);
         unset($this->class);
     }
@@ -146,7 +154,9 @@ final class ReflectionClassConstant extends CoreReflectionClassConstant
             $attributes = $this->betterClassConstantOrEnumCase->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
+        return array_map(static function (BetterReflectionAttribute $betterReflectionAttribute) {
+            return ReflectionAttributeFactory::create($betterReflectionAttribute);
+        }, $attributes);
     }
 
     public function isFinal(): bool
@@ -163,7 +173,10 @@ final class ReflectionClassConstant extends CoreReflectionClassConstant
         return $this->betterClassConstantOrEnumCase instanceof BetterReflectionEnumCase;
     }
 
-    public function __get(string $name): mixed
+    /**
+     * @return mixed
+     */
+    public function __get(string $name)
     {
         if ($name === 'name') {
             return $this->betterClassConstantOrEnumCase->getName();

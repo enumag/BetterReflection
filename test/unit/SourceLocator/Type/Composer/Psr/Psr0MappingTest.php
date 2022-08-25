@@ -73,10 +73,7 @@ class Psr0MappingTest extends TestCase
      */
     public function testClassLookups(array $mappings, Identifier $identifier, array $expectedFiles): void
     {
-        self::assertEquals(
-            $expectedFiles,
-            Psr0Mapping::fromArrayMappings($mappings)->resolvePossibleFilePaths($identifier),
-        );
+        self::assertEquals($expectedFiles, Psr0Mapping::fromArrayMappings($mappings)->resolvePossibleFilePaths($identifier));
     }
 
     /** @return array<string, array{0: array<string, list<string>>, 1: Identifier, 2: list<string>}> */

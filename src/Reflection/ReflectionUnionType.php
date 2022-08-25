@@ -16,16 +16,15 @@ use function implode;
 class ReflectionUnionType extends ReflectionType
 {
     /** @var list<ReflectionNamedType> */
-    private array $types;
+    private $types;
 
-    public function __construct(
-        Reflector $reflector,
-        ReflectionParameter|ReflectionMethod|ReflectionFunction|ReflectionEnum|ReflectionProperty $owner,
-        UnionType $type,
-    ) {
+    /**
+     * @param \Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     */
+    public function __construct(Reflector $reflector, $owner, UnionType $type)
+    {
         parent::__construct($reflector, $owner);
-
-        $this->types = array_values(array_map(static function (Node\Identifier|Node\Name $type) use ($reflector, $owner): ReflectionNamedType {
+        $this->types = array_values(array_map(static function ($type) use ($reflector, $owner): ReflectionNamedType {
             $type = ReflectionType::createFromNode($reflector, $owner, $type);
             assert($type instanceof ReflectionNamedType);
 
@@ -54,6 +53,8 @@ class ReflectionUnionType extends ReflectionType
 
     public function __toString(): string
     {
-        return implode('|', array_map(static fn (ReflectionType $type): string => $type->__toString(), $this->types));
+        return implode('|', array_map(static function (ReflectionType $type) : string {
+            return $type->__toString();
+        }, $this->types));
     }
 }

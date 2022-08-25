@@ -23,39 +23,85 @@ class ReflectionClassConstant
 {
     public const IS_FINAL = 32;
 
-    private ?CompiledValue $compiledValue = null;
+    /**
+     * @var \Roave\BetterReflection\NodeCompiler\CompiledValue|null
+     */
+    private $compiledValue;
 
     /** @var list<ReflectionAttribute> */
-    private array $attributes;
+    private $attributes;
 
-    private string $name;
+    /**
+     * @var string
+     */
+    private $name;
 
-    private Expr $valueExpr;
+    /**
+     * @var \PhpParser\Node\Expr
+     */
+    private $valueExpr;
 
-    private bool $isPublic;
+    /**
+     * @var bool
+     */
+    private $isPublic;
 
-    private bool $isPrivate;
+    /**
+     * @var bool
+     */
+    private $isPrivate;
 
-    private bool $isProtected;
+    /**
+     * @var bool
+     */
+    private $isProtected;
 
-    private bool $isFinal;
+    /**
+     * @var bool
+     */
+    private $isFinal;
 
-    private string $docComment;
+    /**
+     * @var string
+     */
+    private $docComment;
 
-    private int $startLine;
+    /**
+     * @var int
+     */
+    private $startLine;
 
-    private int $endLine;
+    /**
+     * @var int
+     */
+    private $endLine;
 
-    private int $startColumn;
+    /**
+     * @var int
+     */
+    private $startColumn;
 
-    private int $endColumn;
-
-    private function __construct(
-        private Reflector $reflector,
-        ClassConst $node,
-        private ReflectionClass $owner,
-        private int $positionInNode,
-    ) {
+    /**
+     * @var int
+     */
+    private $endColumn;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflection\ReflectionClass
+     */
+    private $owner;
+    /**
+     * @var int
+     */
+    private $positionInNode;
+    private function __construct(Reflector $reflector, ClassConst $node, ReflectionClass $owner, int $positionInNode)
+    {
+        $this->reflector = $reflector;
+        $this->owner = $owner;
+        $this->positionInNode = $positionInNode;
         $this->attributes = ReflectionAttributeHelper::createAttributes($this->reflector, $this, $node->attrGroups);
         $this->name = $node->consts[$this->positionInNode]->name->name;
         $this->valueExpr = $node->consts[$this->positionInNode]->value;
@@ -66,37 +112,25 @@ class ReflectionClassConstant
         $this->docComment = GetLastDocComment::forNode($node);
         $this->startLine = $node->getStartLine();
         $this->endLine = $node->getEndLine();
-
         try {
             $this->startColumn = CalculateReflectionColumn::getStartColumn($this->owner->getLocatedSource()->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->startColumn = -1;
         }
-
         try {
             $this->endColumn = CalculateReflectionColumn::getEndColumn($this->owner->getLocatedSource()->getSource(), $node);
         } catch (NoNodePosition $e) {
             $this->endColumn = -1;
         }
     }
-
     /**
      * Create a reflection of a class's constant by Const Node
      *
      * @internal
      */
-    public static function createFromNode(
-        Reflector $reflector,
-        ClassConst $node,
-        int $positionInNode,
-        ReflectionClass $owner,
-    ): self {
-        return new self(
-            $reflector,
-            $node,
-            $owner,
-            $positionInNode,
-        );
+    public static function createFromNode(Reflector $reflector, ClassConst $node, int $positionInNode, ReflectionClass $owner): self
+    {
+        return new self($reflector, $node, $owner, $positionInNode);
     }
 
     /**
@@ -111,14 +145,12 @@ class ReflectionClassConstant
     /**
      * @deprecated Use getValueExpr()
      * Returns constant value
+     * @return mixed
      */
-    public function getValue(): mixed
+    public function getValue()
     {
         if ($this->compiledValue === null) {
-            $this->compiledValue = (new CompileNodeToValue())->__invoke(
-                $this->valueExpr,
-                new CompilerContext($this->reflector, $this),
-            );
+            $this->compiledValue = (new CompileNodeToValue())->__invoke($this->valueExpr, new CompilerContext($this->reflector, $this));
         }
 
         return $this->compiledValue->value;

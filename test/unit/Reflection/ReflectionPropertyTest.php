@@ -14,17 +14,17 @@ use PhpParser\Node\Stmt\PropertyProperty;
 use PHPUnit\Framework\TestCase;
 use Reflection;
 use ReflectionProperty as CoreReflectionProperty;
-use Roave\BetterReflection\Reflection\Exception\ClassDoesNotExist;
-use Roave\BetterReflection\Reflection\Exception\NoObjectProvided;
-use Roave\BetterReflection\Reflection\Exception\NotAnObject;
-use Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
-use Roave\BetterReflection\Reflection\ReflectionProperty;
-use Roave\BetterReflection\Reflector\DefaultReflector;
-use Roave\BetterReflection\Reflector\Reflector;
-use Roave\BetterReflection\SourceLocator\Ast\Locator;
-use Roave\BetterReflection\SourceLocator\Type\ComposerSourceLocator;
-use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
-use Roave\BetterReflection\SourceLocator\Type\StringSourceLocator;
+use PHPStan\BetterReflection\Reflection\Exception\ClassDoesNotExist;
+use PHPStan\BetterReflection\Reflection\Exception\NoObjectProvided;
+use PHPStan\BetterReflection\Reflection\Exception\NotAnObject;
+use PHPStan\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
+use PHPStan\BetterReflection\Reflection\ReflectionProperty;
+use PHPStan\BetterReflection\Reflector\DefaultReflector;
+use PHPStan\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\SourceLocator\Ast\Locator;
+use PHPStan\BetterReflection\SourceLocator\Type\ComposerSourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
+use PHPStan\BetterReflection\SourceLocator\Type\StringSourceLocator;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 use Roave\BetterReflectionTest\Fixture\Attr;
 use Roave\BetterReflectionTest\Fixture\ClassForHinting;
@@ -43,17 +43,17 @@ use TraitWithProperty;
 use function sprintf;
 
 /**
- * @covers \Roave\BetterReflection\Reflection\ReflectionProperty
+ * @covers \PHPStan\BetterReflection\Reflection\ReflectionProperty
  */
 class ReflectionPropertyTest extends TestCase
 {
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
 
     /**
-     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     * @var \PHPStan\BetterReflection\SourceLocator\Ast\Locator
      */
     private $astLocator;
 

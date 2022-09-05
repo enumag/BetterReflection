@@ -6,6 +6,7 @@ namespace Roave\BetterReflection\Reflection;
 
 use Closure;
 use OutOfBoundsException;
+use PhpParser\Modifiers;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\ClassMethod as MethodNode;
 use ReflectionException;
@@ -285,7 +286,7 @@ class ReflectionMethod
      */
     public function isAbstract(): bool
     {
-        return ($this->modifiers & CoreReflectionMethod::IS_ABSTRACT) === CoreReflectionMethod::IS_ABSTRACT
+        return (bool) ($this->modifiers & Modifiers::ABSTRACT)
             || $this->declaringClass->isInterface();
     }
 
@@ -294,7 +295,7 @@ class ReflectionMethod
      */
     public function isFinal(): bool
     {
-        return ($this->modifiers & CoreReflectionMethod::IS_FINAL) === CoreReflectionMethod::IS_FINAL;
+        return (bool) ($this->modifiers & Modifiers::FINAL);
     }
 
     /**
@@ -302,7 +303,7 @@ class ReflectionMethod
      */
     public function isPrivate(): bool
     {
-        return ($this->modifiers & CoreReflectionMethod::IS_PRIVATE) === CoreReflectionMethod::IS_PRIVATE;
+        return (bool) ($this->modifiers & Modifiers::PRIVATE);
     }
 
     /**
@@ -310,7 +311,7 @@ class ReflectionMethod
      */
     public function isProtected(): bool
     {
-        return ($this->modifiers & CoreReflectionMethod::IS_PROTECTED) === CoreReflectionMethod::IS_PROTECTED;
+        return (bool) ($this->modifiers & Modifiers::PROTECTED);
     }
 
     /**
@@ -318,7 +319,8 @@ class ReflectionMethod
      */
     public function isPublic(): bool
     {
-        return ($this->modifiers & CoreReflectionMethod::IS_PUBLIC) === CoreReflectionMethod::IS_PUBLIC;
+        return ($this->modifiers & Modifiers::PUBLIC) !== 0
+            || ($this->modifiers & Modifiers::VISIBILITY_MASK) === 0;
     }
 
     /**
@@ -326,7 +328,7 @@ class ReflectionMethod
      */
     public function isStatic(): bool
     {
-        return ($this->modifiers & CoreReflectionMethod::IS_STATIC) === CoreReflectionMethod::IS_STATIC;
+        return (bool) ($this->modifiers & Modifiers::STATIC);
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflection\SourceLocator\Ast\Parser;
 
 use PhpParser\ErrorHandler;
+use PhpParser\Lexer;
 use PhpParser\Node;
 use PhpParser\Parser;
 
@@ -44,5 +45,10 @@ final class MemoizingParser implements Parser
         $this->sourceHashToAst[$hash] = serialize($ast);
 
         return $ast;
+    }
+
+    public function getLexer(): Lexer
+    {
+        return $this->wrappedParser->getLexer();
     }
 }

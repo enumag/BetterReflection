@@ -9,6 +9,7 @@ use Error;
 use ExtendedClassWithPropertiesAndTraitProperties;
 use OutOfBoundsException;
 use PhpParser\Node;
+use PhpParser\Node\PropertyItem;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\PropertyProperty;
@@ -272,7 +273,7 @@ class ReflectionPropertyTest extends TestCase
     public function testIsDefaultWithRuntimeDeclaredProperty(): void
     {
         $classInfo            = $this->reflector->reflectClass(ExampleClass::class);
-        $propertyPropertyNode = new PropertyProperty('foo');
+        $propertyPropertyNode = new PropertyItem('foo');
         $propertyNode         = ReflectionProperty::createFromNode(
             $this->reflector,
             new Property(Class_::MODIFIER_PUBLIC, [$propertyPropertyNode]),

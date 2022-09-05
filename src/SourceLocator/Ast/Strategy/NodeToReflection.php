@@ -29,7 +29,7 @@ class NodeToReflection implements AstConversionStrategy
         int|null $positionInNode = null,
     ): ReflectionClass|ReflectionConstant|ReflectionFunction {
         /** @psalm-suppress PossiblyNullPropertyFetch, PossiblyNullArgument */
-        $namespaceName = $namespace?->name !== null ? implode('\\', $namespace->name->parts) : null;
+        $namespaceName = $namespace?->name !== null ? implode('\\', $namespace->name->getParts()) : null;
 
         if ($node instanceof Node\Stmt\Enum_) {
             return ReflectionEnum::createFromNode(

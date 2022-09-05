@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Roave\BetterReflection\Reflection;
 
 use BackedEnum;
+use PhpParser\Modifiers;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_ as ClassNode;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -612,7 +613,7 @@ class ReflectionClass implements Reflection
             new ClassMethod(
                 new Node\Identifier($name),
                 [
-                    'flags' => ClassNode::MODIFIER_PUBLIC | ClassNode::MODIFIER_STATIC,
+                    'flags' => Modifiers::PUBLIC | Modifiers::STATIC,
                     'params' => $params,
                     'returnType' => $returnType,
                 ],
@@ -881,7 +882,7 @@ class ReflectionClass implements Reflection
 
                 $propertyNode                     = new Node\Stmt\Property(
                     $parameterNode->flags,
-                    [new Node\Stmt\PropertyProperty($parameterNameNode->name)],
+                    [new Node\PropertyItem($parameterNameNode->name)],
                     $parameterNode->getAttributes(),
                     $parameterNode->type,
                     $parameterNode->attrGroups,
@@ -912,10 +913,10 @@ class ReflectionClass implements Reflection
      */
     private function addEnumProperties(array $properties, EnumNode|InterfaceNode $node, Reflector $reflector): array
     {
-        $createProperty = function (string $name, string|Node\Identifier|Node\UnionType $type) use ($reflector): ReflectionProperty {
+        $createProperty = function (string $name, Node\Name|Node\Identifier|Node\UnionType $type) use ($reflector): ReflectionProperty {
             $propertyNode = new Node\Stmt\Property(
-                ClassNode::MODIFIER_PUBLIC | ClassNode::MODIFIER_READONLY,
-                [new Node\Stmt\PropertyProperty($name)],
+                Modifiers::PUBLIC | Modifiers::READONLY,
+                [new Node\PropertyItem($name)],
                 [],
                 $type,
             );
@@ -932,7 +933,7 @@ class ReflectionClass implements Reflection
         if ($node instanceof InterfaceNode) {
             $interfaceName = $this->getName();
             if ($interfaceName === 'UnitEnum') {
-                $properties['name'] = $createProperty('name', 'string');
+                $properties['name'] = $createProperty('name', new Node\Identifier('string'));
             }
 
             if ($interfaceName === 'BackedEnum') {
@@ -942,7 +943,7 @@ class ReflectionClass implements Reflection
                 ]));
             }
         } else {
-            $properties['name'] = $createProperty('name', 'string');
+            $properties['name'] = $createProperty('name', new Node\Identifier('string'));
 
             if ($node->scalarType !== null) {
                 $properties['value'] = $createProperty('value', $node->scalarType);

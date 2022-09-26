@@ -193,6 +193,8 @@ final class ReflectionEnum extends CoreReflectionEnum
     }
 
     /**
+     * @deprecated Use getReflectionConstants()
+     *
      * @param int-mask-of<ReflectionClassConstant::IS_*>|null $filter
      *
      * @return array<string, mixed|null>
@@ -205,6 +207,9 @@ final class ReflectionEnum extends CoreReflectionEnum
         );
     }
 
+    /**
+     * @deprecated Use getReflectionConstant()
+     */
     public function getConstant(string $name): mixed
     {
         if ($name === '') {
@@ -227,7 +232,7 @@ final class ReflectionEnum extends CoreReflectionEnum
     private function getConstantValue(BetterReflectionClassConstant|BetterReflectionEnumCase $betterConstantOrEnumCase): mixed
     {
         if ($betterConstantOrEnumCase instanceof BetterReflectionEnumCase) {
-            return constant(sprintf('%s::%s', $betterConstantOrEnumCase->getDeclaringClass()->getName(), $betterConstantOrEnumCase->getName()));
+            throw new Exception\NotImplemented('Not implemented');
         }
 
         return $betterConstantOrEnumCase->getValue();

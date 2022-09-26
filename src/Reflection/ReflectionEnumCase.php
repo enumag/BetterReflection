@@ -87,6 +87,14 @@ class ReflectionEnumCase
     }
 
     /**
+     * @deprecated Use getValueExpression()
+     */
+    public function getValueExpr(): Node\Expr
+    {
+        return $this->getValueExpression();
+    }
+
+    /**
      * Check ReflectionEnum::isBacked() being true first to avoid throwing exception.
      *
      * @throws LogicException

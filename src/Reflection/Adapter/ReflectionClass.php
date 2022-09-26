@@ -125,7 +125,7 @@ final class ReflectionClass extends CoreReflectionClass
     }
 
     /** @return ReflectionMethod|null */
-    public function getConstructor(): CoreReflectionMethod|null
+    public function getConstructor(): ?CoreReflectionMethod
     {
         $constructor = $this->betterReflectionClass->getConstructor();
 
@@ -565,7 +565,7 @@ final class ReflectionClass extends CoreReflectionClass
         return $this->betterReflectionClass->implementsInterface($realInterfaceName);
     }
 
-    public function getExtension(): CoreReflectionExtension|null
+    public function getExtension(): ?CoreReflectionExtension
     {
         throw new Exception\NotImplemented('Not implemented');
     }

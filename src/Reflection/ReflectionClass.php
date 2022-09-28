@@ -1662,13 +1662,14 @@ class ReflectionClass implements Reflection
         }
 
         $interfaceClassNames[] = $interfaceClassName;
+        $tmp = $interfaceClassNames;
 
         /** @var array<class-string, self> $interfaces */
         $interfaces = [$interfaceClassName => $this];
         foreach ($this->implementsClassNames as $name) {
             try {
                 $interface = $this->reflector->reflectClass($name);
-                foreach ($interface->getInterfacesHierarchy($interfaceClassNames) as $n => $i) {
+                foreach ($interface->getInterfacesHierarchy($tmp) as $n => $i) {
                     $interfaces[$n] = $i;
                 }
             } catch (IdentifierNotFound) {

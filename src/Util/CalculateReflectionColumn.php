@@ -15,38 +15,32 @@ use function strrpos;
 final class CalculateReflectionColumn
 {
     /**
-     * @return positive-int
-     *
      * @throws InvalidNodePosition
      * @throws NoNodePosition
      */
     public static function getStartColumn(string $source, Node $node): int
     {
         if (! $node->hasAttribute('startFilePos')) {
-            throw NoNodePosition::fromNode($node);
+            return -1;
         }
 
         return self::calculateColumn($source, $node->getStartFilePos());
     }
 
     /**
-     * @return positive-int
-     *
      * @throws InvalidNodePosition
      * @throws NoNodePosition
      */
     public static function getEndColumn(string $source, Node $node): int
     {
         if (! $node->hasAttribute('endFilePos')) {
-            throw NoNodePosition::fromNode($node);
+            return -1;
         }
 
         return self::calculateColumn($source, $node->getEndFilePos());
     }
 
     /**
-     * @return positive-int
-     *
      * @throws InvalidNodePosition
      */
     private static function calculateColumn(string $source, int $position): int
@@ -54,7 +48,7 @@ final class CalculateReflectionColumn
         $sourceLength = strlen($source);
 
         if ($position >= $sourceLength) {
-            throw InvalidNodePosition::fromPosition($position);
+            return -1;
         }
 
         $lineStartPosition = strrpos($source, "\n", $position - $sourceLength);

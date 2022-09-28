@@ -7,8 +7,6 @@ namespace Roave\BetterReflectionTest\Util;
 use PhpParser\Node;
 use PHPUnit\Framework\TestCase;
 use Roave\BetterReflection\Util\CalculateReflectionColumn;
-use Roave\BetterReflection\Util\Exception\InvalidNodePosition;
-use Roave\BetterReflection\Util\Exception\NoNodePosition;
 
 /** @covers \Roave\BetterReflection\Util\CalculateReflectionColumn */
 class CalculateReflectionColumnTest extends TestCase
@@ -61,35 +59,6 @@ class CalculateReflectionColumnTest extends TestCase
         self::assertSame(7, CalculateReflectionColumn::getStartColumn($source, $node));
     }
 
-    public function testGetStartColumnThrowsExceptionIfInvalidPosition(): void
-    {
-        $node = $this->createMock(Node::class);
-        $node
-            ->method('hasAttribute')
-            ->with('startFilePos')
-            ->willReturn(true);
-        $node
-            ->method('getStartFilePos')
-            ->willReturn(5);
-
-        $this->expectException(InvalidNodePosition::class);
-
-        CalculateReflectionColumn::getStartColumn('test', $node);
-    }
-
-    public function testGetStartColumnThrowsExceptionIfNoPosition(): void
-    {
-        $node = $this->createMock(Node::class);
-        $node
-            ->method('hasAttribute')
-            ->with('startFilePos')
-            ->willReturn(false);
-
-        $this->expectException(NoNodePosition::class);
-
-        CalculateReflectionColumn::getStartColumn('', $node);
-    }
-
     public function testGetEndColumn(): void
     {
         $source = "<?php\n    class Foo {}";
@@ -136,34 +105,5 @@ class CalculateReflectionColumnTest extends TestCase
             ->willReturn(17);
 
         self::assertSame(18, CalculateReflectionColumn::getEndColumn($source, $node));
-    }
-
-    public function testGetEndColumnThrowsExceptionIfInvalidPosition(): void
-    {
-        $node = $this->createMock(Node::class);
-        $node
-            ->method('hasAttribute')
-            ->with('endFilePos')
-            ->willReturn(true);
-        $node
-            ->method('getEndFilePos')
-            ->willReturn(10);
-
-        $this->expectException(InvalidNodePosition::class);
-
-        CalculateReflectionColumn::getEndColumn('1234567890', $node);
-    }
-
-    public function testGetEndColumnThrowsExceptionIfNoPosition(): void
-    {
-        $node = $this->createMock(Node::class);
-        $node
-            ->method('hasAttribute')
-            ->with('endFilePos')
-            ->willReturn(false);
-
-        $this->expectException(NoNodePosition::class);
-
-        CalculateReflectionColumn::getEndColumn('', $node);
     }
 }

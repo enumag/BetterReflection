@@ -1683,6 +1683,7 @@ class ReflectionClass implements Reflection
 
         $interfaceClassNames[] = $interfaceClassName;
         $tmp = $interfaceClassNames;
+        $tmp2 = $tmp;
 
         /** @var array<class-string, self> $interfaces */
         $interfaces = [$interfaceClassName => $this];
@@ -1692,6 +1693,7 @@ class ReflectionClass implements Reflection
                 foreach ($interface->getInterfacesHierarchy($tmp) as $n => $i) {
                     $interfaces[$n] = $i;
                 }
+                $tmp = $tmp2;
             } catch (IdentifierNotFound) {
                 continue;
             }

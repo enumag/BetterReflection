@@ -2633,4 +2633,31 @@ PHP;
         $array     = $anonymous->getConstant('CACHE_MAP')->getValue();
         self::assertIsArray($array);
     }
+
+    public function testInterfacesNotCircular()
+    {
+        $php = <<<'PHP'
+            <?php
+
+            interface CacheableDependencyInterface {
+            }
+
+            interface RefinableCacheableDependencyInterface extends CacheableDependencyInterface {
+            }
+
+            interface AccessibleInterface {
+            }
+
+            interface EntityInterface extends AccessibleInterface, CacheableDependencyInterface, RefinableCacheableDependencyInterface {
+            }
+        PHP;
+
+        $reflector = new DefaultReflector(new StringSourceLocator($php, $this->astLocator));
+        $entityInterface = $reflector->reflectClass('EntityInterface');
+        self::assertSame([
+            'AccessibleInterface',
+            'CacheableDependencyInterface',
+            'RefinableCacheableDependencyInterface',
+        ], $entityInterface->getInterfaceNames());
+    }
 }

@@ -314,34 +314,6 @@ class ReflectionFunctionAbstractTest extends TestCase
         $methodReflection->getEndLine();
     }
 
-    public function testGetStartColumnThrowsExceptionForMagicallyAddedEnumMethod(): void
-    {
-        $reflector = new DefaultReflector(new AggregateSourceLocator([
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Enums.php', $this->astLocator),
-            BetterReflectionSingleton::instance()->sourceLocator(),
-        ]));
-
-        $classReflection  = $reflector->reflectClass(StringEnum::class);
-        $methodReflection = $classReflection->getMethod('tryFrom');
-
-        self::expectException(CodeLocationMissing::class);
-        $methodReflection->getStartColumn();
-    }
-
-    public function testGetEndColumnThrowsExceptionForMagicallyAddedEnumMethod(): void
-    {
-        $reflector = new DefaultReflector(new AggregateSourceLocator([
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Enums.php', $this->astLocator),
-            BetterReflectionSingleton::instance()->sourceLocator(),
-        ]));
-
-        $classReflection  = $reflector->reflectClass(StringEnum::class);
-        $methodReflection = $classReflection->getMethod('tryFrom');
-
-        self::expectException(CodeLocationMissing::class);
-        $methodReflection->getEndColumn();
-    }
-
     /** @return list<array{0: non-empty-string, 1: bool}> */
     public function returnsReferenceProvider(): array
     {

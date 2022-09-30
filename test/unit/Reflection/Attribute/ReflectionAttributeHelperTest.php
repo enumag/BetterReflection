@@ -26,11 +26,7 @@ class ReflectionAttributeHelperTest extends TestCase
         ];
 
         $reflection = $this->createMock(ReflectionClass::class);
-        $attributes = ReflectionAttributeHelper::createAttributes(
-            $this->createMock(Reflector::class),
-            $reflection,
-            $ast->attrGroups,
-        );
+        $attributes = ReflectionAttributeHelper::createAttributes($this->createMock(Reflector::class), $reflection, $ast->attrGroups);
 
         self::assertCount(3, $attributes);
 

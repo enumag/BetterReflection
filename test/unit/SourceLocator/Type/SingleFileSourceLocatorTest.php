@@ -17,7 +17,10 @@ use Roave\BetterReflectionTest\BetterReflectionSingleton;
 /** @covers \Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator */
 class SingleFileSourceLocatorTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
     protected function setUp(): void
     {
@@ -26,7 +29,10 @@ class SingleFileSourceLocatorTest extends TestCase
         $this->astLocator = BetterReflectionSingleton::instance()->astLocator();
     }
 
-    private function getMockReflector(): Reflector|MockObject
+    /**
+     * @return \Roave\BetterReflection\Reflector\Reflector|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private function getMockReflector()
     {
         return $this->createMock(Reflector::class);
     }
@@ -37,13 +43,7 @@ class SingleFileSourceLocatorTest extends TestCase
 
         $locator = new SingleFileSourceLocator($fileName, $this->astLocator);
 
-        self::assertNull($locator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier(
-                'does not matter what the class name is',
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        ));
+        self::assertNull($locator->locateIdentifier($this->getMockReflector(), new Identifier('does not matter what the class name is', new IdentifierType(IdentifierType::IDENTIFIER_CLASS))));
     }
 
     public function testReturnsReflectionWhenSourceHasClass(): void
@@ -52,13 +52,7 @@ class SingleFileSourceLocatorTest extends TestCase
 
         $locator = new SingleFileSourceLocator($fileName, $this->astLocator);
 
-        $reflectionClass = $locator->locateIdentifier(
-            $this->getMockReflector(),
-            new Identifier(
-                'ClassWithNoNamespace',
-                new IdentifierType(IdentifierType::IDENTIFIER_CLASS),
-            ),
-        );
+        $reflectionClass = $locator->locateIdentifier($this->getMockReflector(), new Identifier('ClassWithNoNamespace', new IdentifierType(IdentifierType::IDENTIFIER_CLASS)));
 
         self::assertSame('ClassWithNoNamespace', $reflectionClass->getName());
     }

@@ -7,12 +7,17 @@ namespace Roave\BetterReflection\SourceLocator\Located;
 /** @internal */
 class AliasLocatedSource extends LocatedSource
 {
-    public function __construct(string $source, string $name, string|null $filename, private string $aliasName)
+    /**
+     * @var string
+     */
+    private $aliasName;
+    public function __construct(string $source, string $name, ?string $filename, string $aliasName)
     {
+        $this->aliasName = $aliasName;
         parent::__construct($source, $name, $filename);
     }
 
-    public function getAliasName(): string|null
+    public function getAliasName(): ?string
     {
         return $this->aliasName;
     }

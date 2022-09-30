@@ -16,9 +16,11 @@ use function count;
 /** @internal */
 final class ReflectionTypeStringCast
 {
-    public static function toString(
-        ReflectionNamedType|ReflectionUnionType|ReflectionIntersectionType $type,
-    ): string {
+    /**
+     * @param \Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|\Roave\BetterReflection\Reflection\ReflectionIntersectionType $type
+     */
+    public static function toString($type): string
+    {
         if ($type instanceof ReflectionUnionType) {
             // php-src has this weird behavior where a union type composed of a single type `T`
             // together with `null` means that a `ReflectionNamedType` for `?T` is produced,
@@ -26,10 +28,9 @@ final class ReflectionTypeStringCast
             // introduced nullable types), but at reflection level, this is mostly a nuisance.
             // In order to keep parity with core `Reflector#__toString()` behavior, we stashed
             // this weird behavior in here.
-            $nonNullTypes = array_values(array_filter(
-                $type->getTypes(),
-                static fn (ReflectionType $type): bool => ! ($type instanceof ReflectionNamedType && $type->getName() === 'null'),
-            ));
+            $nonNullTypes = array_values(array_filter($type->getTypes(), static function (ReflectionType $type) : bool {
+                return ! ($type instanceof ReflectionNamedType && $type->getName() === 'null');
+            }));
 
             if (
                 $type->allowsNull()
@@ -39,7 +40,6 @@ final class ReflectionTypeStringCast
                 return '?' . $nonNullTypes[0]->__toString();
             }
         }
-
         return $type->__toString();
     }
 }

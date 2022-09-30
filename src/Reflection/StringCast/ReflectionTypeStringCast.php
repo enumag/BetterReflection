@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection\StringCast;
+namespace PHPStan\BetterReflection\Reflection\StringCast;
 
-use Roave\BetterReflection\Reflection\ReflectionIntersectionType;
-use Roave\BetterReflection\Reflection\ReflectionNamedType;
-use Roave\BetterReflection\Reflection\ReflectionType;
-use Roave\BetterReflection\Reflection\ReflectionUnionType;
+use PHPStan\BetterReflection\Reflection\ReflectionIntersectionType;
+use PHPStan\BetterReflection\Reflection\ReflectionNamedType;
+use PHPStan\BetterReflection\Reflection\ReflectionType;
+use PHPStan\BetterReflection\Reflection\ReflectionUnionType;
 
 use function array_filter;
 use function array_values;
@@ -17,7 +17,7 @@ use function count;
 final class ReflectionTypeStringCast
 {
     /**
-     * @param \Roave\BetterReflection\Reflection\ReflectionNamedType|\Roave\BetterReflection\Reflection\ReflectionUnionType|\Roave\BetterReflection\Reflection\ReflectionIntersectionType $type
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionNamedType|\PHPStan\BetterReflection\Reflection\ReflectionUnionType|\PHPStan\BetterReflection\Reflection\ReflectionIntersectionType $type
      */
     public static function toString($type): string
     {

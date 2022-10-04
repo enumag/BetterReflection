@@ -8,7 +8,7 @@ use Exception;
 use LogicException;
 use PHPUnit\Framework\Error\Warning;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Type\AutoloadSourceLocator\FileReadTrapStreamWrapper;
+use PHPStan\BetterReflection\SourceLocator\Type\AutoloadSourceLocator\FileReadTrapStreamWrapper;
 use Throwable;
 use UnexpectedValueException;
 
@@ -19,7 +19,7 @@ use function sprintf;
 use function uniqid;
 
 /**
- * @covers \Roave\BetterReflection\SourceLocator\Type\AutoloadSourceLocator\FileReadTrapStreamWrapper
+ * @covers \PHPStan\BetterReflection\SourceLocator\Type\AutoloadSourceLocator\FileReadTrapStreamWrapper
  *
  * Note: stream wrappers interfere **HEAVILY** with autoloaders, therefore we need to operate with raw
  *       assertions rather than with PHPUnit's assertion utilities, which lead to autoloading in case

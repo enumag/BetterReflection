@@ -7,15 +7,15 @@ namespace Roave\BetterReflectionTest\SourceLocator\Type;
 use PhpParser\Lexer\Emulative;
 use PhpParser\ParserFactory;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflector\DefaultReflector;
-use Roave\BetterReflection\SourceLocator\Ast\Locator;
-use Roave\BetterReflection\SourceLocator\Ast\Parser\MemoizingParser;
-use Roave\BetterReflection\SourceLocator\Type\AutoloadSourceLocator;
+use PHPStan\BetterReflection\Reflector\DefaultReflector;
+use PHPStan\BetterReflection\SourceLocator\Ast\Locator;
+use PHPStan\BetterReflection\SourceLocator\Ast\Parser\MemoizingParser;
+use PHPStan\BetterReflection\SourceLocator\Type\AutoloadSourceLocator;
 use Roave\BetterReflectionTest\Fixture\ExampleClass;
 
 use function class_exists;
 
-/** @covers \Roave\BetterReflection\SourceLocator\Type\AutoloadSourceLocator */
+/** @covers \PHPStan\BetterReflection\SourceLocator\Type\AutoloadSourceLocator */
 class AutoloadSourceLocatorWithoutLoadedParserDependenciesTest extends TestCase
 {
     /**

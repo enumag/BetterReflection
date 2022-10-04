@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflector\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Identifier\Identifier;
-use Roave\BetterReflection\Identifier\IdentifierType;
-use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
+use PHPStan\BetterReflection\Identifier\Identifier;
+use PHPStan\BetterReflection\Identifier\IdentifierType;
+use PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound;
 
-/** @covers \Roave\BetterReflection\Reflector\Exception\IdentifierNotFound */
+/** @covers \PHPStan\BetterReflection\Reflector\Exception\IdentifierNotFound */
 class IdentifierNotFoundTest extends TestCase
 {
     public function testFromNonObject(): void

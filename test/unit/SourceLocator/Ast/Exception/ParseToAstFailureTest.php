@@ -15,8 +15,7 @@ class ParseToAstFailureTest extends TestCase
 {
     public function testErrorInTheMiddleOfSource(): void
     {
-        $locatedSource = new LocatedSource(
-            <<<'PHP'
+        $locatedSource = new LocatedSource(<<<'PHP'
             <?php
             /**
              * Some
@@ -36,17 +35,14 @@ class ParseToAstFailureTest extends TestCase
                     // More code
                 }
             }
-            PHP,
-            'Whatever',
-        );
+            PHP, 'Whatever');
 
         $previous = new Error('Error message', ['startLine' => 10]);
 
         $exception = ParseToAstFailure::fromLocatedSource($locatedSource, $previous);
 
         self::assertInstanceOf(ParseToAstFailure::class, $exception);
-        self::assertSame(
-            <<<'ERROR'
+        self::assertSame(<<<'ERROR'
             AST failed to parse in located source (line 10): Error message
 
              * long
@@ -60,16 +56,13 @@ class ParseToAstFailureTest extends TestCase
                     $this->boo = 'boo';
 
                     // More code
-            ERROR,
-            $exception->getMessage(),
-        );
+            ERROR, $exception->getMessage());
         self::assertSame($previous, $exception->getPrevious());
     }
 
     public function testErrorAtTheBeginningOfSource(): void
     {
-        $locatedSource = new LocatedSource(
-            <<<'PHP'
+        $locatedSource = new LocatedSource(<<<'PHP'
             <?php
             class SomeClass
             {
@@ -79,17 +72,14 @@ class ParseToAstFailureTest extends TestCase
                 // Code
                 // Code
             }
-            PHP,
-            'Whatever',
-        );
+            PHP, 'Whatever');
 
         $previous = new Error('Error message', ['startLine' => 2]);
 
         $exception = ParseToAstFailure::fromLocatedSource($locatedSource, $previous);
 
         self::assertInstanceOf(ParseToAstFailure::class, $exception);
-        self::assertSame(
-            <<<'ERROR'
+        self::assertSame(<<<'ERROR'
             AST failed to parse in located source (line 2): Error message
 
             <?php
@@ -99,16 +89,13 @@ class ParseToAstFailureTest extends TestCase
                 // Code
                 // Code
                 // Code
-            ERROR,
-            $exception->getMessage(),
-        );
+            ERROR, $exception->getMessage());
         self::assertSame($previous, $exception->getPrevious());
     }
 
     public function testErrorAtTheEndOfSource(): void
     {
-        $locatedSource = new LocatedSource(
-            <<<'PHP'
+        $locatedSource = new LocatedSource(<<<'PHP'
             <?php
 
             // Comment
@@ -120,17 +107,14 @@ class ParseToAstFailureTest extends TestCase
             class SomeClass
             {
             }
-            PHP,
-            'Whatever',
-        );
+            PHP, 'Whatever');
 
         $previous = new Error('Error message', ['startLine' => 10]);
 
         $exception = ParseToAstFailure::fromLocatedSource($locatedSource, $previous);
 
         self::assertInstanceOf(ParseToAstFailure::class, $exception);
-        self::assertSame(
-            <<<'ERROR'
+        self::assertSame(<<<'ERROR'
             AST failed to parse in located source (line 10): Error message
 
             // Comment
@@ -140,9 +124,7 @@ class ParseToAstFailureTest extends TestCase
             class SomeClass
             {
             }
-            ERROR,
-            $exception->getMessage(),
-        );
+            ERROR, $exception->getMessage());
         self::assertSame($previous, $exception->getPrevious());
     }
 
@@ -155,14 +137,11 @@ class ParseToAstFailureTest extends TestCase
         $exception = ParseToAstFailure::fromLocatedSource($locatedSource, $previous);
 
         self::assertInstanceOf(ParseToAstFailure::class, $exception);
-        self::assertSame(
-            <<<'ERROR'
+        self::assertSame(<<<'ERROR'
             AST failed to parse in located source (line 1): Error message
 
             <?php abc
-            ERROR,
-            $exception->getMessage(),
-        );
+            ERROR, $exception->getMessage());
         self::assertSame($previous, $exception->getPrevious());
     }
 
@@ -179,14 +158,11 @@ class ParseToAstFailureTest extends TestCase
         $exception = ParseToAstFailure::fromLocatedSource($locatedSource, $previous);
 
         self::assertInstanceOf(ParseToAstFailure::class, $exception);
-        self::assertSame(
-            <<<'ERROR'
+        self::assertSame(<<<'ERROR'
             AST failed to parse in located source in file /foo/bar (line 1): Some error message
 
             <?php abc
-            ERROR,
-            $exception->getMessage(),
-        );
+            ERROR, $exception->getMessage());
         self::assertSame($previous, $exception->getPrevious());
     }
 

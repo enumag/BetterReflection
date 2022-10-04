@@ -23,12 +23,7 @@ final class ReflectionAttributeStringCast
 
         $argumentsFormat = $arguments !== [] ? " {\n  - Arguments [%d] {%s\n  }\n}" : '';
 
-        return sprintf(
-            'Attribute [ %s ]' . $argumentsFormat . "\n",
-            $attributeReflection->getName(),
-            count($arguments),
-            self::argumentsToString($arguments),
-        );
+        return sprintf('Attribute [ %s ]' . $argumentsFormat . "\n", $attributeReflection->getName(), count($arguments), self::argumentsToString($arguments));
     }
 
     /** @param array<int|string, mixed> $arguments */
@@ -43,12 +38,7 @@ final class ReflectionAttributeStringCast
         $argumentNo = 0;
         /** @psalm-suppress MixedAssignment */
         foreach ($arguments as $argumentName => $argumentValue) {
-            $string .= sprintf(
-                "\n    Argument #%d [ %s%s ]",
-                $argumentNo,
-                is_string($argumentName) ? sprintf('%s = ', $argumentName) : '',
-                self::argumentValueToString($argumentValue),
-            );
+            $string .= sprintf("\n    Argument #%d [ %s%s ]", $argumentNo, is_string($argumentName) ? sprintf('%s = ', $argumentName) : '', self::argumentValueToString($argumentValue));
 
             $argumentNo++;
         }
@@ -56,7 +46,10 @@ final class ReflectionAttributeStringCast
         return $string;
     }
 
-    private static function argumentValueToString(mixed $value): string
+    /**
+     * @param mixed $value
+     */
+    private static function argumentValueToString($value): string
     {
         if (is_array($value)) {
             return 'Array';

@@ -2,7 +2,7 @@
 
 namespace Roave\BetterReflectionTest\Fixture;
 
-use Roave\BetterReflection\TypesFinder\FindReturnType;
+use PHPStan\BetterReflection\TypesFinder\FindReturnType;
 
 class TestClassForPhpParserPrinterTest
 {

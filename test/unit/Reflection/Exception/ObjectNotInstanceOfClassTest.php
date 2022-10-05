@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
+use PHPStan\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass;
 
-/** @covers \Roave\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass */
+/** @covers \PHPStan\BetterReflection\Reflection\Exception\ObjectNotInstanceOfClass */
 class ObjectNotInstanceOfClassTest extends TestCase
 {
     public function testFromClassName(): void

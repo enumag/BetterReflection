@@ -12,11 +12,11 @@ use ReflectionNamedType;
 use ReflectionObject as CoreReflectionObject;
 use ReflectionParameter;
 use ReflectionProperty as CoreReflectionProperty;
-use Roave\BetterReflection\Reflection\ReflectionClass;
-use Roave\BetterReflection\Reflection\ReflectionObject;
-use Roave\BetterReflection\Reflection\ReflectionProperty;
-use Roave\BetterReflection\SourceLocator\Located\EvaledLocatedSource;
-use Roave\BetterReflection\Util\FileHelper;
+use PHPStan\BetterReflection\Reflection\ReflectionClass;
+use PHPStan\BetterReflection\Reflection\ReflectionObject;
+use PHPStan\BetterReflection\Reflection\ReflectionProperty;
+use PHPStan\BetterReflection\SourceLocator\Located\EvaledLocatedSource;
+use PHPStan\BetterReflection\Util\FileHelper;
 use Roave\BetterReflectionTest\BetterReflectionSingleton;
 use Roave\BetterReflectionTest\Fixture\ClassForHinting;
 use Roave\BetterReflectionTest\Fixture\DefaultProperties;
@@ -31,7 +31,7 @@ use function random_int;
 use function realpath;
 use function uniqid;
 
-/** @covers \Roave\BetterReflection\Reflection\ReflectionObject */
+/** @covers \PHPStan\BetterReflection\Reflection\ReflectionObject */
 class ReflectionObjectTest extends TestCase
 {
     /** @return Node[] */

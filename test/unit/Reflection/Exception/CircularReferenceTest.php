@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\CircularReference;
+use PHPStan\BetterReflection\Reflection\Exception\CircularReference;
 
-/** @covers \Roave\BetterReflection\Reflection\Exception\CircularReference */
+/** @covers \PHPStan\BetterReflection\Reflection\Exception\CircularReference */
 class CircularReferenceTest extends TestCase
 {
     public function testFromNonObject(): void

@@ -26,31 +26,22 @@ class ReflectionAttributeHelper
      * @param Node\AttributeGroup[] $attrGroups
      *
      * @return list<ReflectionAttribute>
+     * @param \Roave\BetterReflection\Reflection\ReflectionClass|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionClassConstant|\Roave\BetterReflection\Reflection\ReflectionEnumCase|\Roave\BetterReflection\Reflection\ReflectionProperty|\Roave\BetterReflection\Reflection\ReflectionParameter $reflection
      */
-    public static function createAttributes(
-        Reflector $reflector,
-        ReflectionClass|ReflectionMethod|ReflectionFunction|ReflectionClassConstant|ReflectionEnumCase|ReflectionProperty|ReflectionParameter $reflection,
-        array $attrGroups,
-    ) {
+    public static function createAttributes(Reflector $reflector, $reflection, array $attrGroups)
+    {
         $repeated = [];
         foreach ($attrGroups as $attributesGroupNode) {
             foreach ($attributesGroupNode->attrs as $attributeNode) {
                 $repeated[$attributeNode->name->toLowerString()][] = $attributeNode;
             }
         }
-
         $attributes = [];
         foreach ($attrGroups as $attributesGroupNode) {
             foreach ($attributesGroupNode->attrs as $attributeNode) {
-                $attributes[] = new ReflectionAttribute(
-                    $reflector,
-                    $attributeNode,
-                    $reflection,
-                    count($repeated[$attributeNode->name->toLowerString()]) > 1,
-                );
+                $attributes[] = new ReflectionAttribute($reflector, $attributeNode, $reflection, count($repeated[$attributeNode->name->toLowerString()]) > 1);
             }
         }
-
         return $attributes;
     }
 
@@ -61,7 +52,9 @@ class ReflectionAttributeHelper
      */
     public static function filterAttributesByName(array $attributes, string $name): array
     {
-        return array_values(array_filter($attributes, static fn (ReflectionAttribute $attribute): bool => $attribute->getName() === $name));
+        return array_values(array_filter($attributes, static function (ReflectionAttribute $attribute) use ($name) : bool {
+            return $attribute->getName() === $name;
+        }));
     }
 
     /**

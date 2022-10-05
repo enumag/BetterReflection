@@ -22,9 +22,18 @@ use function sprintf;
 /** @covers \Roave\BetterReflection\Reflection\ReflectionNamedType */
 class ReflectionNamedTypeTest extends TestCase
 {
-    private Reflector $reflector;
-    private ReflectionParameter $owner;
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflection\ReflectionParameter
+     */
+    private $owner;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
     protected function setUp(): void
     {

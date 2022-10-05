@@ -11,8 +11,9 @@ use stdClass;
 /** @covers \Roave\BetterReflection\SourceLocator\Exception\InvalidFileInfo */
 class InvalidFileInfoTest extends TestCase
 {
-    /** @dataProvider nonSplFileInfoProvider */
-    public function testFromNonSplFileInfo(string $expectedMessage, mixed $value): void
+    /** @dataProvider nonSplFileInfoProvider
+     * @param mixed $value */
+    public function testFromNonSplFileInfo(string $expectedMessage, $value): void
     {
         $exception = InvalidFileInfo::fromNonSplFileInfo($value);
 

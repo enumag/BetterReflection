@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\Reflection\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Reflection\Exception\CodeLocationMissing;
+use PHPStan\BetterReflection\Reflection\Exception\CodeLocationMissing;
 
-/** @covers \Roave\BetterReflection\Reflection\Exception\CodeLocationMissing */
+/** @covers \PHPStan\BetterReflection\Reflection\Exception\CodeLocationMissing */
 class CodeLocationMissingTest extends TestCase
 {
     public function testCreate(): void

@@ -6,9 +6,9 @@ namespace Roave\BetterReflectionTest\Util;
 
 use PhpParser\Node;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\CalculateReflectionColumn;
+use PHPStan\BetterReflection\Util\CalculateReflectionColumn;
 
-/** @covers \Roave\BetterReflection\Util\CalculateReflectionColumn */
+/** @covers \PHPStan\BetterReflection\Util\CalculateReflectionColumn */
 class CalculateReflectionColumnTest extends TestCase
 {
     public function testGetStartColumn(): void

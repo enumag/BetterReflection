@@ -31,9 +31,15 @@ use function sprintf;
 /** @covers \Roave\BetterReflection\Reflection\ReflectionFunctionAbstract */
 class ReflectionFunctionAbstractTest extends TestCase
 {
-    private Parser $parser;
+    /**
+     * @var \PhpParser\Parser
+     */
+    private $parser;
 
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
     protected function setUp(): void
     {
@@ -85,13 +91,8 @@ class ReflectionFunctionAbstractTest extends TestCase
 
     public function testNameMethodsWithClosure(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new ClosureSourceLocator(
-                static function (): void {
-                },
-                $this->parser,
-            ),
-        ))->reflectFunction('foo');
+        $functionInfo = (new DefaultReflector(new ClosureSourceLocator(static function (): void {
+        }, $this->parser)))->reflectFunction('foo');
 
         self::assertSame('Roave\BetterReflectionTest\Reflection\\' . ReflectionFunction::CLOSURE_NAME, $functionInfo->getName());
         self::assertSame('Roave\BetterReflectionTest\Reflection', $functionInfo->getNamespaceName());
@@ -110,25 +111,17 @@ class ReflectionFunctionAbstractTest extends TestCase
 
     public function testIsClosureWithClosure(): void
     {
-        $function = (new DefaultReflector(
-            new ClosureSourceLocator(
-                static function (): void {
-                },
-                $this->parser,
-            ),
-        ))->reflectFunction(ReflectionFunction::CLOSURE_NAME);
+        $function = (new DefaultReflector(new ClosureSourceLocator(static function (): void {
+        }, $this->parser)))->reflectFunction(ReflectionFunction::CLOSURE_NAME);
 
         self::assertTrue($function->isClosure());
     }
 
     public function testIsClosureWithArrowFunction(): void
     {
-        $function = (new DefaultReflector(
-            new ClosureSourceLocator(
-                static fn (): bool => true,
-                $this->parser,
-            ),
-        ))->reflectFunction(ReflectionFunction::CLOSURE_NAME);
+        $function = (new DefaultReflector(new ClosureSourceLocator(static function () : bool {
+            return true;
+        }, $this->parser)))->reflectFunction(ReflectionFunction::CLOSURE_NAME);
 
         self::assertTrue($function->isClosure());
     }
@@ -415,9 +408,7 @@ class ReflectionFunctionAbstractTest extends TestCase
 
     public function testGetFileName(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Functions.php', $this->astLocator),
-        ))->reflectFunction('Roave\BetterReflectionTest\Fixture\myFunction');
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Functions.php', $this->astLocator)))->reflectFunction('Roave\BetterReflectionTest\Fixture\myFunction');
 
         self::assertStringContainsString('Fixture/Functions.php', $functionInfo->getFileName());
     }
@@ -456,9 +447,7 @@ class ReflectionFunctionAbstractTest extends TestCase
     /** @dataProvider returnTypeFunctionProvider */
     public function testGetReturnTypeWithDeclaredType(string $functionToReflect, string $expectedType): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction($functionToReflect);
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction($functionToReflect);
 
         $reflectionType = $functionInfo->getReturnType();
         self::assertInstanceOf(ReflectionType::class, $reflectionType);
@@ -467,27 +456,21 @@ class ReflectionFunctionAbstractTest extends TestCase
 
     public function testGetReturnTypeReturnsNullWhenTypeIsNotDeclared(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction('returnsNothing');
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction('returnsNothing');
 
         self::assertNull($functionInfo->getReturnType());
     }
 
     public function testHasReturnTypeWhenTypeDeclared(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction('returnsString');
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction('returnsString');
 
         self::assertTrue($functionInfo->hasReturnType());
     }
 
     public function testHasReturnTypeWhenTypeIsNotDeclared(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction('returnsNothing');
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction('returnsNothing');
 
         self::assertFalse($functionInfo->hasReturnType());
     }
@@ -505,9 +488,7 @@ class ReflectionFunctionAbstractTest extends TestCase
     /** @dataProvider nullableReturnTypeFunctionProvider */
     public function testGetNullableReturnTypeWithDeclaredType(string $functionToReflect, string $expectedType): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php71NullableReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction($functionToReflect);
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php71NullableReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction($functionToReflect);
 
         $reflectionType = $functionInfo->getReturnType();
         self::assertInstanceOf(ReflectionType::class, $reflectionType);
@@ -527,9 +508,7 @@ class ReflectionFunctionAbstractTest extends TestCase
 
     public function testHasNotTentativeReturnType(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction('returnsString');
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction('returnsString');
 
         self::assertFalse($functionInfo->hasTentativeReturnType());
         self::assertTrue($functionInfo->hasReturnType());
@@ -550,9 +529,7 @@ class ReflectionFunctionAbstractTest extends TestCase
 
     public function testNoTentativeReturnType(): void
     {
-        $functionInfo = (new DefaultReflector(
-            new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator),
-        ))->reflectFunction('returnsString');
+        $functionInfo = (new DefaultReflector(new SingleFileSourceLocator(__DIR__ . '/../Fixture/Php7ReturnTypeDeclarations.php', $this->astLocator)))->reflectFunction('returnsString');
 
         self::assertNull($functionInfo->getTentativeReturnType());
         self::assertNotNull($functionInfo->getReturnType());

@@ -21,9 +21,15 @@ use Roave\BetterReflectionTest\Fixture\StringEnum;
 /** @covers \Roave\BetterReflection\Reflection\ReflectionEnum */
 class ReflectionEnumTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
     public function setUp(): void
     {

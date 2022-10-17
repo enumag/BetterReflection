@@ -24,9 +24,15 @@ use Roave\BetterReflectionTest\Fixture\StringEnum;
 /** @covers \Roave\BetterReflection\Reflection\ReflectionEnumCase */
 class ReflectionEnumCaseTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
-    private Reflector $reflector;
+    /**
+     * @var \Roave\BetterReflection\Reflector\Reflector
+     */
+    private $reflector;
 
     public function setUp(): void
     {
@@ -76,8 +82,9 @@ class ReflectionEnumCaseTest extends TestCase
      * @param non-empty-string $caseName
      *
      * @dataProvider dataGetValue
+     * @param int|string $value
      */
-    public function testGetValue(string $enumName, string $caseName, int|string $value): void
+    public function testGetValue(string $enumName, string $caseName, $value): void
     {
         $enumReflection = $this->reflector->reflectClass($enumName);
 
@@ -174,7 +181,7 @@ class ReflectionEnumCaseTest extends TestCase
      *
      * @dataProvider dataGetDocComment
      */
-    public function testGetDocComment(string $caseName, string|null $docComment): void
+    public function testGetDocComment(string $caseName, ?string $docComment): void
     {
         $enumReflection = $this->reflector->reflectClass(DocComment::class);
 

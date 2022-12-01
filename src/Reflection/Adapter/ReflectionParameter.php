@@ -28,8 +28,13 @@ use function strtolower;
 /** @psalm-suppress MissingImmutableAnnotation */
 final class ReflectionParameter extends CoreReflectionParameter
 {
-    public function __construct(private BetterReflectionParameter $betterReflectionParameter)
+    /**
+     * @var BetterReflectionParameter
+     */
+    private $betterReflectionParameter;
+    public function __construct(BetterReflectionParameter $betterReflectionParameter)
     {
+        $this->betterReflectionParameter = $betterReflectionParameter;
         unset($this->name);
     }
 
@@ -122,7 +127,7 @@ final class ReflectionParameter extends CoreReflectionParameter
         try {
             /** @phpstan-ignore-next-line */
             return new ReflectionClass($classType->getClass());
-        } catch (LogicException) {
+        } catch (LogicException $exception) {
             return null;
         }
     }
@@ -139,8 +144,9 @@ final class ReflectionParameter extends CoreReflectionParameter
 
     /**
      * For isArray() and isCallable().
+     * @param BetterReflectionNamedType|BetterReflectionUnionType|BetterReflectionIntersectionType|null $typeReflection
      */
-    private function isType(BetterReflectionNamedType|BetterReflectionUnionType|BetterReflectionIntersectionType|null $typeReflection, string $type): bool
+    private function isType($typeReflection, string $type): bool
     {
         if ($typeReflection === null) {
             return false;
@@ -255,7 +261,7 @@ final class ReflectionParameter extends CoreReflectionParameter
      *
      * @return list<ReflectionAttribute|FakeReflectionAttribute>
      */
-    public function getAttributes(string|null $name = null, int $flags = 0): array
+    public function getAttributes(?string $name = null, int $flags = 0): array
     {
         if ($flags !== 0 && $flags !== ReflectionAttribute::IS_INSTANCEOF) {
             throw new ValueError('Argument #2 ($flags) must be a valid attribute filter flag');
@@ -269,10 +275,15 @@ final class ReflectionParameter extends CoreReflectionParameter
             $attributes = $this->betterReflectionParameter->getAttributes();
         }
 
-        return array_map(static fn (BetterReflectionAttribute $betterReflectionAttribute): ReflectionAttribute|FakeReflectionAttribute => ReflectionAttributeFactory::create($betterReflectionAttribute), $attributes);
+        return array_map(static function (BetterReflectionAttribute $betterReflectionAttribute) {
+            return ReflectionAttributeFactory::create($betterReflectionAttribute);
+        }, $attributes);
     }
 
-    public function __get(string $name): mixed
+    /**
+     * @return mixed
+     */
+    public function __get(string $name)
     {
         if ($name === 'name') {
             return $this->betterReflectionParameter->getName();

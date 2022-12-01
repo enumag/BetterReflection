@@ -40,7 +40,7 @@ class AnnotationHelperTest extends TestCase
     }
 
     /** @dataProvider deprecatedDocCommentProvider */
-    public function testIsDeprecated(string|null $docComment, bool $isDeprecated): void
+    public function testIsDeprecated(?string $docComment, bool $isDeprecated): void
     {
         self::assertSame($isDeprecated, AnnotationHelper::isDeprecated($docComment));
     }
@@ -69,7 +69,7 @@ class AnnotationHelperTest extends TestCase
     }
 
     /** @dataProvider tentativeReturnTypeDocCommentProvider */
-    public function testhasTentativeReturnType(string|null $docComment, bool $isDeprecated): void
+    public function testhasTentativeReturnType(?string $docComment, bool $isDeprecated): void
     {
         self::assertSame($isDeprecated, AnnotationHelper::hasTentativeReturnType($docComment));
     }

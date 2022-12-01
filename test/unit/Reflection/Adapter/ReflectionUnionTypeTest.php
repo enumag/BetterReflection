@@ -25,7 +25,9 @@ class ReflectionUnionTypeTest extends TestCase
     {
         $methods = get_class_methods(CoreReflectionUnionType::class);
 
-        return array_combine($methods, array_map(static fn (string $i): array => [$i], $methods));
+        return array_combine($methods, array_map(static function (string $i) : array {
+            return [$i];
+        }, $methods));
     }
 
     /** @dataProvider coreReflectionMethodNamesProvider */
@@ -51,8 +53,9 @@ class ReflectionUnionTypeTest extends TestCase
      * @param list<mixed> $args
      *
      * @dataProvider methodExpectationProvider
+     * @param mixed $returnValue
      */
-    public function testAdapterMethods(string $methodName, string|null $expectedException, mixed $returnValue, array $args): void
+    public function testAdapterMethods(string $methodName, ?string $expectedException, $returnValue, array $args): void
     {
         $reflectionStub = $this->createMock(BetterReflectionUnionType::class);
 

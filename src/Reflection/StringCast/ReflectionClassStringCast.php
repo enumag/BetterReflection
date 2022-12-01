@@ -51,30 +51,7 @@ final class ReflectionClassStringCast
         $dynamicProperties = self::getDynamicProperties($classReflection);
         $methods           = self::getMethods($classReflection);
 
-        return sprintf(
-            $format,
-            $isObject ? 'Object of class' : $type,
-            self::sourceToString($classReflection),
-            $classReflection->isFinal() ? 'final ' : '',
-            $classReflection->isAbstract() ? 'abstract ' : '',
-            strtolower($type),
-            $classReflection->getName(),
-            self::extendsToString($classReflection),
-            self::implementsToString($classReflection),
-            self::fileAndLinesToString($classReflection),
-            count($constants) + count($enumCases),
-            self::constantsToString($constants, $enumCases),
-            count($staticProperties),
-            self::propertiesToString($staticProperties),
-            count($staticMethods),
-            self::methodsToString($staticMethods),
-            count($defaultProperties),
-            self::propertiesToString($defaultProperties),
-            $isObject ? count($dynamicProperties) : '',
-            $isObject ? self::propertiesToString($dynamicProperties) : '',
-            count($methods),
-            self::methodsToString($methods, 2),
-        );
+        return sprintf($format, $isObject ? 'Object of class' : $type, self::sourceToString($classReflection), $classReflection->isFinal() ? 'final ' : '', $classReflection->isAbstract() ? 'abstract ' : '', strtolower($type), $classReflection->getName(), self::extendsToString($classReflection), self::implementsToString($classReflection), self::fileAndLinesToString($classReflection), count($constants) + count($enumCases), self::constantsToString($constants, $enumCases), count($staticProperties), self::propertiesToString($staticProperties), count($staticMethods), self::methodsToString($staticMethods), count($defaultProperties), self::propertiesToString($defaultProperties), $isObject ? count($dynamicProperties) : '', $isObject ? self::propertiesToString($dynamicProperties) : '', count($methods), self::methodsToString($methods, 2));
     }
 
     private static function typeToString(ReflectionClass $classReflection): string
@@ -148,8 +125,12 @@ final class ReflectionClassStringCast
             return '';
         }
 
-        $items = array_map(static fn (ReflectionEnumCase $enumCaseReflection): string => trim(ReflectionEnumCaseStringCast::toString($enumCaseReflection)), $enumCases)
-            + array_map(static fn (ReflectionClassConstant $constantReflection): string => trim(ReflectionClassConstantStringCast::toString($constantReflection)), $constants);
+        $items = array_map(static function (ReflectionEnumCase $enumCaseReflection) : string {
+            return trim(ReflectionEnumCaseStringCast::toString($enumCaseReflection));
+        }, $enumCases)
+            + array_map(static function (ReflectionClassConstant $constantReflection) : string {
+                return trim(ReflectionClassConstantStringCast::toString($constantReflection));
+            }, $constants);
 
         return self::itemsToString($items);
     }
@@ -161,7 +142,9 @@ final class ReflectionClassStringCast
             return '';
         }
 
-        return self::itemsToString(array_map(static fn (ReflectionProperty $propertyReflection): string => ReflectionPropertyStringCast::toString($propertyReflection), $properties));
+        return self::itemsToString(array_map(static function (ReflectionProperty $propertyReflection) : string {
+            return ReflectionPropertyStringCast::toString($propertyReflection);
+        }, $properties));
     }
 
     /** @param array<ReflectionMethod> $methods */
@@ -171,7 +154,9 @@ final class ReflectionClassStringCast
             return '';
         }
 
-        return self::itemsToString(array_map(static fn (ReflectionMethod $method): string => ReflectionMethodStringCast::toString($method), $methods), $emptyLinesAmongItems);
+        return self::itemsToString(array_map(static function (ReflectionMethod $method) : string {
+            return ReflectionMethodStringCast::toString($method);
+        }, $methods), $emptyLinesAmongItems);
     }
 
     /** @param array<string> $items */
@@ -190,30 +175,40 @@ final class ReflectionClassStringCast
     /** @return array<ReflectionProperty> */
     private static function getStaticProperties(ReflectionClass $classReflection): array
     {
-        return array_filter($classReflection->getProperties(), static fn (ReflectionProperty $propertyReflection): bool => $propertyReflection->isStatic());
+        return array_filter($classReflection->getProperties(), static function (ReflectionProperty $propertyReflection) : bool {
+            return $propertyReflection->isStatic();
+        });
     }
 
     /** @return array<ReflectionMethod> */
     private static function getStaticMethods(ReflectionClass $classReflection): array
     {
-        return array_filter($classReflection->getMethods(), static fn (ReflectionMethod $methodReflection): bool => $methodReflection->isStatic());
+        return array_filter($classReflection->getMethods(), static function (ReflectionMethod $methodReflection) : bool {
+            return $methodReflection->isStatic();
+        });
     }
 
     /** @return array<ReflectionProperty> */
     private static function getDefaultProperties(ReflectionClass $classReflection): array
     {
-        return array_filter($classReflection->getProperties(), static fn (ReflectionProperty $propertyReflection): bool => ! $propertyReflection->isStatic() && $propertyReflection->isDefault());
+        return array_filter($classReflection->getProperties(), static function (ReflectionProperty $propertyReflection) : bool {
+            return ! $propertyReflection->isStatic() && $propertyReflection->isDefault();
+        });
     }
 
     /** @return array<ReflectionProperty> */
     private static function getDynamicProperties(ReflectionClass $classReflection): array
     {
-        return array_filter($classReflection->getProperties(), static fn (ReflectionProperty $propertyReflection): bool => ! $propertyReflection->isStatic() && ! $propertyReflection->isDefault());
+        return array_filter($classReflection->getProperties(), static function (ReflectionProperty $propertyReflection) : bool {
+            return ! $propertyReflection->isStatic() && ! $propertyReflection->isDefault();
+        });
     }
 
     /** @return array<ReflectionMethod> */
     private static function getMethods(ReflectionClass $classReflection): array
     {
-        return array_filter($classReflection->getMethods(), static fn (ReflectionMethod $methodReflection): bool => ! $methodReflection->isStatic());
+        return array_filter($classReflection->getMethods(), static function (ReflectionMethod $methodReflection) : bool {
+            return ! $methodReflection->isStatic();
+        });
     }
 }

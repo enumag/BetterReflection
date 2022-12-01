@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Roave\BetterReflectionTest\SourceLocator\Exception;
 
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\SourceLocator\Exception\InvalidFileInfo;
+use PHPStan\BetterReflection\SourceLocator\Exception\InvalidFileInfo;
 use stdClass;
 
-/** @covers \Roave\BetterReflection\SourceLocator\Exception\InvalidFileInfo */
+/** @covers \PHPStan\BetterReflection\SourceLocator\Exception\InvalidFileInfo */
 class InvalidFileInfoTest extends TestCase
 {
     /** @dataProvider nonSplFileInfoProvider

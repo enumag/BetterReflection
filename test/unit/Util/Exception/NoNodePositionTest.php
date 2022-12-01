@@ -7,11 +7,11 @@ namespace Roave\BetterReflectionTest\Util\Exception;
 use PhpParser\Lexer;
 use PhpParser\Node\Scalar\LNumber;
 use PHPUnit\Framework\TestCase;
-use Roave\BetterReflection\Util\Exception\NoNodePosition;
+use PHPStan\BetterReflection\Util\Exception\NoNodePosition;
 
 use function sprintf;
 
-/** @covers \Roave\BetterReflection\Util\Exception\NoNodePosition */
+/** @covers \PHPStan\BetterReflection\Util\Exception\NoNodePosition */
 class NoNodePositionTest extends TestCase
 {
     public function testFromPosition(): void

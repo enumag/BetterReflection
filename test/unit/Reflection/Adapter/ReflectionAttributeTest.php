@@ -9,8 +9,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionAttribute as CoreReflectionAttribute;
 use ReflectionClass as CoreReflectionClass;
-use Roave\BetterReflection\Reflection\Adapter\ReflectionAttribute as ReflectionAttributeAdapter;
-use Roave\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
+use PHPStan\BetterReflection\Reflection\Adapter\ReflectionAttribute as ReflectionAttributeAdapter;
+use PHPStan\BetterReflection\Reflection\ReflectionAttribute as BetterReflectionAttribute;
 
 use function array_combine;
 use function array_map;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Roave\BetterReflection\Reflection;
+namespace PHPStan\BetterReflection\Reflection;
 
 use LogicException;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
-use Roave\BetterReflection\Reflector\Reflector;
+use PHPStan\BetterReflection\Reflector\Reflector;
 
 use function array_key_exists;
 use function assert;
@@ -40,15 +40,15 @@ class ReflectionNamedType extends ReflectionType
     /** @var non-empty-string */
     private $name;
     /**
-     * @var \Roave\BetterReflection\Reflector\Reflector
+     * @var \PHPStan\BetterReflection\Reflector\Reflector
      */
     private $reflector;
     /**
-     * @var \Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionProperty
+     * @var \PHPStan\BetterReflection\Reflection\ReflectionParameter|\PHPStan\BetterReflection\Reflection\ReflectionMethod|\PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionEnum|\PHPStan\BetterReflection\Reflection\ReflectionProperty
      */
     private $owner;
     /** @internal
-     * @param \Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionParameter|\PHPStan\BetterReflection\Reflection\ReflectionMethod|\PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionEnum|\PHPStan\BetterReflection\Reflection\ReflectionProperty $owner
      * @param \PhpParser\Node\Identifier|\PhpParser\Node\Name $type */
     public function __construct(Reflector $reflector, $owner, $type)
     {
@@ -60,7 +60,7 @@ class ReflectionNamedType extends ReflectionType
     }
 
     /** @internal
-     * @param \Roave\BetterReflection\Reflection\ReflectionParameter|\Roave\BetterReflection\Reflection\ReflectionMethod|\Roave\BetterReflection\Reflection\ReflectionFunction|\Roave\BetterReflection\Reflection\ReflectionEnum|\Roave\BetterReflection\Reflection\ReflectionProperty $owner
+     * @param \PHPStan\BetterReflection\Reflection\ReflectionParameter|\PHPStan\BetterReflection\Reflection\ReflectionMethod|\PHPStan\BetterReflection\Reflection\ReflectionFunction|\PHPStan\BetterReflection\Reflection\ReflectionEnum|\PHPStan\BetterReflection\Reflection\ReflectionProperty $owner
      * @return $this */
     public function withOwner($owner)
     {

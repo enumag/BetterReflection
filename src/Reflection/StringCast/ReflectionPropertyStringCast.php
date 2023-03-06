@@ -27,15 +27,7 @@ final class ReflectionPropertyStringCast
 
         $type = $propertyReflection->getType();
 
-        $string = sprintf(
-            'Property [%s %s%s%s%s $%s ]',
-            $stateModifier,
-            self::visibilityToString($propertyReflection),
-            $propertyReflection->isStatic() ? ' static' : '',
-            $propertyReflection->isReadOnly() ? ' readonly' : '',
-            $type !== null ? sprintf(' %s', ReflectionTypeStringCast::toString($type)) : '',
-            $propertyReflection->getName(),
-        );
+        $string = sprintf('Property [%s %s%s%s%s $%s ]', $stateModifier, self::visibilityToString($propertyReflection), $propertyReflection->isStatic() ? ' static' : '', $propertyReflection->isReadOnly() ? ' readonly' : '', $type !== null ? sprintf(' %s', ReflectionTypeStringCast::toString($type)) : '', $propertyReflection->getName());
         assert($string !== '');
 
         return $string;

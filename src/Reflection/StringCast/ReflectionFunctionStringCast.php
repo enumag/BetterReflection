@@ -31,15 +31,7 @@ final class ReflectionFunctionStringCast
             ? "\n  - Return [ %s ]"
             : '';
 
-        $string = sprintf(
-            'Function [ <%s> function %s ] {%s' . $parametersFormat . $returnTypeFormat . "\n}",
-            self::sourceToString($functionReflection),
-            $functionReflection->getName(),
-            self::fileAndLinesToString($functionReflection),
-            count($functionReflection->getParameters()),
-            self::parametersToString($functionReflection),
-            self::returnTypeToString($functionReflection),
-        );
+        $string = sprintf('Function [ <%s> function %s ] {%s' . $parametersFormat . $returnTypeFormat . "\n}", self::sourceToString($functionReflection), $functionReflection->getName(), self::fileAndLinesToString($functionReflection), count($functionReflection->getParameters()), self::parametersToString($functionReflection), self::returnTypeToString($functionReflection));
         assert($string !== '');
 
         return $string;
@@ -76,7 +68,9 @@ final class ReflectionFunctionStringCast
     /** @psalm-pure */
     private static function parametersToString(ReflectionFunction $functionReflection): string
     {
-        return array_reduce($functionReflection->getParameters(), static fn (string $string, ReflectionParameter $parameterReflection): string => $string . "\n    " . ReflectionParameterStringCast::toString($parameterReflection), '');
+        return array_reduce($functionReflection->getParameters(), static function (string $string, ReflectionParameter $parameterReflection) : string {
+            return $string . "\n    " . ReflectionParameterStringCast::toString($parameterReflection);
+        }, '');
     }
 
     /** @psalm-pure */

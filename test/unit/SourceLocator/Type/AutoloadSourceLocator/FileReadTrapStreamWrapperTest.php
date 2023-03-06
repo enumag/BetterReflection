@@ -33,37 +33,31 @@ class FileReadTrapStreamWrapperTest extends TestCase
     {
         self::assertNull(FileReadTrapStreamWrapper::$autoloadLocatedFile);
 
-        self::assertSame(
-            'value produced by the function',
-            FileReadTrapStreamWrapper::withStreamWrapperOverride(
-                static function (): string {
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should be null when being first used');
-                    }
+        self::assertSame('value produced by the function', FileReadTrapStreamWrapper::withStreamWrapperOverride(static function (): string {
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should be null when being first used');
+            }
 
-                    if (! is_file(__FILE__)) {
-                        throw new UnexpectedValueException('is_file() should operate as usual');
-                    }
+            if (! is_file(__FILE__)) {
+                throw new UnexpectedValueException('is_file() should operate as usual');
+            }
 
-                    /** @phpstan-ignore-next-line */
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not be populated when file existence is checked');
-                    }
+            /** @phpstan-ignore-next-line */
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not be populated when file existence is checked');
+            }
 
-                    if (@file_get_contents(__FILE__)) {
-                        throw new UnexpectedValueException('file_get_contents() should fail: file should not be readable when this stream wrapper is active');
-                    }
+            if (@file_get_contents(__FILE__)) {
+                throw new UnexpectedValueException('file_get_contents() should fail: file should not be readable when this stream wrapper is active');
+            }
 
-                    if (__FILE__ !== FileReadTrapStreamWrapper::$autoloadLocatedFile) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should have been populated by the failed file access');
-                    }
+            if (__FILE__ !== FileReadTrapStreamWrapper::$autoloadLocatedFile) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should have been populated by the failed file access');
+            }
 
-                    /** @phpstan-ignore-next-line */
-                    return 'value produced by the function';
-                },
-                ['file'],
-            ),
-        );
+            /** @phpstan-ignore-next-line */
+            return 'value produced by the function';
+        }, ['file']));
 
         self::assertNull(FileReadTrapStreamWrapper::$autoloadLocatedFile);
         self::assertNotEmpty(file_get_contents(__FILE__), 'Stream wrapper was removed, file reads work again');
@@ -75,37 +69,31 @@ class FileReadTrapStreamWrapperTest extends TestCase
 
         $nonExistingFilePath = __DIR__ . '/' . uniqid('non-existing-file', true);
 
-        self::assertSame(
-            'the value produced by the function',
-            FileReadTrapStreamWrapper::withStreamWrapperOverride(
-                static function () use ($nonExistingFilePath): string {
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should be null when being first used');
-                    }
+        self::assertSame('the value produced by the function', FileReadTrapStreamWrapper::withStreamWrapperOverride(static function () use ($nonExistingFilePath): string {
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should be null when being first used');
+            }
 
-                    if (is_file($nonExistingFilePath)) {
-                        throw new UnexpectedValueException('is_file() should operate as usual - file does indeed not exist');
-                    }
+            if (is_file($nonExistingFilePath)) {
+                throw new UnexpectedValueException('is_file() should operate as usual - file does indeed not exist');
+            }
 
-                    /** @phpstan-ignore-next-line */
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not be populated when file existence is checked');
-                    }
+            /** @phpstan-ignore-next-line */
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not be populated when file existence is checked');
+            }
 
-                    if (@file_get_contents($nonExistingFilePath)) {
-                        throw new UnexpectedValueException('file_get_contents() should fail: file should not be readable when this stream wrapper is active');
-                    }
+            if (@file_get_contents($nonExistingFilePath)) {
+                throw new UnexpectedValueException('file_get_contents() should fail: file should not be readable when this stream wrapper is active');
+            }
 
-                    if ($nonExistingFilePath !== FileReadTrapStreamWrapper::$autoloadLocatedFile) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should have been populated by the failed file access');
-                    }
+            if ($nonExistingFilePath !== FileReadTrapStreamWrapper::$autoloadLocatedFile) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should have been populated by the failed file access');
+            }
 
-                    /** @phpstan-ignore-next-line */
-                    return 'the value produced by the function';
-                },
-                ['file'],
-            ),
-        );
+            /** @phpstan-ignore-next-line */
+            return 'the value produced by the function';
+        }, ['file']));
 
         self::assertNull(FileReadTrapStreamWrapper::$autoloadLocatedFile);
         self::assertNotEmpty(file_get_contents(__FILE__), 'Stream wrapper was removed, file reads work again');
@@ -115,37 +103,31 @@ class FileReadTrapStreamWrapperTest extends TestCase
     {
         self::assertNull(FileReadTrapStreamWrapper::$autoloadLocatedFile);
 
-        self::assertSame(
-            'another value produced by the function',
-            FileReadTrapStreamWrapper::withStreamWrapperOverride(
-                static function (): string {
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should be null when being first used');
-                    }
+        self::assertSame('another value produced by the function', FileReadTrapStreamWrapper::withStreamWrapperOverride(static function (): string {
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should be null when being first used');
+            }
 
-                    if (! is_file(__FILE__)) {
-                        throw new UnexpectedValueException('is_file() should operate as usual - stream wrapper not active');
-                    }
+            if (! is_file(__FILE__)) {
+                throw new UnexpectedValueException('is_file() should operate as usual - stream wrapper not active');
+            }
 
-                    /** @phpstan-ignore-next-line */
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not be populated when file existence is checked');
-                    }
+            /** @phpstan-ignore-next-line */
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not be populated when file existence is checked');
+            }
 
-                    if (! @file_get_contents(__FILE__)) {
-                        throw new UnexpectedValueException('file_get_contents() should work: file access not on this protocol');
-                    }
+            if (! @file_get_contents(__FILE__)) {
+                throw new UnexpectedValueException('file_get_contents() should work: file access not on this protocol');
+            }
 
-                    /** @phpstan-ignore-next-line */
-                    if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
-                        throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not have been populated: unrelated protocol');
-                    }
+            /** @phpstan-ignore-next-line */
+            if (FileReadTrapStreamWrapper::$autoloadLocatedFile !== null) {
+                throw new UnexpectedValueException('FileReadTrapStreamWrapper::$autoloadLocatedFile should not have been populated: unrelated protocol');
+            }
 
-                    return 'another value produced by the function';
-                },
-                ['http'],
-            ),
-        );
+            return 'another value produced by the function';
+        }, ['http']));
 
         self::assertNull(FileReadTrapStreamWrapper::$autoloadLocatedFile);
         self::assertNotEmpty(file_get_contents(__FILE__), 'Stream wrapper was removed, file reads work again');
@@ -156,19 +138,13 @@ class FileReadTrapStreamWrapperTest extends TestCase
         $thrown = new Exception();
 
         try {
-            self::assertSame(
-                'another value produced by the function',
-                FileReadTrapStreamWrapper::withStreamWrapperOverride(
-                    static function () use ($thrown): string {
-                        if (! is_file(__FILE__)) {
-                            throw new UnexpectedValueException('is_file() should operate as usual');
-                        }
+            self::assertSame('another value produced by the function', FileReadTrapStreamWrapper::withStreamWrapperOverride(static function () use ($thrown): string {
+                if (! is_file(__FILE__)) {
+                    throw new UnexpectedValueException('is_file() should operate as usual');
+                }
 
-                        throw $thrown;
-                    },
-                    ['http'],
-                ),
-            );
+                throw $thrown;
+            }, ['http']));
 
             self::fail('No exception was raised');
         } catch (Throwable $caught) {
@@ -190,23 +166,17 @@ class FileReadTrapStreamWrapperTest extends TestCase
         $this->expectExceptionMessageMatches('~stat\(\): stat failed for~');
 
         try {
-            self::assertSame(
-                'another value produced by the function',
-                FileReadTrapStreamWrapper::withStreamWrapperOverride(
-                    static function () use ($nonExistingFile): string {
-                        if (is_file($nonExistingFile)) {
-                            throw new UnexpectedValueException('is_file() should report `false` for a non-existing file');
-                        }
+            self::assertSame('another value produced by the function', FileReadTrapStreamWrapper::withStreamWrapperOverride(static function () use ($nonExistingFile): string {
+                if (is_file($nonExistingFile)) {
+                    throw new UnexpectedValueException('is_file() should report `false` for a non-existing file');
+                }
 
-                        if (file_get_contents($nonExistingFile) !== false) {
-                            throw new UnexpectedValueException('file_get_contents() should report `false` for a non-existing file');
-                        }
+                if (file_get_contents($nonExistingFile) !== false) {
+                    throw new UnexpectedValueException('file_get_contents() should report `false` for a non-existing file');
+                }
 
-                        return 'another value produced by the function';
-                    },
-                    ['file'],
-                ),
-            );
+                return 'another value produced by the function';
+            }, ['file']));
         } finally {
             self::assertNull(FileReadTrapStreamWrapper::$autoloadLocatedFile);
             self::assertNotEmpty(file_get_contents(__FILE__), 'Stream wrapper was removed, file reads work again');

@@ -16,7 +16,10 @@ use Roave\BetterReflectionTest\Fixture;
 #[CoversClass(NotAnInterfaceReflection::class)]
 class NotAnInterfaceReflectionTest extends TestCase
 {
-    private Locator $astLocator;
+    /**
+     * @var \Roave\BetterReflection\SourceLocator\Ast\Locator
+     */
+    private $astLocator;
 
     protected function setUp(): void
     {
@@ -31,10 +34,7 @@ class NotAnInterfaceReflectionTest extends TestCase
         $exception = NotAnInterfaceReflection::fromReflectionClass($reflector->reflectClass(Fixture\ExampleClass::class));
 
         self::assertInstanceOf(NotAnInterfaceReflection::class, $exception);
-        self::assertSame(
-            'Provided node "' . Fixture\ExampleClass::class . '" is not interface, but "class"',
-            $exception->getMessage(),
-        );
+        self::assertSame('Provided node "' . Fixture\ExampleClass::class . '" is not interface, but "class"', $exception->getMessage());
     }
 
     public function testFromTrait(): void
@@ -43,9 +43,6 @@ class NotAnInterfaceReflectionTest extends TestCase
         $exception = NotAnInterfaceReflection::fromReflectionClass($reflector->reflectClass(Fixture\ExampleTrait::class));
 
         self::assertInstanceOf(NotAnInterfaceReflection::class, $exception);
-        self::assertSame(
-            'Provided node "' . Fixture\ExampleTrait::class . '" is not interface, but "trait"',
-            $exception->getMessage(),
-        );
+        self::assertSame('Provided node "' . Fixture\ExampleTrait::class . '" is not interface, but "trait"', $exception->getMessage());
     }
 }

@@ -38,14 +38,7 @@ final class ReflectionConstantStringCast
             $valueAsString = (string) $value;
         }
 
-        $string = sprintf(
-            'Constant [ <%s> %s %s ] {%s %s }',
-            self::sourceToString($constantReflection),
-            gettype($value),
-            $constantReflection->getName(),
-            self::fileAndLinesToString($constantReflection),
-            $valueAsString,
-        );
+        $string = sprintf('Constant [ <%s> %s %s ] {%s %s }', self::sourceToString($constantReflection), gettype($value), $constantReflection->getName(), self::fileAndLinesToString($constantReflection), $valueAsString);
         assert($string !== '');
 
         return $string;
